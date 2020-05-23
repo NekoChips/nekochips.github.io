@@ -1,0 +1,1263 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>SpringSecurity OAuth2 实现应用授权 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="SpringSecurity OAuth2 实现应用授权 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/03/14/1584194721393.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="SpringSecurity OAuth2 实现应用授权 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/03/14/1584194721393.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">SpringSecurity OAuth2 实现应用授权</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-03-14</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/03/14/1584194721393.html#comments">
+              <span data-uvstatcmt="1584194721393">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/03/14/1584194721393.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p>在开始之前，我们需要对以下相关知识有基本的了解。</p>
+<ol>
+<li><strong>SpringSecurity</strong>：建议查阅<a href="https://docs.spring.io/spring-security/site/docs/5.3.1.BUILD-SNAPSHOT/reference/html5/" target="_blank">官方文档</a>做相关了解。</li>
+<li><strong>OAuth2</strong>：推荐 <a href="http://www.ruanyifeng.com/blog/2019/04/oauth_design.html" target="_blank">阮一峰老师的 OAuth2 介绍</a>，通俗易懂。</li>
+<li><strong>SpringBoot OAuth2</strong>：官方文档 <a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html" target="_blank">OAuth 2 Developers Guide</a></li>
+<li><strong>JWT（JSON Web Token）</strong>：了解它的作用即可，深入了解可前往官网：<a href="https://jwt.io/" target="_blank">https://jwt.io/</a></li>
+</ol>
+<p>这里提供我写的一些 Demo，欢迎指出问题。</p>
+<p>🚀 源码地址：<a href="https://github.com/NekoChips/SpringDemo/tree/master/11.springboot-oauth2" target="_blank">https://github.com/NekoChips/SpringDemo/11.springboot-oauth2</a></p>
+<p>本文将结合大量代码演示整个功能的实现过程。</p>
+<hr>
+<h3 id="toc_h3_0">1. 框架搭建</h3>
+<p>这里我使用的版本依赖分别为 <code>SpringBoot 2.1.9.RELEASE</code>，<code>SpringCloud Greenwich.SR3</code>。</p>
+<p><strong>👀 友情提示</strong>：<em>文中还使用了 MybatisPlus 工具，若不需使用，请自行去除依赖以及实体类代码中的相关注解。若连数据库也不使用的，请自行去除数据库连接相关依赖。</em></p>
+<h4 id="toc_h4_1">1.1 引入相关依赖</h4>
+<p>新建 maven 项目后，引入相关依赖。</p>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;org.example&lt;/groupId&gt;
+    &lt;artifactId&gt;springboot-oauth2&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;name&gt;springboot-oauth2-demo&lt;/name&gt;
+    &lt;description&gt;Oauth2 Demo for Springboot&lt;/description&gt;
+
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.1.9.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;charset&gt;UTF-8&lt;/charset&gt;
+        &lt;springcloud.version&gt;Greenwich.SR3&lt;/springcloud.version&gt;
+        &lt;mybaitplus.version&gt;3.3.0&lt;/mybaitplus.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-oauth2&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-security&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- 数据库连接依赖 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-jdbc&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;mysql&lt;/groupId&gt;
+            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- 引入 mybatis-plus --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.baomidou&lt;/groupId&gt;
+            &lt;artifactId&gt;mybatis-plus-boot-starter&lt;/artifactId&gt;
+            &lt;version&gt;${mybaitplus.version}&lt;/version&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                    &lt;artifactId&gt;spring-boot-autoconfigure&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- 日志 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+            &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${springcloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;
+</code></pre>
+<h4 id="toc_h4_2">1.2 实现 UserDetailsService</h4>
+<p>相信了解过 <code>SpringSecurity</code> 的同学，对这个接口都不会陌生。该接口在<strong>实现用户认证</strong>功能上起决定性作用。</p>
+<p>定义 <code>UserEntity</code> 实体类实现 <code>UserDetails</code> 接口，定义 <code>RoleEntity</code> 和 <code>AuthorityEntity</code> ，均需实现 <code>GrantedAuthority</code> 接口。</p>
+<pre><code>@TableName(value = "tb_user_info")
+public class UserEntity implements UserDetails {
+
+    private static final long serialVersionUID = -517800012387095551L;
+
+    @TableId(value = "U_ID", type = IdType.ASSIGN_UUID)
+    private String userId;
+
+    @TableField(value = "U_NAME")
+    private String username;
+
+    @TableField(value = "U_PASSWORD")
+    private String password;
+
+    // -1： 过期; 0： 锁定； 1：启用
+    @TableField(value = "U_STATUS")
+    private Integer status;
+
+    // 角色列表
+    @TableField(exist = false)
+    private Collection&lt;RoleEntity&gt; roles;
+
+    // 权限列表
+    @TableField(exist = false)
+    private Collection&lt;AuthorityEntity&gt; authorities;
+
+    public UserEntity() {
+
+    }
+
+    public UserEntity(String username, String password, Integer status) {
+        this.username = username;
+        this.password = password;
+        this.status = status;
+    }
+
+    // 获取用户的权限，这里可以配置基于方法的权限，也可以配置基于角色的权限
+    // 同样可以把两个都配置进去
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+        List&lt;GrantedAuthority&gt; grantedAuthorities = new ArrayList&lt;&gt;();
+        grantedAuthorities.addAll(this.authorities);
+        grantedAuthorities.addAll(this.roles);
+        return grantedAuthorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    // 用户是否过期,过期返回false, 没过期返回true
+    @Override
+    public boolean isAccountNonExpired() {
+        return !this.status.equals(CommonConstant.EXPIRED.getValue());
+    }
+
+    // 用户是否被锁住,锁定返回false，没锁定返回true
+    @Override
+    public boolean isAccountNonLocked() {
+        return !this.status.equals(CommonConstant.LOCKED.getValue());
+    }
+
+    // 判断用户的凭证是否过期， 用于 refresh_token
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    // 判断用户是否可用
+    @Override
+    public boolean isEnabled() {
+        return this.status.equals(CommonConstant.VALID.getValue());
+    }
+
+	// 省略getter、setter
+	......
+
+}
+</code></pre>
+<p><code>RoelEntity</code> 实体类</p>
+<pre><code>@TableName(value = "tb_role")
+public class RoleEntity implements GrantedAuthority {
+
+    private static final long serialVersionUID = -6827906048760709856L;
+
+    @TableId(value = "R_ID", type = IdType.AUTO)
+    private Integer roleId;
+
+    @TableField(value = "R_NAME")
+    private String roleName;
+
+    // 权限列表
+    @TableField(exist = false)
+    private Collection&lt;AuthorityEntity&gt; authorities;
+
+    @Override
+    public String getAuthority() {
+        return this.roleName;
+    }
+
+    // 省略getter、setter
+    ......
+}
+</code></pre>
+<p><code>AuthorityEntity</code> 实体类</p>
+<pre><code>@TableName(value = "tb_permission")
+public class AuthorityEntity implements GrantedAuthority {
+
+    private static final long serialVersionUID = 1426714296619157512L;
+
+    @TableId(value = "PERM_ID", type = IdType.AUTO)
+    private Integer authId;
+
+    @TableField(value = "PERM_NAME")
+    private String authName;
+
+    @Override
+    public String getAuthority() {
+        return this.authName;
+    }
+    // 省略getter、setter
+    ......
+}
+</code></pre>
+<p>使用 <code>UserServiceImpl</code> 实现 <code>UserDetailsService</code> 接口</p>
+<pre><code>@Service
+public class UserServiceImpl implements IUserService, UserDetailsService {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private IRoleService roleService;
+
+    @Autowired
+    private IAuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /**
+     * userDetailsService 方法实现
+     *
+     * @param username 用户名
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = new UserEntity();
+        user.setUsername(username);
+        QueryWrapper&lt;UserEntity&gt; wrapper = new QueryWrapper&lt;&gt;(user);
+
+        UserEntity existUser = userMapper.selectOne(wrapper);
+        // 设置用户方法级权限
+        existUser.setAuthorities(listAuthById(existUser.getUserId()));
+        // 设置用户角色级权限
+        existUser.setRoles(listRoleById(existUser.getUserId()));
+
+        return new User(username, existUser.getPassword(), existUser.isEnabled(),
+                existUser.isAccountNonExpired(), existUser.isCredentialsNonExpired(),
+                existUser.isAccountNonLocked(), existUser.getAuthorities());
+    }
+
+    @Override
+    public List&lt;RoleEntity&gt; listRoleById(String userId) {
+        return roleService.listByUser(userId);
+    }
+
+    @Override
+    public List&lt;AuthorityEntity&gt; listAuthById(String userId) {
+        List&lt;RoleEntity&gt; roles = listRoleById(userId);
+        if (!CollectionUtils.isEmpty(roles)) {
+            List&lt;AuthorityEntity&gt; auths = new ArrayList&lt;&gt;();
+            roles.forEach(role -&gt; auths.addAll(authService.listByRole(role.getRoleId())));
+            return auths;
+        }
+        return null;
+    }
+}
+</code></pre>
+<p>这里用户的信息是存放在数据库中，具体的用户信息以及用户权限的查询自己实现。同样也可以创建一个 <code>UserEntity</code> 对象来代替数据库查询结果，代码如下：</p>
+<pre><code>    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = new UserEntity();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode("123456"));
+        user.setStatus(CommonConstant.VALID.getValue());
+
+        return new User(username, user.getPassword(), user.isEnabled(),
+                user.isAccountNonExpired(), user.isCredentialsNonExpired(),
+                user.isAccountNonLocked(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
+    }
+</code></pre>
+<p><code>PasswordEncoder</code> 这个类也是 <code>SpringSecurity</code> 中很关键的一个类，下面马上会介绍到。</p>
+<hr>
+<h3 id="toc_h3_3">2. 配置认证服务器</h3>
+<p>定义一个认证服务配置类 <code>AuthorizationServerConfig</code> 继承自 <code>WebSecurityConfigurerAdapter</code>，添加相关注解 <code>@Configuration</code>、<code>@EnableAuthorizationServer</code>，注解的功能这里不做赘述。在配置类中添加前面说到的 <code>PasswordEncoder</code> 实现并交于 Spring 管理。</p>
+<pre><code>@Configuration
+@EnableAuthorizationServer
+public class AuthorizationServerConfig  extends WebSecurityConfigurerAdapter {
+    // 密码加密、校验器
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+</code></pre>
+<p>这时一个简单的 OAuth2 认证环境已经搭建完毕。为了避免 OAuth2 在项目启动时自动创建 client-id 和 client-secret，我们修改一下配置文件。</p>
+<pre><code>security:
+  oauth2:
+    client:
+      client-id: test
+      client-secret: test_123456
+</code></pre>
+<hr>
+<h3 id="toc_h3_4">3. 获取 token 令牌</h3>
+<h4 id="toc_h4_5">3.1 授权码方式获取令牌</h4>
+<p>到这里就需要了解 OAuth2 的几种申请令牌的方式了。这里再简单的介绍一下（安全级别由高到低）</p>
+<ol>
+<li><strong>authorization_code</strong> ：授权码模式</li>
+<li><strong>implicit</strong> ：隐藏模式（多应用于纯前端应用）</li>
+<li><strong>password</strong> ：密码模式</li>
+<li><strong>client_credentials</strong> ：凭证式（仅限于客户端）</li>
+</ol>
+<p>启动项目，打开浏览器访问 <a href="http://localhost:8080/oauth/authorize?response_type=code&amp;client_id=test&amp;redirect_uri=https://chenyangjie.com.cn&amp;scope=all&amp;state=123">http://localhost:8080/oauth/authorize?response_type=code&amp;client_id=test&amp;redirect_uri=https://chenyangjie.com.cn&amp;scope=all&amp;state=123</a></p>
+<p>参数说明：</p>
+<ul>
+<li>response_type=code	表示授权码模式</li>
+<li>client_id=test	配置文件中配置的 client-id</li>
+<li>redirect_uri	重定向地址，用于获取授权码，这里我随便写的一个地址</li>
+<li>scop=all	权限作用域，表示所有权限</li>
+</ul>
+<p>由于我们的认证服务器继承自 <code>WebSecurityConfigurerAdapter</code> ,所以访问后会跳转到 <code>SpringSecurity</code> 的登录页面。</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-8d1d78c3.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>根据前面定义的 <code>UserServiceImpl</code> 逻辑进行登录验证。登录成功后会默认跳至 sw.js ，然后报 404 错误。撇开它不管，我们继续访问上述地址，页面跳转如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-20803d47.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>明显告诉我们需要在配置文件中指定 redirect_uri 。</p>
+<pre><code>security:
+  oauth2:
+    client:
+      client-id: test
+      client-secret: test_123456
+      registered-redirect-uri: http://chenyangjie.com.cn
+</code></pre>
+<p>重启项目，再次进行如上步骤，登录成功后再次访问的跳转页面如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-6b2f31e6.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>选择 Approve 同意授权，然后点击 Authorize 按钮，页面会跳至指定的 redirect_uri，并带上了授权码信息，地址栏信息如下：</p>
+<p><a href="https://chenyangjie.com.cn/?code=KiaeNt&amp;state=123" target="_blank">https://chenyangjie.com.cn/?code=KiaeNt&amp;state=123</a></p>
+<p>其中 code 后面的值即为<strong>授权码</strong>。然后我们就可以拿着这个授权码从认证服务器上获取 token 令牌了。</p>
+<p>使用 postman 发送 post 请求，<strong>切记是 post 请求</strong>，请求地址：<a href="localhost:8080/oauth/token" target="_blank">localhost:8080/oauth/token</a>，请求参数如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-30536320.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>除了这些参数外，还需在请求头中新增 <code>Authorization</code> 参数</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-d794a343.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p><code>Authorization</code> 的值为 <code>Basic</code> client-id:clinet-secret 的值经过 base64 加密后的值。发送请求后，获取到 token 令牌：</p>
+<pre><code>{
+    "access_token": "f592c381-46d1-41f6-8956-1f831013e1ff",
+    "token_type": "bearer",
+    "refresh_token": "b9ff22e6-0e79-4c8e-a75f-df252553d4a5",
+    "expires_in": 43199,
+    "scope": "all"
+}
+</code></pre>
+<p>其中 access_token 即为获取到的 token 令牌，refresh_token 为刷新令牌，后面会讲到。</p>
+<p>一个授权码只能获取一次令牌，再次发送获取令牌请求，结果如下：</p>
+<pre><code>{
+    "error": "invalid_grant",
+    "error_description": "Invalid authorization code: KiaeNt"
+}
+</code></pre>
+<h4 id="toc_h4_6">3.2 密码方式获取令牌</h4>
+<p>使用 postman 发送 post 请求，请求地址：<a href="localhost:8080/oauth/token" target="_blank">localhost:8080/oauth/token</a>，请求参数如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-b28cf23f.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>同样的也需要在请求头中添加 Authorization 信息，与授权码方式一样。同样也能获得 token：</p>
+<pre><code>{
+    "access_token": "f592c381-46d1-41f6-8956-1f831013e1ff",
+    "token_type": "bearer",
+    "refresh_token": "b9ff22e6-0e79-4c8e-a75f-df252553d4a5",
+    "expires_in": 35423,
+    "scope": "all"
+}
+</code></pre>
+<hr>
+<h3 id="toc_h3_7">4. 配置资源服务器</h3>
+<p>这里有一个很重要的概念。资源服务器，顾名思义，只有在配置了资源服务器时，才可以调用服务器上的资源。</p>
+<p>我们先创建一个 Controller，用于需要访问的资源。</p>
+<pre><code>@RestController
+@RequestMapping("test")
+public class TestController {
+
+    @GetMapping("authInfo")
+    public Authentication getAuth(Authentication authentication) {
+        return authentication;
+    }
+}
+</code></pre>
+<p>下面我们分 <strong>没配置资源服务器</strong> 和 <strong>配置了资源服务器</strong> 两种情况对该资源进行访问。</p>
+<h4 id="toc_h4_8">4.1 没配置资源服务器</h4>
+<p>先使用<strong>密码方式</strong>获取 token 令牌，令牌如下：</p>
+<pre><code>{
+    "access_token": "d27a5db5-bc74-413e-ac23-c00133f3dbcb",
+    "token_type": "bearer",
+    "refresh_token": "cd32fb38-fbc6-402e-8cbe-f9c9724c0431",
+    "expires_in": 43199,
+    "scope": "all"
+}
+</code></pre>
+<p>使用 token 令牌对资源发起请求，在请求头中添加 Authorization 参数，值为 <code>token_type</code> <code>access_token</code></p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-f12d8dc7.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>返回值如下：</p>
+<pre><code>{
+    "timestamp": "2020-03-14T12:55:34.517+0000",
+    "status": 401,
+    "error": "Unauthorized",
+    "message": "Unauthorized",
+    "path": "/authInfo"
+}
+</code></pre>
+<p>很奇怪，明明使用了密码方式获取的 token 来访问资源，却还是报了<strong>没有认证</strong>的错误。这就是没有配置资源服务器导致的，服务器认为这个 token 它并不合法。</p>
+<h4 id="toc_h4_9">4.2 配置了资源服务器</h4>
+<p>首先我们需要配置一个资源服务器，定义 <code>ResourceServerConfig</code> 类，并添加 <code>@EnableResourceServer</code> 注解</p>
+<pre><code>@Configuration
+@EnableResourceServer
+public class ResourceServerConfig {
+
+}
+</code></pre>
+<p>重启服务，再次访问资源，成功获取到了资源信息，返回值如下：</p>
+<pre><code>{
+    "authorities": [
+        {
+            "authority": "ROLE_ADMIN"
+        }
+    ],
+    "details": {
+        "remoteAddress": "127.0.0.1",
+        "sessionId": null,
+        "tokenValue": "ae31ad4c-f218-4899-aa3b-48a2b617d237",
+        "tokenType": "bearer",
+        "decodedDetails": null
+    },
+    ......
+}
+</code></pre>
+<p>👀 这里要说明一下，如果在同一个服务模块中同时配置了认证服务器和资源服务器，再去使用授权码模式去获取令牌有可能</p>
+<p><em>Full authentication is required to access this resource</em> 的问题，此时需要使用 <code>@Order()</code> 注解保证认证服务器的配置优先级高于资源服务器即可。</p>
+<hr>
+<h3 id="toc_h3_10">5. 自定义 token 管理</h3>
+<p>之前我们获取到的 token 令牌都是基于 <code>SpringSecurity OAuth2</code> 默认配置生成的，同时 <code>SpringSecurity</code> 允许用户去自定义 token 配置。SpringSecurity 还支持使用 JWT 来替换默认的令牌，进一步提升对服务资源的安全保护。</p>
+<h4 id="toc_h4_11">5.1 ClientDetailsService</h4>
+<p>与 <code>UserDetailsService</code> 功能类似，<code>ClientDetailsService</code> 用于认证客户端信息。查看其源码，发现它有两个子类实现 <code>InMemoryClientDetailsService</code> 和 <code>JdbcClientDetailsService</code>。</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-9f25566c.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>🚀 这里我重点说一下 <code>JdbcClientDetailsService</code>，至于 <code>InMemoryClientDetailsService</code> 就不做赘述了。</p>
+<p>👀 <em>对于不想使用数据库的同学，本小结的以下部分可选择跳过。</em></p>
+<p><code>JdbcClientDetailsService</code> 顾名思义，是需要连接数据库的。</p>
+<pre><code>	......
+
+	private static final String CLIENT_FIELDS_FOR_UPDATE = "resource_ids, scope, "
+			+ "authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, "
+			+ "refresh_token_validity, additional_information, autoapprove";
+	private static final String CLIENT_FIELDS = "client_secret, " + CLIENT_FIELDS_FOR_UPDATE;
+	private static final String BASE_FIND_STATEMENT = "select client_id, " + CLIENT_FIELDS
+			+ " from oauth_client_details";
+	private static final String DEFAULT_INSERT_STATEMENT = "insert into oauth_client_details (" + CLIENT_FIELDS
+			+ ", client_id) values (?,?,?,?,?,?,?,?,?,?,?)";
+
+	......
+</code></pre>
+<p>通过查看其源码，不难发现我们需要建一张名为 <code>oauth_client_details</code> 的表。建表语句如下：</p>
+<pre><code>-- Table structure for oauth_client_details 
+-- ----------------------------
+DROP TABLE IF EXISTS `oauth_client_details`;
+CREATE TABLE `oauth_client_details`
+(
+    `client_id`               varchar(48) NOT NULL,
+    `resource_ids`            varchar(256)  DEFAULT NULL,
+    `client_secret`           varchar(256)  DEFAULT NULL,
+    `scope`                   varchar(256)  DEFAULT NULL,
+    `authorized_grant_types`  varchar(256)  DEFAULT NULL,
+    `web_server_redirect_uri` varchar(256)  DEFAULT NULL,
+    `authorities`             varchar(256)  DEFAULT NULL,
+    `access_token_validity`   int(11)       DEFAULT NULL,
+    `refresh_token_validity`  int(11)       DEFAULT NULL,
+    `additional_information`  varchar(4096) DEFAULT NULL,
+    `autoapprove`             varchar(256)  DEFAULT NULL,
+    PRIMARY KEY (`client_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+</code></pre>
+<p>至此 <code>ClientDetails</code> 的数据库环境搭建好了，我们可以将认证的客户端信息放在该表中用于查询验证。</p>
+<h4 id="toc_h4_12">5.2 自定义令牌配置</h4>
+<p>之前的认证服务器 <code>AuthorizationServerConfig</code> 继承自 SpringSecurity 的安全配置适配器 <code>WebSecurityConfigurerAdapter</code>，现在我们让它继承自 <code>OAuth2</code> 的 <code>AuthorizationServerConfigurerAdapter</code></p>
+<pre><code>@Configuration
+@EnableAuthorizationServer
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    // 注入认证管理器
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    // 注入用户认证信息查询接口
+    @Autowired
+    private UserDetailsService userService;
+
+    // 注入 DataSource
+    @Autowired
+    private DataSource dataSource;
+
+    // 密码加密、校验器
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // 注入 jdbcClientDetailsService
+    @Bean
+    public ClientDetailsService jdbcClientDetailsService() {
+        return new JdbcClientDetailsService(dataSource);
+    }
+
+    // 客户端认证配置
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.withClientDetails(jdbcClientDetailsService());
+    }
+
+    // 配置认证端点
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userService);
+    }
+}
+</code></pre>
+<p>👀 不想使用数据库的同学可以使用 <code>inMemory</code> 的方式配置客户端认证，同时<strong>无需</strong>注入 <code>DataSource</code> 以及注册 <code>ClientDetailsService</code> ，客户端配置代码更改如下：</p>
+<pre><code>    // 客户端认证配置
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("test")
+                .secret("test_123456")
+                .accessTokenValiditySeconds(3600)
+                .scopes("all")
+                .authorizedGrantTypes("password");
+    }
+</code></pre>
+<p>配置完认证服务器之后，需要再新增一个 <code>SpringSecurity</code> 的配置，并注册认证服务器中用到的认证管理器 <code>AuthenticationManager</code> 。</p>
+<pre><code>@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManagerBean();
+    }
+}
+</code></pre>
+<p>启动项目，使用密码模式获取客户端“test”的令牌：</p>
+<pre><code>{
+    "error": "unauthorized",
+    "error_description": "Full authentication is required to access this resource"
+}
+</code></pre>
+<p>查看控制台告警，提示我们 <em><code>Encoded password does not look like BCrypt</code></em></p>
+<pre><code>WARN 10736 --- [0.1-8080-exec-1] o.s.s.c.bcrypt.BCryptPasswordEncoder     : Encoded password does not look like BCrypt
+</code></pre>
+<p>根据指示使用 <code>PasswordEncoder</code> 对客户端密码进行加密。</p>
+<p>👀 使用数据库的同学再添加客户端信息时需要对客户端的密码进行加密，源码中有提供，这里不做赘述。</p>
+<pre><code>    // 客户端认证配置
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()
+                .withClient("test")
+                .secret(passwordEncoder().encode("test_123456"))
+                .accessTokenValiditySeconds(3600)
+                .scopes("all")
+                .authorizedGrantTypes("password");
+    }
+</code></pre>
+<p>重启项目，使用密码方式获取客户端“test”的令牌：</p>
+<pre><code>{
+    "access_token": "0351a6c2-215b-4f11-85fb-fd11319082ca",
+    "token_type": "bearer",
+    "expires_in": 3599,
+    "scope": "all"
+}
+</code></pre>
+<p>🚀  <em>这里可能会出现一个服务告警，导致无法获取令牌，成功获取令牌的可跳过该段内容</em></p>
+<pre><code>WARN 9508 --- [0.1-8080-exec-2] o.s.s.o.provider.endpoint.TokenEndpoint  : Handling error: NestedServletException, Handler dispatch failed; nested exception is java.lang.StackOverflowError
+</code></pre>
+<p>经过 debug ，发现 security 源码在用户校验时会进入一个死循环，从而导致内存溢出。</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-b2679f31.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>👀 这个地方认证失败的原因是，前面有一个步骤将参数中的密码移除了，导致现在参数中没有密码，从而导致认证不通过。由此可以推断出可能是注册的 <code>AuthenticationManager</code> 有问题，尝试换一种注册方式。</p>
+<p>👀 （<em>具体是什么原因引起的还有待验证</em>）</p>
+<pre><code>@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+//        return super.authenticationManagerBean();
+    }
+}
+</code></pre>
+<p>👀 保险起见移除配置文件中的 OAuth2 相关配置：</p>
+<pre><code>#security:
+#  oauth2:
+#    client:
+#      client-id: test
+#      client-secret: test_123456
+#      registered-redirect-uri: https://chenyangjie.com.cn
+</code></pre>
+<p>重启项目，使用密码方式获取令牌</p>
+<pre><code>{
+    "access_token": "0351a6c2-215b-4f11-85fb-fd11319082ca",
+    "token_type": "bearer",
+    "expires_in": 3575,
+    "scope": "all"
+}
+</code></pre>
+<hr>
+<h3 id="toc_h3_13">6. 令牌储存策略</h3>
+<p>🚀 细心的同学会发现上面我们使用密码方式获取的两次令牌是同一个令牌，只是过期时间 expires_in 有所变化</p>
+<pre><code>// 第一次
+{
+"access_token": "0351a6c2-215b-4f11-85fb-fd11319082ca",
+"token_type": "bearer",
+"expires_in": 3599,
+"scope": "all"
+}
+
+// 第二次
+{
+"access_token": "0351a6c2-215b-4f11-85fb-fd11319082ca",
+"token_type": "bearer",
+"expires_in": 3575,
+"scope": "all"
+}
+</code></pre>
+<p>😄 这是因为令牌的默认储存策略是<strong>存储在内存中</strong>的，同时它也支持第三方存储，如 Redis 。</p>
+<h4 id="toc_h4_14">6.1 使用 Redis 存储令牌</h4>
+<p>首先创建 <code>RedisTokenConfig</code>，并注册 <code>RedisTokenStore</code></p>
+<pre><code>@Configuration
+public class RedisTokenConfig{
+
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
+    // 注册RedisTokenStore
+    @Bean
+    public TokenStore redisTokenStore() {
+        return new RedisTokenStore(redisConnectionFactory);
+    }
+}
+</code></pre>
+<p>然后在认证服务器中指定令牌储存策略</p>
+<pre><code>@Configuration
+@EnableAuthorizationServer
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+........
+
+    // 注入 RedisTokenStore
+    @Autowired
+    private TokenStore redisTokenStore;
+
+
+    // 配置认证端点
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userService)
+                .tokenStore(redisTokenStore);
+    }
+
+........
+}
+</code></pre>
+<p>重启项目获取令牌，验证令牌存储</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-0cd43231.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<hr>
+<h3 id="toc_h3_15">7. 集成 JWT 令牌</h3>
+<p>👀 在集成之前，需要对 JWT 有一个基本的认识。</p>
+<p>在使用方式上与使用 <code>RedisTokenStore</code> 有点类似。</p>
+<h4 id="toc_h4_16">7.1 使用 JWT 令牌</h4>
+<p>创建一个 <code>JwtTokenConfig</code> ，注册 <code>JwtAccessTokenConverter</code> 和 <code>JwtTokenStore</code></p>
+<pre><code>@Configuration
+public class JwtTokenConfig {
+
+    private static final String PUBLIC_KEY = "public_key";
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
+        tokenConverter.setSigningKey(PUBLIC_KEY);
+        return tokenConverter;
+    }
+
+    @Bean
+    public TokenStore jwtTokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+}
+</code></pre>
+<p>👀 注释掉 <code>RedisTokenConfig</code> 上的 <code>@Configuration</code> 注解，或者直接删除 <code>RedisTokenConfig</code> 代码，避免发生<strong>注册冲突</strong>。</p>
+<p>修改认证服务器相关配置</p>
+<pre><code>@Configuration
+@EnableAuthorizationServer
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+......
+
+    // 注入 RedisTokenStore
+//    @Autowired
+//    private TokenStore redisTokenStore;
+
+    // 注入 JwtAccessTokenConverter
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+
+    // 注入 JwtTokenStore
+    @Autowired
+    private TokenStore jwtTokenStore;
+
+    // 配置认证端点
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userService)
+//                .tokenStore(redisTokenStore)
+                .accessTokenConverter(jwtAccessTokenConverter)
+                .tokenStore(jwtTokenStore);
+    }
+
+......
+}
+</code></pre>
+<p>重启项目，获取令牌</p>
+<pre><code>{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODQyNDY5NjUsInVzZXJfbmFtZSI6ImFkbWluIiwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXSwianRpIjoiMDY4ZDNiODUtZGEyZS00M2M1LWFiZjAtZGNiNTUxMDg2NDRjIiwiY2xpZW50X2lkIjoidGVzdCIsInNjb3BlIjpbImFsbCJdfQ.uySQMR5wh528q7QtaJAW2CKeX5kd9ZXiL63ETGvF0GY",
+    "token_type": "bearer",
+    "expires_in": 3598,
+    "scope": "all",
+    "jti": "068d3b85-da2e-43c5-abf0-dcb55108644c"
+}
+</code></pre>
+<p>使用 jwt 令牌访问资源，同样可以成功访问。</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-20042c0c.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<h4 id="toc_h4_17">7.2 解析 JWT 令牌</h4>
+<p>可以去 jwt 的官网进行解析，<a href="https://jwt.io" target="_blank">https://jwt.io</a></p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-09ff687a.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>也可以使用 Java 实现对 JWT 的解析，这里不做赘述。</p>
+<p>具体实现可以参照另一篇文章： <a href="" target="_blank">初探 JWT</a></p>
+<h4 id="toc_h4_18">7.3 JwtToken 增强</h4>
+<p>一般来说 jwt 的安全性已经得到了一定的保障，不过 <code>Springsecurity OAuth2</code> 提供了一个 <code>TokenEnhance</code> r 的 <code>Token</code> 增强器接口，我们通过实现他可以让 JWT 的安全性进一步提升。</p>
+<p>首先写一个 <code>TokenEnhancer</code> 的实现类</p>
+<pre><code>public class JwtTokenEnhancer implements TokenEnhancer {
+
+    // 实际开发中这里可以是一个 密钥
+    private static final String PRIVATE_SECRET = "private_secret";
+
+    @Override
+    public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
+        Map&lt;String, Object&gt; enhanceMap = new HashMap&lt;&gt;();
+        // 增强的内容
+        enhanceMap.put("secret", PRIVATE_SECRET);
+        ((DefaultOAuth2AccessToken)accessToken).setAdditionalInformation(enhanceMap);
+        return accessToken;
+    }
+}
+</code></pre>
+<p>在 <code>JwtTokenConfig</code> 中注册这个增强类</p>
+<pre><code>@Configuration
+public class JwtTokenConfig {
+
+......
+
+    @Bean
+    public TokenEnhancer jwtTokenEnhancer() {
+        return new JwtTokenEnhancer();
+    }
+}
+</code></pre>
+<p>配置认证服务器</p>
+<pre><code>@Configuration
+@EnableAuthorizationServer
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+......
+
+    // 注入 JwtAccessTokenConverter
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+
+    // 注入 JwtTokenStore
+    @Autowired
+    private TokenStore jwtTokenStore;
+
+    // 注入 JwtTokenEnhancer
+    @Autowired
+    private TokenEnhancer jwtTokenEnhancer;
+
+    // 配置认证端点
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
+        TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+        List&lt;TokenEnhancer&gt; enhancers = new ArrayList&lt;&gt;();
+        enhancers.add(jwtTokenEnhancer);
+        enhancers.add(jwtAccessTokenConverter);
+        enhancerChain.setTokenEnhancers(enhancers);
+
+        endpoints
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userService)
+//                .tokenStore(redisTokenStore)
+                .accessTokenConverter(jwtAccessTokenConverter)
+                .tokenStore(jwtTokenStore)
+                .tokenEnhancer(enhancerChain);
+    }
+
+......
+
+}
+</code></pre>
+<p>重启项目，获取令牌，解析令牌得到的数据为：</p>
+<pre><code>{
+  "user_name": "admin",
+  "scope": [
+    "all"
+  ],
+  "secret": "private_secret",
+  "exp": 1584249003,
+  "authorities": [
+    "admin"
+  ],
+  "jti": "09c340bd-e240-47d1-b937-a3679e48b940",
+  "client_id": "test"
+}
+</code></pre>
+<p>可以发现我们增强的东西，也被加密到 jwt 中了，使用这个增强的 jwt 也可以访问资源，这里就不演示了。</p>
+<hr>
+<h3 id="toc_h3_19">8. 刷新令牌 refresh_token</h3>
+<p>🚀 我们平时在使用软件的过程中，如果一个软件是通过第三方应用授权登录的，每次使用的间隔较短时，系统不会提示我们需要重新登录或者授权，不过如果长时间没有登录，系统就会提示需要重新登录或者授权。</p>
+<p>👀 在这里，刷新令牌的作用就和上面的应用场景类似了，当我们申请的令牌过期了或者快要过期了，可以通过刷新令牌从认证服务中重新获取一个新的令牌，以维持授权可用。</p>
+<p>👀 我们可以发现，在我们前面的例子中，返回的令牌信息中没有包含 <code>refresh_token</code> 。</p>
+<h4 id="toc_h4_20">8.1 配置 refresh_token</h4>
+<p>为了让返回的令牌信息包含 <code>refresh_token</code> ，我们需要进行相关配置。</p>
+<p>查看文档发现 <code>SpringSecurity OAuth2</code> 将 <code>refresh_token</code> 当做了除<strong>四种标准的获取令牌方式</strong>之外的<strong>另一种拓展方式</strong>，即 <code>refresh_token</code> 方式获取令牌。说到这里，想必都明白如何去进行配置了。</p>
+<p>👀 使用数据库管理客户端信息的同学，只需要在对应客户端的 <code>authorized_grant_types</code> 字段中新 <code>refresh_token</code> 方式即可。</p>
+<p>👀 对于将客户端数据放在内存中管理的同学，修改认证服务器中的配置即可：</p>
+<pre><code>    // 客户端认证配置
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+//        clients.withClientDetails(jdbcClientDetailsService());
+        clients.inMemory()
+                .withClient("test")
+                .secret(passwordEncoder().encode("test_123456"))
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(86400)
+                .scopes("all")
+                .authorizedGrantTypes("password","refresh_token");
+
+    }
+</code></pre>
+<p>这里我将 <code>refresh_token</code> 的过期时间设为 1 天</p>
+<p>重启项目，获取 token 信息如下：</p>
+<pre><code>{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDI1MTA4MSwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXSwianRpIjoiMjM2NjY4ODItM2I3My00YTY0LTgzNjAtZmY0ZGNlMGRkMDhhIiwiY2xpZW50X2lkIjoidGVzdCJ9.ttPBy4qj6w98aHvnBLsDUbD_fAxVpOXKpxsWMs5WnEs",
+    "token_type": "bearer",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJhdGkiOiIyMzY2Njg4Mi0zYjczLTRhNjQtODM2MC1mZjRkY2UwZGQwOGEiLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDMzMzg4MSwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXSwianRpIjoiYzQ0ZjU2MjAtMmYwOS00NmYxLTkwYWItOWFjNzQ1MWMzNjQ1IiwiY2xpZW50X2lkIjoidGVzdCJ9.77kAVWdVk86h-gC3MSKGt8JJScOlUe9-wEBqp4U1GnI",
+    "expires_in": 3599,
+    "scope": "all",
+    "secret": "private_secret",
+    "jti": "23666882-3b73-4a64-8360-ff4dce0dd08a"
+}
+</code></pre>
+<h4 id="toc_h4_21">8.2 使用 refresh_token 获取新的 token</h4>
+<p>使用 postman 发送获取 token 的 post 请求，请求地址：<a href="localhost:8080/oauth/token" target="_blank">localhost:8080/oauth/token</a>，参数如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-e3b85b34.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>同样也需要带上请求头中的 <code>Authorization</code> 信息，获取令牌信息如下：</p>
+<pre><code>{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDI1MTMzNiwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXSwianRpIjoiY2NjZjY0ZDAtOTc4YS00MjUzLWI0ZGUtNmM5ZjEzMmExZjY2IiwiY2xpZW50X2lkIjoidGVzdCJ9.mwYWgoRNtjhgjp8thRimiFm-RTmoWnITtELtHjCM6zw",
+    "token_type": "bearer",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJhdGkiOiJjY2NmNjRkMC05NzhhLTQyNTMtYjRkZS02YzlmMTMyYTFmNjYiLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDMzMzg4MSwiYXV0aG9yaXRpZXMiOlsiYWRtaW4iXSwianRpIjoiYzQ0ZjU2MjAtMmYwOS00NmYxLTkwYWItOWFjNzQ1MWMzNjQ1IiwiY2xpZW50X2lkIjoidGVzdCJ9.0q8BrAADIGSZfuKqsTQR8tiJ4EaULqkc8DY2T20X8U0",
+    "expires_in": 3599,
+    "scope": "all",
+    "secret": "private_secret",
+    "jti": "cccf64d0-978a-4253-b4de-6c9f132a1f66"
+}
+</code></pre>
+<p>我们可以使用新的令牌去获取资源信息，这里就不做演示。</p>
+<hr>
+<h3 id="toc_h3_22">9. 总结</h3>
+<p>至此，使用 <code>SpringSecurity OAuth2</code> 实现应用授权的思路和简单的 Demo 基本完成。</p>
+<p>❤️ 感谢看到这里还有帮忙验证的小伙伴。</p>
+<p>🚀 源码地址：<a href="https://github.com/NekoChips/SpringDemo/tree/master/11.springboot-oauth2" target="_blank">https://github.com/NekoChips/SpringDemo/11.springboot-oauth2</a></p>
+<p>🚀 相关链接：</p>
+<ol>
+<li>OAuth2 介绍以及使用：<a href="http://www.ruanyifeng.com/blog/2019/04/oauth_design.html" target="_blank">阮一峰老师的 OAuth2 介绍</a></li>
+<li>SpringBoot OAuth2 官方文档： <a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html" target="_blank">OAuth 2 Developers Guide</a></li>
+<li>JWT 介绍以及使用： <a href="https://www.chenyangjie.com.cn/articles/2020/03/15/1584254901664.html" target="_blank">初探 JWT</a></li>
+<li>SpringSecurity OAuth2 实现单点登录：<a href="https://www.chenyangjie.com.cn/articles/2020/03/15/1584254982408.html" target="_blank">Spring Security OAuth2 SSO 搭建指南</a></li>
+<li>SpringSecurity 权限管理： <a href="https://www.chenyangjie.com.cn/articles/2020/03/15/1584254953580.html" target="_blank">Spring Security 使用指南</a></li>
+</ol>
+<p>😄 进阶路途贵在不断的学习和积累，希望各位读者能积极指出文中错误。</p>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/03/14/1584194721393.html" target="_blank">https://nekochips.github.io/articles/2020/03/14/1584194721393.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="SpringSecurity OAuth2 实现应用授权"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/03/14/1584194721393.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1584194721393"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+      <a class="item" href="https://nekochips.github.io/tags/JWT">JWT</a>
+      <a class="item" href="https://nekochips.github.io/tags/Golang">Golang</a>
+      <a class="item" href="https://nekochips.github.io/tags/CSS">CSS</a>
+      <a class="item" href="https://nekochips.github.io/tags/AntDesignPro">AntDesignPro</a>
+      <a class="item" href="https://nekochips.github.io/tags/SpringCloud">SpringCloud</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1584194721393",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1584194721393', "SpringBoot,OAuth2")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2666ms, 2020/05/23 21:10:47 -->

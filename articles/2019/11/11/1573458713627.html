@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>浅谈对redis的理解 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="浅谈对redis的理解 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2019/11/11/1573458713627.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="浅谈对redis的理解 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2019/11/11/1573458713627.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">浅谈对redis的理解</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2019-11-11</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2019/11/11/1573458713627.html#comments">
+              <span data-uvstatcmt="1573458713627">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2019/11/11/1573458713627.html">321</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/Redis">Redis</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p><img src="https://img.hacpai.com/bing/20180818.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" alt=""></p>
+<p>在我们的日常的Java Web开发过程中,都是使用数据库来对数据进行存储，提供给系统中的业务进行CRUD的一系列操作。可在我们涉及到大数据量和高并发的场景下时，只是使用数据库来处理数据的性能弊端暴露无遗，甚至极其容易就能造成数据库瘫痪，继而导致系统停止服务，从而对服务群体造成严重影响。为了克服以上问题，我们通常使用Redis来保证系统的稳定性和可用性。</p>
+<h2 id="toc_h2_0">一、Redis简介</h2>
+<p>Redis（全称：Remote Dictionary Server 远程字典服务）是一个开源Key-Value数据库，并提供多种语言的API。<br>
+Redis与其他的Key-Value数据库(如Memcached)相比，有以下几个优势：</p>
+<ul>
+<li>读写高性能：Redis能读的速度是110000次/s,写的速度是81000次/s 。</li>
+<li>多数据类型：Redis不仅仅支持Key-Value类型的数据，同时还支持List、Set、Hash、Zset等数据结构。</li>
+<li>数据持久化：Redis可将内存中的数据持久化至硬盘上，对数据的备份和恢复起到良好的作用。</li>
+<li>原子性操作：Redis的所有操作都是原子性的。</li>
+<li>多语言支持：Redis可以和多种语言进行集成。<br>
+......</li>
+</ul>
+<h2 id="toc_h2_1">二、应用场景</h2>
+<p>Redis一般用作系统缓存、限流以及保证数据的一致性。</p>
+<h3 id="toc_h3_2">缓存</h3>
+<p>使用 Redis 作为缓存的读取逻辑如图所示（图源来自：<a href="https://www.jianshu.com/p/56999f2b8e3b" target="_blank">Redis【入门】就这一篇！</a>）：<br>
+<img src="https://img.hacpai.com/file/2019/11/Redis缓存操作流程-5d95393d.webp?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="Redis缓存操作流程.webp"><br>
+读取过程：</p>
+<ol>
+<li>用户查询数据时，先去查询redis中的数据。</li>
+<li>如果redis中存在该数据，直接返回给用户。</li>
+<li>如果redis中不存在该数据，后台业务查询数据库。</li>
+<li>将从数据库中查询到的数据写入redis中并返回给用户。</li>
+</ol>
+<h4 id="toc_h4_3">缓存穿透</h4>
+<p>缓存穿透，是指查询一个一定不存在的数据。</p>
+<p>场景：一般情况下遭遇黑客攻击时可能会出现这种问题，以高频率的方式去查询一个不存在的数据。这些请求会全部落到数据库上，从而对数据造成极大的压力。</p>
+<p>解决方案：通过在redis中存放空值对象（即将从数据库中查询所得到的空值对象作为value写入reids中并为其设置过期时间）可以解决这个问题。</p>
+<h4 id="toc_h4_4">缓存雪崩</h4>
+<p>缓存雪崩，是指在某一个时间段，缓存集中失效。</p>
+<p>场景：大量缓存数据集中过期或者某一个redis服务节点宕机，会导致大量的请求落到数据库上，造成服务器压力。</p>
+<p>解决方法：</p>
+<ol>
+<li>对热门数据设置较长的过期时间（也可以不设置过期时间），对冷门数据设置较短的过期时间，可避免因为缓存数据过期而造成的缓存雪崩。</li>
+<li>通过主从复制对redis中的缓存数据进行备份，可以迅速代替宕机的redis节点进行工作，在一定程度上可以解决因为redis服务节点宕机而造成的缓存雪崩。</li>
+</ol>
+<h4 id="toc_h4_5">缓存击穿</h4>
+<p>缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。</p>
+<p>场景：访问某些非常热门的数据时，该数据过期了，大量请求落到数据库上造成服务器压力。</p>
+<p>解决方案：对这些非常热门的数据不设置过期时间。</p>
+<h2 id="toc_h2_6">三、数据结构</h2>
+<p>Redis支持的数据结构有String、List、Set、Hash、Zset五种。</p>
+<h3 id="toc_h3_7">String</h3>
+<p>String（字符串）类型是Redis中最为常用的数据类型，主要存储字符串类型的数据。<br>
+String类型最大能储存512M的数据。</p>
+<h3 id="toc_h3_8">List</h3>
+<p>List 存储的是list集合数据，集合中允许重复元素。</p>
+<h3 id="toc_h3_9">Set</h3>
+<p>Set 同 List，但是不允许重复元素。</p>
+<h3 id="toc_h3_10">Hash</h3>
+<p>Hash 是一个键值对集合。<br>
+Hash 存储的是类似于Map结构的数据。</p>
+<h3 id="toc_h3_11">Zset（Sorted Set）</h3>
+<p>Zset 和 Set 一样，不允许重复的成员。<br>
+Zset 中的每个元素都都会有一个score， 元素根据score进行排序。<br>
+Zset 可用于实现简单的延迟队列。</p>
+<h2 id="toc_h2_12">四、持久化</h2>
+<p>Redis提供了两种持久化方式，RDB和AOF</p>
+<h3 id="toc_h3_13">RDB（Redis DataBase）</h3>
+<p>在指定的时间间隔内将内存中的数据集快照写入磁盘，也就是Snapshot快照，它恢复时是加载快照文件，将数据写入缓存中。<br>
+Redis会单独创建一个子进程来进行持久化，会先将数据写入到一个临时文件中，待持久化过程都结束了，再用这个临时文件替换上次持久化好的文件。整个过程中，主进程是不进行任何IO操作的，这就确保了极高的性能。<br>
+如果需要进行大规模数据的恢复，且对于数据恢复的完整性不是非常敏感，那RDB方式要比AOF方式更加的高效。RDB的缺点是最后一次持久化后产生的数据可能丢失。</p>
+<p>RDB配置：</p>
+<pre><code># 修改 RDB 文件名称
+dbfilename dump.rdb
+
+# 修改 RDB 文件保存路径
+dir /redis/data_save
+
+# 修改 RDB 保存策略
+save 900 1  
+save 300 10  
+save 60 10000
+
+# 当 Redis 无法持久化至磁盘时，关闭Redis的写操作
+stop-writes-on-bgsave-error yes
+
+# 进行 rdb 保存时，压缩文件
+rdbcompression yes
+
+# 在存储快照后，还可以让Redis使用CRC64算法来进行数据校验,损耗性能，建议关闭
+rdbchecksum no
+</code></pre>
+<p>RDB的优点：</p>
+<ul>
+<li>使用较少的磁盘空间</li>
+<li>恢复方式简单，速度较快</li>
+</ul>
+<p>RDB的缺点：</p>
+<ul>
+<li>数据量过大时，会损耗性能。</li>
+<li>由于是每隔一段时间进行一次RDB持久化操作，服务节点意外宕机的情况下，会丢失最后一次持久化操作之后的所有数据。</li>
+</ul>
+<h3 id="toc_h3_14">AOF（Append Of File）</h3>
+<p>以日志的形式来记录每个写操作，只能追加文件但不可以修改文件内容，Redis重启时根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作。</p>
+<p>AOF配置：</p>
+<pre><code># 开启 aof 持久化
+appendonly yes
+
+# 指定 aof 文件名称
+appendfilename "redis_data.aof"
+
+# aof 文件存放路径同rdb
+dir /redis/data_save
+
+# 设置 aof 同步频率
+
+# 始终同步，redis的每进行一次操作都会记录到 aof 文件中
+# appendsync always
+
+# 每秒同步一次，redis每隔一秒对这一秒内所有的redis操作记录到 aof 文件中
+appendsync everysec
+
+# 关闭 aof 同步
+# appendsync no
+
+# 配置 aof 重写机制
+auto-aof-rewirte-percentage 100
+auto-aof-rewrite-min-size 64mb		
+</code></pre>
+<p>AOF的优点：</p>
+<ul>
+<li>备份机制更稳健，丢失数据概率更低。</li>
+<li>AOF是日志文件，可以通过改文件找出操作过程中的一些问题并予以解决。</li>
+</ul>
+<p>AOF的缺点：</p>
+<ul>
+<li>占用更多的磁盘空间。</li>
+<li>备份和恢复的速度较慢。</li>
+<li>每次读写都同步的话，有一定的性能压力。</li>
+</ul>
+<p>AOF和RDB的选择：</p>
+<ul>
+<li>对数据不敏感（允许存在数据丢失），优先选择RDB。</li>
+<li>对数据敏感的情况下，同时开启RDB和AOF。</li>
+<li>只是单纯的用作内存和缓存，可以不开启持久化。</li>
+</ul>
+<h2 id="toc_h2_15">五、Redis主从复制</h2>
+<p>主从复制，就是主机数据更新后根据配置和策略，自动同步到备机的master/slaver机制，Master以写为主，Slaver以读为主。</p>
+<h3 id="toc_h3_16">主从关系配置</h3>
+<p>通过 <code>info replication</code>命令查看当前redis节点的主从复制相关信息。<br>
+通过执行 <code>slaveof ip port</code>命令设置当前redis节点为指定redis节点的从服务节点。</p>
+<h3 id="toc_h3_17">主从复制过程及原理</h3>
+<p>过程：</p>
+<ol>
+<li>当 Slaver 连接上 Master后，Slaver 向 Master 发送 sync 指令。</li>
+<li>Master 接收到 Slaver 的 sync 指令后，立即进行数据持久化操作，生成RDB文件。</li>
+<li>Master 将RDB文件发送给 Slaver。</li>
+<li>Slaver 接收到 Master 发送过来的RDB文件后，进行全盘加载及复制操作。</li>
+<li>之后再 Master 中的所有写操作都会立刻发送给 Slaver ， Slaver 执行相同的操作来保证主从数据一致。</li>
+</ol>
+<p>Slaver 升级为 Master ：<br>
+当 Master 宕机时，可在 Slaver 节点执行 <code>slaveof no one</code>命令将当前 Slaver 节点升级为 Master 节点。</p>
+<h3 id="toc_h3_18">Redis哨兵（Sentinel）模式</h3>
+<p>能够后台监控 Master 节点是否出现故障，如果故障了通过投票机制将 Slaver 自动升级为 Master。</p>
+<h4 id="toc_h4_19">配置 Sentinel</h4>
+<p>在Redis安装目录下有一个sentinel.conf文件，对改文件进行如下修改</p>
+<pre><code>sentinel  monitor  mymaster  `masterIP`  `masterPort`  `2`
+</code></pre>
+<ul>
+<li>masterIP  	# Master 节点地址</li>
+<li>masterPort 	# Master 节点端口</li>
+<li>2			# 只有两个或两个以上的哨兵认为Master不可用的时候，才会将Slaver变为Master</li>
+</ul>
+<h4 id="toc_h4_20">启动哨兵</h4>
+<p>执行 <code>redis-sentinel /myredis/sentinel.conf</code><br>
+当 Master 宕机后，当前 Slaver 会直接替换为 Master， 之前的 Master 重启后会成为当前节点的 Slaver 。</p>
+<h2 id="toc_h2_21">六、Redis集群</h2>
+<p>Redis集群相关知识还未有过实际应用，之后完善。</p>
+<h2 id="toc_h2_22">七、Redis事务</h2>
+<p>Redis通过 <code>MULTI</code>、<code>EXEC</code>、<code>DISCARD</code>、<code>WATCH</code>等命令来实现事务（transaction）功能。<br>
+事务提供了一种将多个命令请求打包，然后一次性、按顺序地执行多个命令的机制，并且在事务执行期间，服务器不会中断事务而去执行其他客户端命令。</p>
+<h3 id="toc_h3_23"><em>MULTI</em> 命令</h3>
+<p>执行该命令表示开启 redis 事务，之后的所有操作都会进入<em>事务队列</em>。</p>
+<pre><code>127.0.0.1:6379&gt;&gt; MULTI
+OK
+
+127.0.0.1:6379&gt;&gt; set name Redis;
+QUEUED
+
+127.0.0.1:6379&gt;&gt; get name;
+QUEUED
+
+127.0.0.1:6379&gt;&gt; set language Java;
+QUEUED
+
+127.0.0.1:6379&gt;&gt; get language;
+QUEUED
+</code></pre>
+<h3 id="toc_h3_24"><em>EXEC</em> 命令</h3>
+<p>发送该命令后，redis 服务器会立即执行 <em>事务队列</em> 中保存的所有命令。</p>
+<pre><code>127.0.0.1:6379&gt; EXEC
+OK
+"Redis"
+OK
+"Java"
+</code></pre>
+<h3 id="toc_h3_25"><em>WATCH</em> 命令</h3>
+<p><code>WATCH</code>命令是一个乐观锁，它可以在 <code>EXEC</code>命令执行前，监视任意数量的数据库键，并在 <code>EXEC</code>命令执行时，检查被监视的键是否存在被修改过的，如果存在，服务器将拒绝执行事务，并向客户端返回代表事务执行失败的空回复。</p>
+<pre><code>127.0.0.1:6379&gt; WATCH name
+OK
+
+127.0.0.1:6379&gt; MULTI
+OK
+
+127.0.0.1:6379&gt; set name HelloWorld
+QUEUED
+
+127.0.0.1:6379&gt; EXEC
+(nil)
+</code></pre>
+<h2 id="toc_h2_26">八、Redis内存淘汰策略</h2>
+<p>当 Redis 内存不足时，会采用淘汰策略删除部分缓存。从 Redis4.0 版本之后，Redis有以下8中内存淘汰策略。</p>
+<ul>
+<li>volatile-lru：从设置了过期时间的键集合中淘汰最久没有使用的键</li>
+<li>volatile-lfu：从设置了过期时间的键中淘汰使用频率最少的键</li>
+<li>volatile-random：从设置了过期键的集合中随机淘汰</li>
+<li>volatile-ttl：从设置了过期时间的键中淘汰马上就要过期的键</li>
+<li>allkeys-lru：从所有键中淘汰最久没有使用的键</li>
+<li>allkeys-lfu：从所有键中淘汰使用频率最少的键</li>
+<li>allkeys-random：从所有键中随机淘汰</li>
+<li>noeviction：不会淘汰任何键，但是会报错</li>
+</ul>
+<h3 id="toc_h3_27">LRU（Least Recently Used）</h3>
+<p>最近最少使用算法：<strong>如果一个数据在最近一段时间没有被访问到，那么可以认为在将来它被访问的可能性也很小。因此，当空间满时，最久没有访问的数据最先被置换（淘汰）</strong>。</p>
+<p>LRU 算法简述：</p>
+<ul>
+<li>新数据插入到链表头部</li>
+<li>每当缓存命中（即缓存数据被访问），则将数据移到链表头部</li>
+<li>当链表满的时候，将链表尾部的数据丢弃</li>
+</ul>
+<h4 id="toc_h4_28">Java 实现 LRU 算法的方式</h4>
+<p><code>logback</code>中的 <code>LRUMessageCache</code>使用 <code>LinkedHashMap</code>进行了实现 ，查看 <code>LinkedHashMap</code>中的 <code>get()</code>方法也能看到LRU的影子。</p>
+<pre><code>/**
+ * Logback: the reliable, generic, fast and flexible logging framework.
+ * Copyright (C) 1999-2015, QOS.ch. All rights reserved.
+ *
+ * This program and the accompanying materials are dual-licensed under
+ * either the terms of the Eclipse Public License v1.0 as published by
+ * the Eclipse Foundation
+ *
+ *   or (per the licensee's choosing)
+ *
+ * under the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation.
+ */
+package ch.qos.logback.classic.turbo;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Clients of this class should only use the  {@link #getMessageCountAndThenIncrement} method. Other methods inherited
+ * via LinkedHashMap are not thread safe.
+ */
+class LRUMessageCache extends LinkedHashMap&lt;String, Integer&gt; {
+
+    private static final long serialVersionUID = 1L;
+    final int cacheSize;
+
+    LRUMessageCache(int cacheSize) {
+        super((int) (cacheSize * (4.0f / 3)), 0.75f, true);
+        if (cacheSize &lt; 1) {
+            throw new IllegalArgumentException("Cache size cannot be smaller than 1");
+        }
+        this.cacheSize = cacheSize;
+    }
+
+    int getMessageCountAndThenIncrement(String msg) {
+        // don't insert null elements
+        if (msg == null) {
+            return 0;
+        }
+
+        Integer i;
+        // LinkedHashMap is not LinkedHashMap. See also LBCLASSIC-255
+        synchronized (this) {
+            i = super.get(msg);
+            if (i == null) {
+                i = 0;
+            } else {
+                i = i + 1;
+            }
+            super.put(msg, i);
+        }
+        return i;
+    }
+
+    // called indirectly by get() or put() which are already supposed to be
+    // called from within a synchronized block
+    protected boolean removeEldestEntry(Map.Entry eldest) {
+        return (size() &gt; cacheSize);
+    }
+
+    @Override
+    synchronized public void clear() {
+        super.clear();
+    }
+}
+
+</code></pre>
+<h4 id="toc_h4_29">Redis中LRU的实现</h4>
+<ul>
+<li>Redis操作数据的时候会带上时间戳，当Redis内存不足时，会将数据的时间戳与当前时间进行对比，将距离当前时间较为久远的数据进行淘汰。</li>
+<li>Redis中的LRU与常规的LRU实现并不相同，常规LRU会准确的淘汰掉队头的元素，但是Redis的LRU并不维护队列，只是根据配置的策略要么从所有的key中随机选择N个（N可以配置）要么从所有的设置了过期时间的key中选出N个键，然后再从这N个键中选出最久没有使用的一个key进行淘汰。</li>
+</ul>
+<h3 id="toc_h3_30">LFU（Least Frequently Used）</h3>
+<p>最近最不常用算法：<strong>如果一个数据在最近一段时间很少被访问到，那么可以认为在将来它被访问的可能性也很小。因此，当空间满时，最小频率访问的数据最先被淘汰</strong>。</p>
+<h2 id="toc_h2_31">参考资料</h2>
+<p><a href="https://www.jianshu.com/p/161e66611fe9" target="_blank">Redis 集群</a><br>
+<a href="https://www.jianshu.com/p/479398a8e82c" target="_blank">Redis事务</a><br>
+<a href="https://www.jianshu.com/p/84dbb25cc8dc" target="_blank">深入剖析Redis - Redis集群模式搭建与原理详解</a><br>
+<a href="https://baijiahao.baidu.com/s?id=1619572269435584821&amp;wfr=spider&amp;for=pc" target="_blank">实例解读什么是Redis缓存穿透、缓存雪崩和缓存击穿</a><br>
+<a href="https://www.cnblogs.com/hongdada/p/10406902.html" target="_blank">缓存算法（FIFO 、LRU、LFU三种算法的区别）</a></p>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2019/11/11/1573458713627.html" target="_blank">https://nekochips.github.io/articles/2019/11/11/1573458713627.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="浅谈对redis的理解"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2019/11/11/1573458713627.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1573458713627"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nginx">Nginx</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1573458713627",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1573458713627', "Redis")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 3000ms, 2020/05/23 21:10:54 -->

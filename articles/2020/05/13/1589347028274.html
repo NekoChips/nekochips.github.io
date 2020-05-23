@@ -1,0 +1,997 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>Spring Boot 深入学习（6） ——  Spring 事务管理 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="Spring Boot 深入学习（6） ——  Spring 事务管理 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/05/13/1589347028274.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="Spring Boot 深入学习（6） ——  Spring 事务管理 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/05/13/1589347028274.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">Spring Boot 深入学习（6） ——  Spring 事务管理</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-05-13</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/05/13/1589347028274.html#comments">
+              <span data-uvstatcmt="1589347028274">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/05/13/1589347028274.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <blockquote>
+<p>前言：</p>
+<p>有关事务的特性 <strong>ACID</strong> ，想必大家已经熟记于心了。（如果还有不了解事务特性的朋友，建议先花点时间进行了解，以便文中下面的内容不会对您造成困扰。）</p>
+<p>本文我们主要以 <strong>Spring 的事务管理</strong>为主，MySQL 的事务相关内容可参考 MySQL 系列文章：<a href="https://chenyangjie.com.cn/articles/2020/04/15/1586926804823.html" target="_blank">MySQL 学习总结（一） —— 认识 MySQL 以及简单应用</a>。</p>
+</blockquote>
+<h3 id="toc_h3_0">1. Spring 事务说明</h3>
+<hr>
+<p><strong>虽然说 Spring 提供了对事务的支持，但并不代表在程序中使用了 Spring 的事务管理就能保证我们的项目一定支持事务。</strong></p>
+<p>为什么这么说呢？</p>
+<p><strong>因为 Spring 的事务管理本质上使用的是项目中所使用的数据库的事务。简单点说，如果项目中使用的数据库本身就不支持事务，那么即使我们开启了 Spring 的事务管理也是徒劳。</strong></p>
+<p>下面这张表中可以看出<strong>在 MySQL 5.7 版本中仅有 InnoDB 引擎是支持事务的</strong>：</p>
+<pre><code>+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+</code></pre>
+<blockquote>
+<p>查看您自身的 MySQL 所支持的存储引擎执行如下语句：</p>
+<pre><code>mysql&gt; show engines;
+</code></pre>
+</blockquote>
+<h4 id="toc_h4_1">1.1. 数据回滚</h4>
+<p>事务存在的意义是 <strong>保证数据正确且可靠</strong>。基于这个条件，MySQL  中的 <strong>redo log</strong> 和 <strong>undo log</strong> 起到了关键作用。</p>
+<p><strong>重做日志（redo log）</strong></p>
+<hr>
+<p><strong>redo log 的功能是保证事务的持久性</strong>。 当我们往数据中插入或更新一条数据时，MySQL 会先在内存中将对应的数据更新，但是更新之后不会马上持久化至磁盘中，而是把执行的操作记录至 redo log 中。最后再通过 redo log 中记录的操作日志将数据持久化到磁盘上。</p>
+<p>可能有人觉得这样多此一举，其实不然。也许有朋友跟笔者遇到过相同的情况，数据库突然断电或者是崩溃，在重启数据库后经常会遇到一些莫名其妙的问题，这在使用 Oracle 11g 时感触颇深（好像扯远了）。而 redo log 的存在就使得 MySQL 在发生故障重启服务后，根据 redo log 进行数据恢复，从而保证了事务的持久性。</p>
+<p><strong>回滚日志（undo log）</strong></p>
+<hr>
+<p>顾名思义，该日志的功能相当于是记录一个保存点，当执行的数据库操作遇到异常时，通过 undo log 将数据库中的信息回退到修改前的样子。也就是说，<strong>undo log 保证了事务的原子性</strong>。</p>
+<p>undo log 同时也会将操作记录至 redo log 中，从而保证了 undo log 的数据不会轻易地丢失。</p>
+<h4 id="toc_h4_2">1.2. Spring 事务管理</h4>
+<p>众所周知，Spring 提供了两种方式的事务管理：</p>
+<ul>
+<li>编程式事务</li>
+<li>声明式事务</li>
+</ul>
+<p>Spring 中定义了几个事务相关的重要接口和类：</p>
+<ul>
+<li><code>TransactionDefinition</code>：定义事务的接口，用于定义 事务隔离级别、传播行为，超时设置等信息。</li>
+<li><code>PlatformTransactionManager</code>：平台事务管理器，Spring 传统事务管理的核心接口。</li>
+<li><code>ReactiveTransactionManager</code>：响应式事务管理器，Spring 响应式事务管理的核心接口。</li>
+<li><code>TransactionTemplate</code>：处理事务的模板类。</li>
+</ul>
+<p>其中 <code>ReactiveTransactionManager</code> 是在 Spring 5.2 之后引入的，其源码部分基于响应式编程进行编写。</p>
+<h3 id="toc_h3_3">2.  事务相关接口源码分析</h3>
+<hr>
+<p>现在就对上面提到的部分接口和类进行源码分析，以便更清晰地认识 Spring 事务管理。</p>
+<h4 id="toc_h4_4">2.1. <code>TransactionDefinition</code> 事务定义</h4>
+<p><code>TransactionDefinition</code> 源码：</p>
+<pre><code class="language-java">public interface TransactionDefinition {
+
+	int PROPAGATION_REQUIRED = 0;
+
+	int PROPAGATION_SUPPORTS = 1;
+
+	int PROPAGATION_MANDATORY = 2;
+
+	int PROPAGATION_REQUIRES_NEW = 3;
+
+	int PROPAGATION_NOT_SUPPORTED = 4;
+
+	int PROPAGATION_NEVER = 5;
+
+	int PROPAGATION_NESTED = 6;
+
+	int ISOLATION_DEFAULT = -1;
+
+	int ISOLATION_READ_UNCOMMITTED = 1;  // same as java.sql.Connection.TRANSACTION_READ_UNCOMMITTED;
+
+	int ISOLATION_READ_COMMITTED = 2;  // same as java.sql.Connection.TRANSACTION_READ_COMMITTED;
+
+	int ISOLATION_REPEATABLE_READ = 4;  // same as java.sql.Connection.TRANSACTION_REPEATABLE_READ;
+
+	int ISOLATION_SERIALIZABLE = 8;  // same as java.sql.Connection.TRANSACTION_SERIALIZABLE;
+
+	int TIMEOUT_DEFAULT = -1;
+
+	// 获取事务的传播行为，默认为 REQUIRED
+	default int getPropagationBehavior() {
+		return PROPAGATION_REQUIRED;
+	}
+
+	// 获取事务的隔离级别，默认为 DEFAULT
+	default int getIsolationLevel() {
+		return ISOLATION_DEFAULT;
+	}
+
+	// 获取事务的超时时间，默认为 -1，表示没有超时时间
+	default int getTimeout() {
+		return TIMEOUT_DEFAULT;
+	}
+
+	// 判断是否为只读事务，默认为 false
+	default boolean isReadOnly() {
+		return false;
+	}
+
+	// 获取事务名称，默认为 null
+	@Nullable
+	default String getName() {
+		return null;
+	}
+
+
+	// Static builder methods
+	static TransactionDefinition withDefaults() {
+		return StaticTransactionDefinition.INSTANCE;
+	}
+
+}
+</code></pre>
+<p>可以看到 <code>TransactionDefinition</code> 的功能都是用来定义和获取事务中的属性值，具体分为以下几种：</p>
+<ul>
+<li>事务传播行为</li>
+<li>事务隔离级别</li>
+<li>事务超时时间</li>
+<li>是否只读事务</li>
+<li>事务名称</li>
+</ul>
+<h4 id="toc_h4_5">2.2. <code>PlatformTransactionManager</code> 平台事务管理器</h4>
+<p><code>PlatformTransactionManager</code> 继承自 <code>TransactionManager</code> 接口。 <code>TransactionManager</code> 与 <code>Cloneable</code> 和 <code>RandomAcess</code>类似 —— 都是空接口，只是用来表名该接口的主要功能。</p>
+<p><code>PlatformTransactionManager</code> 源码：</p>
+<pre><code class="language-java">public interface PlatformTransactionManager extends TransactionManager {
+
+	// 获取事务
+	TransactionStatus getTransaction(@Nullable TransactionDefinition definition)
+			throws TransactionException;
+	// 提交事务
+	void commit(TransactionStatus status) throws TransactionException;
+	// 回滚事务
+	void rollback(TransactionStatus status) throws TransactionException;
+
+}
+</code></pre>
+<p>该接口提供了三个方法：</p>
+<ul>
+<li><code>getTransaction</code>：以 <code>TransactionDefinition</code> 作为入参，返回一个 <code>TransactionStatus</code> 对象（下面讲）。</li>
+<li><code>commit</code>：传入 <code>TransactionStatus</code> 对象，提交该事务。</li>
+<li><code>rollback</code>：传入 <code>TransactionStatus</code> 对象，回滚该事务。</li>
+</ul>
+<h4 id="toc_h4_6">2.3. <code>TransactionStatus</code> 事务状态</h4>
+<p><code>TransactionStatus</code> 的继承结构：</p>
+<p><img src="https://img.hacpai.com/file/2020/05/image-44259816.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p><code>Flushable</code> 接口只提供了一个 <code>flush</code> 方法。</p>
+<p><code>SavepointManager</code> 源码很容易理解：</p>
+<pre><code>public interface SavepointManager {
+
+	// 创建保存点
+	Object createSavepoint() throws TransactionException;
+
+	// 回滚至指定保存点
+	void rollbackToSavepoint(Object savepoint) throws TransactionException;
+
+	// 删除指定保存点
+	void releaseSavepoint(Object savepoint) throws TransactionException;
+
+}
+</code></pre>
+<p><code>TransactionExecution</code> 源码：</p>
+<pre><code>public interface TransactionExecution {
+
+	// 判断当前事务是否为新事务
+	boolean isNewTransaction();
+
+	// 设置当前事务为只回滚事务
+	void setRollbackOnly();
+
+	// 判断当前事务是否为只回滚事务
+	boolean isRollbackOnly();
+
+	// 判断当前事务是否已经被提交或者回滚
+	boolean isCompleted();
+}
+</code></pre>
+<p><code>TransactionStatus</code> 在这些父类接口的基础上，额外添加了一个方法：</p>
+<pre><code class="language-java">public interface TransactionStatus extends TransactionExecution, SavepointManager, Flushable {
+
+	// 是否有保存点
+	boolean hasSavepoint();
+
+	@Override
+	void flush();
+}
+</code></pre>
+<h3 id="toc_h3_7">3. 事务属性</h3>
+<hr>
+<p>上面也提到了 <code>TransactionDefinition</code> 接口中定义了一些事务的属性，下面结合源码中注释给出的信息逐一分析这些事务的属性所指代的意思。</p>
+<h4 id="toc_h4_8">3.1. 传播行为</h4>
+<p><strong>所谓事务的传播行为，是指在事务间的方法调用时事务应该如何传递。</strong></p>
+<p>举个例子：</p>
+<pre><code>public class PropagationDemo {
+  
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void methodA() {
+        methodB();
+        // doSomething
+    }
+  
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void methodB() {
+        // doSomething
+    }
+}
+</code></pre>
+<p>上面的示例中用到了 <code>@Transactional</code> 注解，也就是基于<strong>声明式事务</strong>编写的伪代码，关于这一块下面再讲。示例中 <code>methodA</code>方法调用了 <code>methodB</code> 方法，而 methodB 方法的事务的传播行为由方法上的 <code>@Transactional</code> 注解决定。</p>
+<p>先说结果：上述伪代码，当 <code>methodB</code> 执行异常时，<code>methodA</code> 和 <code>methodB</code> 均要回滚事务，同样的 <code>methodA</code> 异常时，两个方法均要回滚事务，至于为什么下面讲到。</p>
+<p>Spring 中提供了 7 中事务的传播行为，为了方便还提供了一个 <code>Propagation</code> 枚举类来指定事务的传播行为：</p>
+<pre><code>public enum Propagation {
+
+	REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
+
+	SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
+
+	MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
+
+	REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
+
+	NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
+
+	NEVER(TransactionDefinition.PROPAGATION_NEVER),
+
+	NESTED(TransactionDefinition.PROPAGATION_NESTED);
+
+	private final int value;
+
+	Propagation(int value) {
+		this.value = value;
+	}
+
+	public int value() {
+		return this.value;
+	}
+}
+</code></pre>
+<p>| 传播行为类型 | 说明 |<br>
+| :- | - |<br>
+| REQUIRED | 最常用的传播行为，<code>@Transactional</code> 注解中默认使用的如果当前没有事务就新建一个事务，如果当前已经存在事务就加入到这个事务中。 |<br>
+| SUPPORTS | 支持事务，如果当前没有事务，就以非事务方式执行。 |<br>
+| MANDATORY | 必须使用事务，如果当前没有事务，抛出异常。 |<br>
+| REQUIRES_NEW | 新建一个事务，如果当前已有事务，将当前事务挂起。 |<br>
+| NOT_SUPPORTED | 不支持事务，如果当前存在事务，将当前事务挂起，最终均以非事务方式执行。 |<br>
+| NEVER | 不支持事务，如果当前存在事务，排除异常。 |<br>
+| NESTED | 嵌套事务，如果当前没有事务就新建一个事务，如果当前已有事务，则在嵌套事务内执行。 |</p>
+<p>🌰 有关其他事务传播行为的示例可参照：<a href="https://juejin.im/entry/5a8fe57e5188255de201062b" target="_blank">Spring 事务传播行为详解</a></p>
+<h4 id="toc_h4_9">3.2. 隔离级别</h4>
+<p>为了方便起见，Spring 中也定义了一个 <code>Isolation</code> 枚举类用于指定事务的隔离级别：</p>
+<pre><code>public enum Isolation {
+
+	DEFAULT(TransactionDefinition.ISOLATION_DEFAULT),
+
+	READ_UNCOMMITTED(TransactionDefinition.ISOLATION_READ_UNCOMMITTED),
+
+	READ_COMMITTED(TransactionDefinition.ISOLATION_READ_COMMITTED),
+
+	REPEATABLE_READ(TransactionDefinition.ISOLATION_REPEATABLE_READ),
+
+	SERIALIZABLE(TransactionDefinition.ISOLATION_SERIALIZABLE);
+
+	private final int value;
+
+	Isolation(int value) {
+		this.value = value;
+	}
+
+	public int value() {
+		return this.value;
+	}
+}
+</code></pre>
+<table>
+<thead>
+<tr><th align="center">隔离级别</th><th align="center">脏读</th><th align="center">不可重复读</th><th align="center">幻读</th><th align="center">第一类丢失修改</th><th align="center">第二类丢失修改</th></tr>
+</thead>
+<tbody>
+<tr><td align="center">不设置任何隔离级别</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td></tr>
+<tr><td align="center">READ-UNCOMMITED</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">N</td><td align="center">Y</td></tr>
+<tr><td align="center">READ-COMMITED</td><td align="center">N</td><td align="center">Y</td><td align="center">Y</td><td align="center">N</td><td align="center">Y</td></tr>
+<tr><td align="center">REPEATABLE-READ</td><td align="center">N</td><td align="center">N</td><td align="center">Y</td><td align="center">N</td><td align="center">N</td></tr>
+<tr><td align="center">SERIALIZABLE</td><td align="center">N</td><td align="center">N</td><td align="center">N</td><td align="center">N</td><td align="center">N</td></tr>
+</tbody>
+</table>
+<p>🌰 有关 MySQL 隔离级别的说明可参考：<a href="https://chenyangjie.com.cn/articles/2020/04/15/1586926804823.html" target="_blank">MySQL 学习总结（一） —— 认识 MySQL 以及简单应用</a></p>
+<h4 id="toc_h4_10">3.3. 超时时间</h4>
+<p>事务的超时属性，是指处理该事务能用的最长时间，如果超过该时间事务还没有处理完成，Spring 会默认该事务处理失败，从而执行回滚操作。</p>
+<p>设置事务的超时时间，单位为秒，-1 即表示不设置超时属性。</p>
+<h4 id="toc_h4_11">3.4. 只读事务</h4>
+<p>当一个事务中执行的所有 SQL 语句均为查询语句时，我们就可以将该事务定义为只读属性。</p>
+<p>可能有人会问，执行查询语句也要牵扯到事务吗？</p>
+<p>其实 MySQL 官方已经做出了这方面的说明：</p>
+<blockquote>
+<p>In <code>InnoDB</code>, all user activity occurs inside a transaction. If <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_autocommit" target="_blank"><code>autocommit</code></a> mode is enabled, each SQL statement forms a single transaction on its own. By default, MySQL starts the session for each new connection with <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_autocommit" target="_blank"><code>autocommit</code></a> enabled, so MySQL does a commit after each SQL statement if that statement did not return an error. If a statement returns an error, the commit or rollback behavior depends on the error.</p>
+</blockquote>
+<p>简单点说，<strong>MySQL 会给每一个新的连接会话都开启 autocommit 模式，所以在 MySQL 中每一条 SQL 语句都会在一个单独的事务中进行处理，执行成功后自动提交事务，执行失败则回滚事务。</strong></p>
+<p>所以当在 Spring 中声明了事务的只读属性时，在该事务中所有的 SQL 语句会被放在同一个事务中，MySQL 就会去它们进行优化。</p>
+<h4 id="toc_h4_12">3.5. 回滚策略</h4>
+<p>回滚策略没有在 <code>TransactionDefinition</code> 进行定义，在使用 <code>@Transactional</code> 注解时可以通过 <code>rollbackFor</code> 属性指定事务的回滚策略，如：</p>
+<pre><code class="language-java">@Transactional(rollbackFor = Exception.class)
+public void excuteService(){
+}
+</code></pre>
+<p>上面的代码指定 <code>excuteService</code> 方法在遇到异常时进行回滚。</p>
+<p>默认的回滚策略为在遇到 <code>RuntimeException</code> 或 <code>Error</code> 时进行回滚，附上源码注释：</p>
+<pre><code>/**
+ * &lt;p&gt;By default, a transaction will be rolling back on {@link RuntimeException}
+ * and {@link Error} but not on checked exceptions (business exceptions). See
+ * {@link org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)}
+ * for a detailed explanation.
+ */
+</code></pre>
+<h3 id="toc_h3_13">4. 编程式事务管理</h3>
+<hr>
+<p>在了解了事务接口的相关功能后，开始使用这些接口编写伪代码。</p>
+<h4 id="toc_h4_14">4.1. <code>PlatformTransactionManager</code> 事务管理</h4>
+<p>示例伪代码：</p>
+<pre><code>public class TransactionManagerDemo {
+    @Autowired
+    private PlatformTransactionManager tansactionManager;
+
+    public void exucuteTransaction() {
+	// DefaultTransactionDefinition 是 TransactionDefinition 的默认实现
+	TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+	// 根据 transactionDefinition 获取一个 TransactionStatus 对象，用于后续的事务操作
+	TransactionStatus transactionStatus = trasactionManager.getTransaction(transactionDefinition);
+	try {
+	    // 处理事务逻辑的代码
+	    ......  
+            // 执行完毕后，提交事务
+	    transactionManager.commit(transactionStatus);
+	} catch(Exception e) {
+	    // 出现异常时，回滚事务
+	    transactionManager.rollBack(transactionStatus);
+	}
+    }
+}
+</code></pre>
+<p>上面使用到了 <code>DefaultTransactionDefinition</code> ，该类为 <code>TransactionDefinition</code> 的默认实现，一起来看看它的源码：</p>
+<pre><code>public class DefaultTransactionDefinition implements TransactionDefinition, Serializable {
+
+	public static final String PREFIX_PROPAGATION = "PROPAGATION_";
+
+	public static final String PREFIX_ISOLATION = "ISOLATION_";
+
+	public static final String PREFIX_TIMEOUT = "timeout_";
+
+	public static final String READ_ONLY_MARKER = "readOnly";
+
+
+	/** Constants instance for TransactionDefinition. */
+	static final Constants constants = new Constants(TransactionDefinition.class);
+
+	private int propagationBehavior = PROPAGATION_REQUIRED;
+
+	private int isolationLevel = ISOLATION_DEFAULT;
+
+	private int timeout = TIMEOUT_DEFAULT;
+
+	private boolean readOnly = false;
+
+	@Nullable
+	private String name;
+
+
+	public DefaultTransactionDefinition() {
+	}
+
+	public DefaultTransactionDefinition(TransactionDefinition other) {
+		this.propagationBehavior = other.getPropagationBehavior();
+		this.isolationLevel = other.getIsolationLevel();
+		this.timeout = other.getTimeout();
+		this.readOnly = other.isReadOnly();
+		this.name = other.getName();
+	}
+
+	public final void setPropagationBehaviorName(String constantName) throws IllegalArgumentException {
+		if (!constantName.startsWith(PREFIX_PROPAGATION)) {
+			throw new IllegalArgumentException("Only propagation constants allowed");
+		}
+		setPropagationBehavior(constants.asNumber(constantName).intValue());
+	}
+
+	// 省略其他单独设置属性值的方法
+}
+</code></pre>
+<p>从源码中可以看出，<code>DefaultTransactionDefinition</code> 的属性为：</p>
+<ul>
+<li>传播行为：REQUORED</li>
+<li>隔离级别：DEFAULT，即为没有隔离级别</li>
+<li>超时时间：DEFAULT，即为没有超时时间</li>
+<li>是否只读事务：false</li>
+</ul>
+<p>还可以通过它的有参构造传入一个 <code>TransactionDefinition</code> 对象创建一个事务定义的对象。</p>
+<p>除此之外，还可以通过它的 <code>setXX</code> 方法，同时传入一个 <code>Constants</code> 对象，对它的各个属性进行单独设置。</p>
+<h4 id="toc_h4_15">4.2. <code>TransactionTemplate</code> 事务模板</h4>
+<p><code>TransactionTemplate</code> 继承图：</p>
+<p><img src="https://img.hacpai.com/file/2020/05/image-c9120b28.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="TransactionTemplate 继承图.png"></p>
+<p><code>TransactionTemplate</code> 源码：</p>
+<pre><code>public class TransactionTemplate extends DefaultTransactionDefinition
+		implements TransactionOperations, InitializingBean {
+
+	protected final Log logger = LogFactory.getLog(getClass());
+
+	@Nullable
+	private PlatformTransactionManager transactionManager;
+
+	public TransactionTemplate() {
+	}
+
+	public TransactionTemplate(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public TransactionTemplate(PlatformTransactionManager transactionManager, TransactionDefinition transactionDefinition) {
+		super(transactionDefinition);
+		this.transactionManager = transactionManager;
+	}
+
+	// 省略 setter、getter
+
+	// 执行事务管理的核心方法
+	@Override
+	@Nullable
+	public &lt;T&gt; T execute(TransactionCallback&lt;T&gt; action) throws TransactionException {
+		Assert.state(this.transactionManager != null, "No PlatformTransactionManager set");
+
+		if (this.transactionManager instanceof CallbackPreferringPlatformTransactionManager) {
+			return ((CallbackPreferringPlatformTransactionManager) this.transactionManager).execute(this, action);
+		}
+		else {
+			TransactionStatus status = this.transactionManager.getTransaction(this);
+			T result;
+			try {
+				result = action.doInTransaction(status);
+			}
+			catch (RuntimeException | Error ex) {
+				// Transactional code threw application exception -&gt; rollback
+				rollbackOnException(status, ex);
+				throw ex;
+			}
+			catch (Throwable ex) {
+				// 回滚事务
+				rollbackOnException(status, ex);
+				throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
+			}
+			this.transactionManager.commit(status);
+			return result;
+		}
+	}
+
+	// 异常时回滚事务的方法
+	private void rollbackOnException(TransactionStatus status, Throwable ex) throws TransactionException {
+		Assert.state(this.transactionManager != null, "No PlatformTransactionManager set");
+
+		logger.debug("Initiating transaction rollback on application exception", ex);
+		try {
+			this.transactionManager.rollback(status);
+		}
+		catch (TransactionSystemException ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			ex2.initApplicationException(ex);
+			throw ex2;
+		}
+		catch (RuntimeException | Error ex2) {
+			logger.error("Application exception overridden by rollback exception", ex);
+			throw ex2;
+		}
+	}
+
+}
+</code></pre>
+<p>可见在 <code>TransactionTemplate</code> 中存在一个 <code>PlatformTransactionManager</code> 属性，也就是说它对直接使用 <code>PlatformTransactionManager</code> 的事务管理方式进行了封装，使我们在开发过程中无需注意更多地细节，直接使用创建好的 <code>TransactionTemplate</code> 对象调用其 <code>excute</code> 方法即可。</p>
+<p>在调用 <code>excute</code> 方法时需要传入 <code>TransactionCallback</code> 对象，<code>TransactionCallback</code> 接口源码如下：</p>
+<pre><code>@FunctionalInterface
+public interface TransactionCallback&lt;T&gt; {
+
+	@Nullable
+	T doInTransaction(TransactionStatus status);
+
+}
+</code></pre>
+<ul>
+<li>
+<p><code>@FunctionalInterface</code> 注解是 Java 8 引入的新注解，加上该注解的接口表示该接口<strong>满足函数式编程风格</strong>。</p>
+</li>
+<li>
+<p><code>TransactionCallback</code> 接口只有一个方法 <code>doInTransaction</code> ，该方法需要传入 <code>TransactionStatus</code> 对象，用于返回一个结果对象，如返回 <code>TransactionStatus</code> 中的域对象。</p>
+</li>
+<li>
+<p>通常对于该接口的使用方法，注释中也有说明，附上注释说明如下：</p>
+<pre><code>/* 
+ * Callback interface for transactional code. Used with {@link TransactionTemplate}'s
+ * {@code execute} method, often as anonymous class within a method implementation.
+ */
+</code></pre>
+</li>
+</ul>
+<p>查看 <code>TransactionCallback</code> 的子类：</p>
+<p><img src="https://img.hacpai.com/file/2020/05/image-c73c6ac6.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>在 <code>Spring-Kafka</code> 中均是以内部类的形式使用，Spring 中提供了 <code>TransactionCallbackWithoutResult</code> 抽象类对 <code>TransactionCallback</code> 进行简单实现 <code>doInTransaction</code> 方法实现直接返回 null，并提供一个抽象方法 <code>doInTransactionWithoutResult</code> 让其子类实现具体的 <code>doInTransaction</code> 逻辑。源码如下：</p>
+<pre><code>public abstract class TransactionCallbackWithoutResult implements TransactionCallback&lt;Object&gt; {
+
+	@Override
+	@Nullable
+	public final Object doInTransaction(TransactionStatus status) {
+		doInTransactionWithoutResult(status);
+		return null;
+	}
+
+	protected abstract void doInTransactionWithoutResult(TransactionStatus status);
+
+}
+</code></pre>
+<p>了解了以上内容之后，开始编写使用 <code>TransactionTemplate</code> 管理事务的示例伪代码：</p>
+<pre><code>public class TransactionManagerDemo {
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+  
+    public void executeTransaction() {
+        transactionTemplate.setTransactionManager(transactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    // 处理事务的逻辑代码
+		    ......
+                } catch (Exception e) {
+                    // 事务处理异常，将 TransactionStatus 设为只回滚事务
+                    status.setRollbackOnly();
+                }
+            }
+        });
+    }
+}
+</code></pre>
+<h3 id="toc_h3_16">5. 声明式事务</h3>
+<p>在日常开发过程中推荐使用声明式事务，即使用 <code>@Transactional</code> 注解来标明需要进行事务管理的方法、类或接口。</p>
+<p><code>@Transactional</code> 源码：</p>
+<pre><code class="language-java">@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Transactional {
+
+	@AliasFor("transactionManager")
+	String value() default "";
+
+	@AliasFor("value")
+	String transactionManager() default "";
+
+	Propagation propagation() default Propagation.REQUIRED;
+
+	Isolation isolation() default Isolation.DEFAULT;
+
+	int timeout() default TransactionDefinition.TIMEOUT_DEFAULT;
+
+	boolean readOnly() default false;
+
+	Class&lt;? extends Throwable&gt;[] rollbackFor() default {};
+
+	String[] rollbackForClassName() default {};
+
+	Class&lt;? extends Throwable&gt;[] noRollbackFor() default {};
+
+	String[] noRollbackForClassName() default {};
+}
+</code></pre>
+<h4 id="toc_h4_17">5.1. 属性说明</h4>
+<p>| 属性名 | 说明 | 是否常用 |<br>
+| - | - | :-: |<br>
+| transactionManager | 指定事务管理器 | 否 |<br>
+| propagation | 指定事务传播行为，默认为 <code>Propagation.REQUIRED</code> | 是 |<br>
+| isolation | 指定事务隔离级别，默认为 <code>Isolation.DEFAULT</code> | 是 |<br>
+| timeout | 指定事务超时时间，默认为 -1 | 是 |<br>
+| readOnly | 指定事务是否为只读事务，默认为 false | 是 |<br>
+| rollbackFor | 指定触发事务回滚的异常类型，可以传多个 | 是 |<br>
+| rollbackForClassName | 指定触发事务回滚的异常名称，可以传多个 | 否 |<br>
+| noRollbackFor | 指定不触发事务回滚的异常类型，可以传多个 | 否 |<br>
+| noRollbackForClassName | 指定不触发事务回滚的异常名称，可以传多个 | 否 |</p>
+<h4 id="toc_h4_18">5.2. <code>@Transactional</code> 工作原理</h4>
+<p>首先 <code>@Transactional</code> 是基于 Spring AOP 实现的，而这其中实现切面功能的具体类为 <code>TransactionInterceptor</code> ，其中执行增强的方法为 <code>invoke</code> ，源码如下：</p>
+<pre><code>public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {
+    // ......
+
+	@Override
+	@Nullable
+	public Object invoke(MethodInvocation invocation) throws Throwable {
+
+		Class&lt;?&gt; targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
+
+		return invokeWithinTransaction(invocation.getMethod(), targetClass, invocation::proceed);
+	}
+
+    // ......
+}
+</code></pre>
+<p><code>invoke</code> 方法调用了其继承自 <code>TransactionAspectSupport</code> 的 <code>invokeWithinTransaction</code> 方法：</p>
+<p><img src="https://b3logfile.com/file/2020/05/image-660971ce.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>从声明式事务管理的处理过程中可以看到，被 <code>@Transactional</code> 注解标注的方法会执行如下过程：</p>
+<ol>
+<li>在执行实际方法前，创建一个 <code>TransactionInfo</code> 对象。</li>
+<li>执行方法，如果发生异常，则抛出异常并回滚事务。</li>
+<li>方法执行成功后，返回结果并提交事务。</li>
+</ol>
+<blockquote>
+<p>这里记录一下有关 AOP 动态代理的问题：</p>
+<p>关于使用的是 JDK 动态代理还是 cglib 动态代理，取决于 <code>DefaultAopProxyFactory</code> 中的 <code>createAopProxy</code> 方法：</p>
+<pre><code>public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
+
+	@Override
+	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+			Class&lt;?&gt; targetClass = config.getTargetClass();
+			if (targetClass == null) {
+				throw new AopConfigException("TargetSource cannot determine target class: " +
+						"Either an interface or a target is required for proxy creation.");
+			}
+			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+				return new JdkDynamicAopProxy(config);
+			}
+			return new ObjenesisCglibAopProxy(config);
+		}
+		else {
+			return new JdkDynamicAopProxy(config);
+		}
+	}
+
+	// ......
+}
+</code></pre>
+<p>可以看到，如果目标类实现了接口，就使用 JDK 动态代理，否则使用 cglib 动态代理。</p>
+</blockquote>
+<h4 id="toc_h4_19">5.3. <code>@Transactional</code> 注解失效问题</h4>
+<p>在开发过程中往往会遇到 <code>@Transactional</code> 注解不生效的问题，造成该问题的原因常见于：</p>
+<ul>
+<li>
+<p><code>@Transactional</code> 标注在非 public 访问修饰符的方法上，导致注解不生效。</p>
+</li>
+<li>
+<p>在同一个类内部，没有被 <code>@Transactional</code> 标注的方法调用了 <code>@Transactional</code> 标注的方法，导致注解不生效。举个栗子：</p>
+<pre><code>public class transactionDemo {
+
+	public void methodA() {
+	    methodB();
+	}
+
+	@Transactional
+	public void methodB(){
+	    // doSomething
+	}
+} 
+</code></pre>
+<p>此时 <code>methodA</code> 会导致 <code>methodB</code> 的 <code>@Transactional</code> 注解失效。<strong>原因是事务管理是基于动态代理来实现的，那么没有添加 <code>@Transactional</code> 注解的方法就不会走动态代理的流程，所以调用其他的方法也就不会走代理类，也就不会实现增强，从而导致注解失效。</strong></p>
+</li>
+<li>
+<p>在方法内将捕获到的异常处理掉了但没有抛出新的异常，导致事务操作不会进行回滚操作，从而注解不生效。</p>
+</li>
+</ul>
+<h3 id="toc_h3_20">6. Reference</h3>
+<ol>
+<li><a href="https://juejin.im/entry/5a8fe57e5188255de201062b" target="_blank">Spring 事务传播行为详解</a></li>
+<li><a href="https://chenyangjie.com.cn/articles/2020/04/15/1586926804823.html" target="_blank">MySQL 学习总结（一） —— 认识 MySQL 以及简单应用</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/" target="_blank">MySQL 官方文档</a></li>
+<li><a href="https://juejin.im/post/5e72e97c6fb9a07cb346083f" target="_blank">一口气说出 6 种 @Transactional 注解的失效场景</a></li>
+</ol>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/05/13/1589347028274.html" target="_blank">https://nekochips.github.io/articles/2020/05/13/1589347028274.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="Spring Boot 深入学习（6） ——  Spring 事务管理"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/05/13/1589347028274.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1589347028274"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1589347028274",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1589347028274', "源码学习")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2555ms, 2020/05/23 21:10:17 -->

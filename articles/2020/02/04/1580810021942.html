@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>数据结构 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="数据结构 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/02/04/1580810021942.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="数据结构 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/02/04/1580810021942.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">数据结构</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-02-04</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/02/04/1580810021942.html#comments">
+              <span data-uvstatcmt="1580810021942">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/02/04/1580810021942.html">6</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/Java">Java</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p><img src="https://img.hacpai.com/bing/20190401.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" alt=""></p>
+<p>数据结构是指相互之间存在一种或多种关系的数据元素的集合和该集合重元素之间的关系组成。选择合适的数据机构可以提升对数据操作的效率。</p>
+<p>数据结构大体可以分为 <code>物理结构</code>和 <code>逻辑结构</code>两种。</p>
+<h3 id="toc_h3_0">1. 数组</h3>
+<p>数组是最简单、最为常用的一种数据结构，是有限个相同类型的变量组成的有序集合。<br>
+<code>int[] array = new int[]{1, 3, 2, 6, 5, 7, 8, 9, 10, 0};</code></p>
+<h3 id="toc_h3_1">2. 链表</h3>
+<p>链表中的元素称之为节点。链表分为单向链表和双向链表。</p>
+<ul>
+<li>单向链表</li>
+</ul>
+<p>单向链表中的节点代码如下：</p>
+<pre><code>    public class Node {
+        int data;
+        Node next;
+    }
+</code></pre>
+<p><code>data</code>:节点的值<br>
+<code>next</code>:节点所指向的下一个节点</p>
+<ul>
+<li>双向链表</li>
+</ul>
+<p>双向链表中的节点代码如下：</p>
+<pre><code>    public class Node {
+        int data;
+        Node pre;
+        Node next;
+    }
+</code></pre>
+<p><code>data</code>:节点的值<br>
+<code>pre</code>：节点所指向的前一个节点<br>
+<code>next</code>:节点所指向的下一个节点</p>
+<h3 id="toc_h3_2">3. 散列表</h3>
+<p>散列表也称之为哈希表。Java中的HashMap就是典型的散列表结构。</p>
+<h3 id="toc_h3_3">4. 栈</h3>
+<p>栈是一种FILO（FIrst In Last Out）的线性结构。<br>
+栈的结构决定了栈中的数据 <code>输入顺序</code>和 <code>输出顺序</code>相反，使得栈在 <code>历史回溯</code>相关的场景得到很好的应用。如：浏览器中的“倒退”功能，部分编译软件中的“面包屑”功能。</p>
+<h3 id="toc_h3_4">5. 队列</h3>
+<p>与栈不同，队列是一种FIFO（First In First Out）的线性结构。<br>
+队列的结构决定了队列中的数据 <code>输入顺序</code>和 <code>输出顺序</code>完全相同，所以队列多应用于前后顺序一致的应用场景。</p>
+<h3 id="toc_h3_5">6. 二叉树</h3>
+<h4 id="toc_h4_6">6.1 树</h4>
+<p>树的定义如下：<br>
+<strong>树是n(n &gt;= 0)个节点的有限集。当n=0时，称之为空树。在任意一个非空树中，有如下特点。</strong></p>
+<ol>
+<li><strong>有且仅有有个特定的称为根的节点。</strong></li>
+<li><strong>当n &gt; 1时，其余节点可分为m（m &gt; 0）个互不相交的有限集，每一个集合本身又是一个树，并称为根的子树。</strong></li>
+</ol>
+<h4 id="toc_h4_7">6.2 二叉树</h4>
+<p>二叉树是树的一种特殊形式。二叉树的节点<strong>最多有两个子节点</strong>。一个称之为<strong>左子节点</strong>，另一个称之为<strong>右子节点</strong>。</p>
+<p>二叉树中有两种特殊的树，一种称为<strong>满二叉树</strong>，一种称为<strong>完全二叉树</strong>。<br>
+<strong>满二叉树</strong>中所有非叶子节点都存在左右子节点，并且所有叶子结点都在同一层级。<br>
+<strong>完全二叉树</strong>中最后一个节点之前的所有节点都是齐全的。</p>
+<h4 id="toc_h4_8">6.3 二叉查找树</h4>
+<p>二叉树中有一种便于数据查找的特殊的二叉树，我们称之为二叉查找树。<br>
+二叉查找树在二叉树的基础上增加了以下几个条件。</p>
+<ul>
+<li>如果左子树不为空，则左子树上的所有节点的值均小于根节点的值</li>
+<li>如果右子树不为空，则右子树上的所有节点的值均大于根节点的值</li>
+<li>左、右子树也都是二叉查找树</li>
+</ul>
+<p>由于二叉查找树的结构和特性，所以二叉查找树搜索节点的时间复杂度为O(logn)。</p>
+<h4 id="toc_h4_9">6.4 二叉树的遍历</h4>
+<p>从节点之间位置关系的角度来看，二叉树的遍历分为4种。</p>
+<ul>
+<li><strong>前序遍历</strong></li>
+<li><strong>中序遍历</strong></li>
+<li><strong>后续遍历</strong></li>
+<li><strong>层序遍历</strong></li>
+</ul>
+<p>从更宏观的角度来看，二叉树的遍历归结为两大类。</p>
+<ul>
+<li><strong>深度优先遍历</strong>（前序遍历、中序遍历、后序遍历）</li>
+<li><strong>广度优先遍历</strong>（层序遍历）</li>
+</ul>
+<h5 id="toc_h5_10">6.4.1 深度优先遍历</h5>
+<p>下面将会用代码的形式来描述各种遍历方式。</p>
+<pre><code>    public static class TreeNode {
+        int data;
+        TreeNode leftChild;
+        TreeNode rightChild;
+
+        public TreeNode(int data) {
+            this.data = data;
+        }
+    }
+</code></pre>
+<pre><code>    /**
+     * 创建二叉树
+     *
+     * @param inputList 输入列表
+     * @return
+     */
+    public static TreeNode createBinaryTree(LinkedList&lt;Integer&gt; inputList) {
+        TreeNode node = null;
+        // 非空判断
+        if (inputList == null || inputList.isEmpty()) {
+            return null;
+        }
+        Integer data = inputList.removeFirst();
+        if (data != null) {
+            // 递归设置TreeNode以及其子节点
+            node = new TreeNode(data);
+            node.leftChild = createBinaryTree(inputList);
+            node.rightChild = createBinaryTree(inputList);
+        }
+        return node;
+    }
+</code></pre>
+<ol>
+<li>前序遍历<br>
+二叉树的前序遍历，输出顺序是：根节点、左子树、右子树。</li>
+</ol>
+<pre><code>    /**
+     * 前序遍历
+     *
+     * @param treeNode 二叉树
+     */
+    public static void preOrderTravel(TreeNode treeNode) {
+        if (treeNode == null) {
+            return;
+        }
+	// 输出根节点的值
+        System.out.println(treeNode.data);
+	// 遍历左子树
+        preOrderTravel(treeNode.leftChild);
+	// 遍历右子树
+        preOrderTravel(treeNode.rightChild);
+    }
+</code></pre>
+<ol start="2">
+<li>中序遍历<br>
+二叉树的中序遍历，输出顺序是：左子树、根节点、右子树。</li>
+</ol>
+<pre><code>    /**
+     * 中序遍历
+     *
+     * @param treeNode 二叉树
+     */
+    public static void inOrderTravel(TreeNode treeNode) {
+        if (treeNode == null) {
+            return;
+        }
+	// 遍历左子树
+        inOrderTravel(treeNode.leftChild);
+	// 输出根节点的值
+        System.out.println(treeNode.data);
+	// 遍历右子树
+        inOrderTravel(treeNode.rightChild);
+    }
+</code></pre>
+<ol start="3">
+<li>后续遍历<br>
+二叉树的后序遍历，输出顺序是：左子树、右子树、根节点。</li>
+</ol>
+<pre><code>   /**
+     * 后序遍历
+     *
+     * @param treeNode 二叉树
+     */
+    public static void postOrderTravel(TreeNode treeNode) {
+        if (treeNode == null) {
+            return;
+        }
+	// 遍历左子树
+        postOrderTravel(treeNode.leftChild);
+	// 遍历右子树
+        postOrderTravel(treeNode.rightChild);
+	// 输出根节点的值
+        System.out.println(treeNode.data);
+    }
+</code></pre>
+<h5 id="toc_h5_11">6.4.2 广度优先遍历</h5>
+<ol>
+<li>层序遍历<br>
+二叉树的层序遍历，二叉树按照从根节点到叶子节点的层次关系，一层一层横向遍历各个节点。</li>
+</ol>
+<pre><code>    /**
+     * 层序遍历
+     *
+     * @param treeNode 二叉树
+     */
+    public static void levOrderTravel(TreeNode treeNode) {
+        if (treeNode == null) {
+            return;
+        }
+        LinkedList&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+	// 把根节点添加至队列中
+        queue.add(treeNode);
+        while (!queue.isEmpty()) {
+	    // 取队列中的头节点
+            TreeNode node = queue.poll();
+	    // 将节点的值放进列表中
+            list.add(node.data);
+            if (node.leftChild != null) {
+		// 将当前节点的左子节点放入队列尾部
+                queue.offer(node.leftChild);
+            }
+
+            if (node.rightChild != null) {
+		// 将当前节点的右子节点放入队列尾部
+                queue.offer(node.rightChild);
+            }
+        }
+
+        list.forEach(System.out::println);
+    }
+</code></pre>
+<h3 id="toc_h3_12">7. 二叉堆</h3>
+<p>二叉堆本质上是一种完全二叉树，它分为两个类型。</p>
+<ol>
+<li><strong>最大堆</strong></li>
+<li><strong>最小堆</strong></li>
+</ol>
+<h4 id="toc_h4_13">7.1 最大堆和最小堆</h4>
+<p><strong>最大堆</strong>的任何一个父节点的值都<strong>大于或等于</strong>左、右子节点的值。<br>
+<strong>最小堆</strong>的任何一个父节点的值都<strong>小于或等于</strong>左、右子节点的值。</p>
+<h4 id="toc_h4_14">7.2 构建二叉堆</h4>
+<p>二叉堆的构建是把一个无序的完全二叉树调整为二叉堆，本质就是让<strong>所有子节点依次“下沉”</strong>。</p>
+<pre><code>/**
+ * 二叉堆中的最小堆
+ */
+public class BinaryHeap {
+    /**
+     * 二叉堆的“下沉”调整
+     * @param array 待调整的堆
+     * @param parentIndex 父节点下标
+     * @param length 堆的大小
+     */
+    public static void downAdjust(int[] array, int parentIndex, int length) {
+        int temp = array[parentIndex];
+        // 左子节点的下标
+        int childIndex = parentIndex * 2 + 1;
+        while (childIndex &lt; length)
+        {
+            // 由于二叉堆是一个完全二叉树，所有当childIndex + 1 的值没有超过堆的大小，说明存在右子节点
+            // 通过比较获取子节点中最小的子节点
+            if (childIndex + 1 &lt; length &amp;&amp; array[childIndex + 1] &lt; array[childIndex])
+            {
+                childIndex++;
+            }
+            // 当父节点的值小于子节点的最小值时，说明堆不用调整，直接跳出循环
+            if (temp &lt; array[childIndex])
+            {
+                break;
+            }
+
+            // 否则对父节点进行“下沉”调整
+            array[parentIndex] = array[childIndex];
+            parentIndex = childIndex;
+            childIndex = 2 * parentIndex + 1;
+        }
+        array[parentIndex] = temp;
+    }
+
+    /**
+     * 构建二叉堆
+     * @param array  待调整的二叉堆
+     */
+    public static void buildBinaryHeap(int[] array)
+    {
+        // 从最后一个非叶子节点开始依次做“下沉”调整
+        for (int i = (array.length - 2) /2; i &gt;= 0 ; i--) {
+            downAdjust(array, i, array.length);
+        }
+    }
+}
+</code></pre>
+<h4 id="toc_h4_15">7.3 插入节点</h4>
+<p>当二叉堆插入节点时，插入位置是完全二叉树的最后一个位置。为了使插入新节点后的二叉树满足二叉堆的特性，需要对新插入的节点进行“上浮”调整。</p>
+<pre><code>    /**
+     * 二叉堆的“上浮”调整
+     * @param array 待调整的堆
+     */
+    public static void upAdjust(int[] array)
+    {
+        // 获取最后一个叶子结点的下标
+        int childIndex = array.length - 1;
+        int parentIndex = (childIndex - 1) / 2;
+
+        int temp = array[childIndex];
+        while (childIndex &gt; 0 &amp;&amp; temp &lt; array[parentIndex])
+        {
+            array[childIndex] = array[parentIndex];
+            // 将子节点“上浮”至父节点下标位置
+            childIndex = parentIndex;
+            // 获取当前节点的父节点下标位置，进行循环比较
+            parentIndex = (childIndex - 1) / 2;
+        }
+        array[childIndex] = temp;
+    }
+</code></pre>
+<h4 id="toc_h4_16">7.4 删除节点</h4>
+<p>当二叉堆删除节点时，删除的节点为堆顶的节点。为了维持完全二叉树的结构，所以把二叉堆中的最后一个节点放置堆顶位置。通过对堆顶节点的“下沉”调整变为满足条件的二叉堆。</p>
+<pre><code>    /**
+     * 二叉堆的“下沉”调整
+     * @param array 待调整的堆
+     * @param parentIndex 父节点下标
+     * @param length 堆的大小
+     */
+    public static void downAdjust(int[] array, int parentIndex, int length) {
+        int temp = array[parentIndex];
+        // 左子节点的下标
+        int childIndex = parentIndex * 2 + 1;
+        while (childIndex &lt; length)
+        {
+            // 由于二叉堆是一个完全二叉树，所有当childIndex + 1 的值没有超过堆的大小，说明存在右子节点
+            // 通过比较获取子节点中最小的子节点
+            if (childIndex + 1 &lt; length &amp;&amp; array[childIndex + 1] &lt; array[childIndex])
+            {
+                childIndex++;
+            }
+            // 当父节点的值小于子节点的最小值时，说明堆不用调整，直接跳出循环
+            if (temp &lt; array[childIndex])
+            {
+                break;
+            }
+
+            // 否则对父节点进行“下沉”调整
+            array[parentIndex] = array[childIndex];
+            parentIndex = childIndex;
+            childIndex = 2 * parentIndex + 1;
+        }
+        array[parentIndex] = temp;
+    }
+</code></pre>
+<h3 id="toc_h3_17">8.优先队列</h3>
+<p>优先队列与队列不同，它不再遵循<strong>FIFO原则</strong>，而是分为两种情况。</p>
+<ul>
+<li><strong>最大优先队列，无论入队顺序如何，都是当前最大的元素优先出列。</strong></li>
+<li><strong>最小优先队列，无论入队顺序如何，都是当前最小的元素优先出列。</strong></li>
+</ul>
+<p>通过优先队列的特性可以发现，<strong>最大优先队列的出列元素与二叉堆的最大堆的堆顶元素一致</strong>，<strong>最小优先队列的出列元素与二叉堆的最小堆的堆顶元素一致</strong>。</p>
+<pre><code>/**
+ * 优先队列
+ */
+public class PriorityQueue {
+    // 初始容量设为32
+    private int[] array = new int[32];
+
+    // 二叉堆的有效大小
+    private int size;
+
+    /**
+     * “入队”操作
+     *
+     * @param value 入队的值
+     */
+    public void enQueue(int value) {
+        if (size &gt;= array.length) {
+            // 进行扩容
+            resize();
+        }
+        array[size++] = value;
+        // 使用二叉堆的“上浮”调整进行调整
+        upAdjust();
+    }
+
+    private void upAdjust() {
+        int childIndex = size - 1;
+        int parentIndex = (childIndex - 1) / 2;
+
+        int temp = array[childIndex];
+        while (childIndex &gt; 0 &amp;&amp; array[parentIndex] &gt; temp) {
+            array[childIndex] = array[parentIndex];
+            childIndex = parentIndex;
+            parentIndex = (childIndex - 1) / 2;
+        }
+        array[childIndex] = temp;
+    }
+
+    /**
+     * “出队”操作
+     */
+    public int deQueue() throws Exception {
+        if (size &lt;= 0) {
+            throw new Exception("queue is empty or queue has no elements!");
+        }
+        // 堆顶的元素为最小的元素
+        int top = array[0];
+        // 将最后一个元素移动到堆顶
+        array[0] = array[--size];
+        array[size] = 0;
+        // 使用二叉堆的“下沉”调整进行调整
+        downAdjust();
+
+        return top;
+    }
+
+    /**
+     * “下沉”调整
+     */
+    private void downAdjust() throws Exception {
+        int parentIndex = 0;
+        int temp = array[parentIndex];
+        int childIndex = 2 * parentIndex + 1;
+        while (childIndex &lt; size - 1) {
+            // 存在左子节点
+            if (childIndex + 1 &lt; size - 1 &amp;&amp; array[childIndex + 1] &lt; array[childIndex]) {
+                // 存在右子节点，且右子节点的值小于左子节点, 取最小值
+                childIndex++;
+            }
+            if (temp &lt;= array[childIndex]) {
+                // 父节点值小于其所有子节点的值，跳出循环
+                break;
+            }
+            array[parentIndex] = array[childIndex];
+            parentIndex = childIndex;
+            childIndex = 2 * parentIndex + 1;
+        }
+        array[parentIndex] = temp;
+    }
+
+    /**
+     * 对数组进行扩容
+     */
+    private void resize() {
+        this.array = Arrays.copyOf(array, 2 * array.length);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0; i &lt; size; i++) {
+            builder.append(array[i]);
+            if (i &lt; size - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
+    public static void main(String[] args) throws Exception {
+        PriorityQueue queue = new PriorityQueue();
+        queue.enQueue(1);
+        queue.enQueue(3);
+        queue.enQueue(2);
+        queue.enQueue(6);
+        queue.enQueue(5);
+        queue.enQueue(7);
+        queue.enQueue(8);
+        queue.enQueue(9);
+        queue.enQueue(10);
+        queue.enQueue(0);
+        System.out.println("原始array： " + queue);
+
+        System.out.println("出队元素： " + queue.deQueue());
+        System.out.println("出队一次后的array： " + queue);
+        System.out.println("出队元素： " + queue.deQueue());
+        System.out.println("出队两次后的array： " + queue);
+
+    }
+}
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/02/image-bfef569b.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/02/04/1580810021942.html" target="_blank">https://nekochips.github.io/articles/2020/02/04/1580810021942.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="数据结构"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/02/04/1580810021942.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1580810021942"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1580810021942",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1580810021942', "Java")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2588ms, 2020/05/23 21:10:47 -->

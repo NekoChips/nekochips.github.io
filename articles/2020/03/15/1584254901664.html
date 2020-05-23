@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>初探 JWT - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="初探 JWT - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/03/15/1584254901664.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="初探 JWT - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/03/15/1584254901664.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">初探 JWT</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-03-15</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/03/15/1584254901664.html#comments">
+              <span data-uvstatcmt="1584254901664">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/03/15/1584254901664.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/Java">Java</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/JWT">JWT</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p>JWT（JSON Web Token）是一种基于 JSON 的开放标准。多应用于传递身份认证信息和授权信息的场景。</p>
+<p>同时它还支持多种加密算法对它的信息进行加密和解密处理，典型的有 RSA 算法 和 HMAC 算法。</p>
+<p>👀 提示：下列演示代码均来自 <a href="https://www.chenyangjie.com.cn/articles/2020/03/14/1584194721393.html" target="_blank">SpringSecurity OAuth2 实现应用授权</a> 中 demo，如果对 <code>OAuth2</code> 不甚了解的小伙伴，可先对 <code>OAuth2</code> 进行了解，也可以前往<a href="https://www.chenyangjie.com.cn/articles/2020/03/14/1584194721393.html" target="_blank">链接地址</a>看看我对 <code>OAuth2</code> 的一些理解。</p>
+<p>🚀 源码地址：<a href="https://github.com/NekoChips/springboot" target="_blank">https://github.com/NekoChips/springboot</a></p>
+<p>🚀 相关链接：</p>
+<ol>
+<li>JWT 简介：<a href="https://jwt.io/introduction/" target="_blank">https://jwt.io/introduction/</a></li>
+<li>Spring Security OAuth2 JWT 应用：<a href="https://www.chenyangjie.com.cn/articles/2020/03/14/1584194721393.html" target="_blank">SpringSecurity OAuth2 实现应用授权</a></li>
+</ol>
+<hr>
+<h3 id="toc_h3_0">1. 初识 JWT</h3>
+<p><img src="https://img.hacpai.com/file/2020/03/image-4e323108.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>通过生成的 JWT 字符串和解析之后的内容可以看出，JWT 由三个部分组成，每个部分间以 (<code>.</code>) 分隔：</p>
+<ol>
+<li><strong>Header</strong>：头部信息</li>
+<li><strong>Payload</strong>：载荷信息</li>
+<li><strong>Signature</strong>：签证信息</li>
+</ol>
+<h4 id="toc_h4_1">Header</h4>
+<p>从解析后的内容上看，<code>header</code> 中包含了两个信息：</p>
+<ol>
+<li>typ：表示加密串的声明类型，此处为 jwt。</li>
+<li>alg：表示该加密串使用的加密算法，这里是 <code>HS256</code>，也是默认的加密算法。</li>
+</ol>
+<p>使用 base64 对解析后的头部信息进行解码：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-dee67b24.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>也就是说 JWT 的头部信息是通过 base64 进行编码的。</p>
+<h4 id="toc_h4_2">Payload</h4>
+<p><strong>载荷</strong>就是用来存放加密后的信息的。官网上说到 JWT 的载荷信息中包含了三个声明部分：</p>
+<ol>
+<li>Registered claims：注册声明</li>
+<li>Public claims：公共声明</li>
+<li>Private claims：私有声明</li>
+</ol>
+<p><strong>Registered claims</strong></p>
+<p><strong>注册声明</strong>是一组非强制性但建议使用的预定义声明，目的是提供一组可用的、可协作的预定义声明。主要包含以下部分：</p>
+<ol>
+<li>iss： jwt 的签发者</li>
+<li>exp：jwt 的过期时间</li>
+<li>sub：jwt 所面向的用户</li>
+<li>aud：jwt 的接收方</li>
+<li>jti：一串 uuid，用于作为 jwt 的唯一标识</li>
+</ol>
+<p>上面解析后的内容中只包含了 exp 和 jti 作为注册声明。</p>
+<p><strong>Public claims</strong></p>
+<p><strong>公共声明</strong>可以添加任何信息，一般添加用户的相关信息。由于该部分信息是公共的，所以不建议存放敏感信息。</p>
+<p>上面解析后的内容中，username、scope、authorities、client_id 皆可归类为公共声明。</p>
+<p><strong>Private claims</strong></p>
+<p><strong>私有声明</strong>是 jwt 的提供方和接收方共同定义的声明，同样不建议存放敏感信息。</p>
+<p>同样的，JWT 的载荷部分也是通过 base64 编码后的产物。</p>
+<h4 id="toc_h4_3">Signature</h4>
+<p>官网给出的解释为：</p>
+<p><em>To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that.</em></p>
+<p>大致意思就是：签证部分是用 <code>已编码的 header</code> 和 <code>已编码的 payload</code> 使用（<code>.</code>）拼接成的字符串，然后按照 <code>header 中声明的加密算法</code> 和 <code>一个提供的 secret 盐值</code> 对该字符串进行加密，最后生成的加密值即为签证部分。</p>
+<p>上面图例中可以看出该 JWT 签证生成的部分为：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-1efab18d.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>👀 很多集成了 JWT 的框架中都提供了这一部分的配置，如前面较多使用的 <code>SpringSecurity</code>。</p>
+<hr>
+<h3 id="toc_h3_4">2. 使用 JWT</h3>
+<p>前面使用过 <code>SpringSecurity OAuth2</code> 集成的 <code>JWT</code> 功能，详情移步至 <a href="https://www.chenyangjie.com.cn/articles/2020/03/14/1584194721393.html" target="_blank">SpringSecurity OAuth2 实现应用授权</a>。</p>
+<h4 id="toc_h4_5">2.1 SpringSecurity 中的应用</h4>
+<p>在之前的示例项目中，JWT 使用的是对称加密的方式，然而 Spring Security OAuth2 还提供了 JWT 非对称加密的方式。我们可以对其进行配置。</p>
+<p>这里我们使用非对称的 RSA 公钥私钥 方式对 JWT 进行加密。</p>
+<p>首先创建一个 <code>RSAUtils</code> 工具类</p>
+<pre><code>public class RsaUtils {
+
+    public static final String PUBLIC_KEY = "RSAPublicKey";
+
+    public static final String PRIVATE_KEY = "RSAPrivateKey";
+
+    private static final String ENCRYPT_ALGORITHM = "RSA";
+
+    private static final int KEY_SIZE = 2048;
+
+    // 用于存放随机生成的密钥对
+    public static Map&lt;String, String&gt; keyMap = new HashMap&lt;&gt;(2);
+
+    /**
+     * 随机生成密钥对
+     *
+     * @return 密钥对
+     */
+    public static KeyPair getKeyPair() throws NoSuchAlgorithmException {
+        // 基于 RSA 算法生成 keyPairGenerator ，用于生成密钥对
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ENCRYPT_ALGORITHM);
+        // 使用随机数初始化 keyPairGenerator
+        keyPairGenerator.initialize(KEY_SIZE, new SecureRandom());
+        // 生成密钥对
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+        // 编码后的 密钥对 添加至map
+        keyMap.put(PUBLIC_KEY, Base64Utils.encodeToString(publicKey.getEncoded()));
+        keyMap.put(PRIVATE_KEY, Base64Utils.encodeToString(privateKey.getEncoded()));
+
+        return keyPair;
+    }
+}
+</code></pre>
+<p>在 <code>JwtTokenConfig</code> 中配置 JWT 转换器</p>
+<pre><code>//......
+
+    // jwtToken 转换器
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
+        // 设置 jwtToken 签名密钥
+//        tokenConverter.setSigningKey(PUBLIC_KEY);
+        try {
+            KeyPair keyPair = RsaUtils.getKeyPair();
+            tokenConverter.setKeyPair(keyPair);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return tokenConverter;
+    }
+//......
+</code></pre>
+<p><code>JwtAccessTokenConverter.setVerifier(SignatureVerifier verifier)</code> 方法需要传入一个 <code>签证校验器</code> 对象，过 <code>SignatureVerifier</code> 接口有如下实现类和接口：</p>
+<p><img src="https://img.hacpai.com/file/2020/03/image-202d38dd.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>查看源码</p>
+<pre><code>// ......
+	public void setSigningKey(String key) {
+		Assert.hasText(key);
+		key = key.trim();
+
+		this.signingKey = key;
+
+		if (isPublic(key)) {
+			signer = new RsaSigner(key);
+			logger.info("Configured with RSA signing key");
+		}
+		else {
+			// Assume it's a MAC key
+			this.verifierKey = key;
+			signer = new MacSigner(key);
+		}
+	}
+// ......
+</code></pre>
+<p>我们之前使用的 <code>setSigningKey(String key)</code> 方法所传入的 <code>key</code> 被用于创建了 <code>SingerVerifier</code> 的实现类 --<code>MacSigner</code> 对象。</p>
+<p>该方法也可以由传入的 <code>key</code> 类型来判断应该生成的 <code>签名器</code> 对象。</p>
+<p>查看 <code>isPublic(String key)</code> 方法</p>
+<pre><code>// ......
+	private boolean isPublic(String key) {
+		return key.startsWith("-----BEGIN");
+	}
+// ......
+</code></pre>
+<p>由此可以判断传入的 <code>key</code> 是否是 <code>RSA 公钥</code>，从而创建响应的 RSA 签名器 <code>RSASigner</code>。</p>
+<p>然而我这里并没有使用 <code>setSigningKey(String key)</code> 的方法来创建 RSASigner 签名器</p>
+<pre><code>// ......
+	    KeyPair keyPair = RsaUtils.getKeyPair();
+            tokenConverter.setKeyPair(keyPair);
+// ......
+</code></pre>
+<p>而是通过 setKeyPair(KeyPair keyPair) 方法直接创建了一个 <code>RSASigner 对象</code> 和 <code>RSAVerifier 对象</code> 传递给 <code>JwtAccessTokenConverter</code> 从而完成对 JWT 的 <code>RSA 非对称</code>  加密，这一点我们可以从源码中看出：</p>
+<pre><code>	public void setKeyPair(KeyPair keyPair) {
+		PrivateKey privateKey = keyPair.getPrivate();
+		Assert.state(privateKey instanceof RSAPrivateKey, "KeyPair must be an RSA ");
+		signer = new RsaSigner((RSAPrivateKey) privateKey);
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+		verifier = new RsaVerifier(publicKey);
+		verifierKey = "-----BEGIN PUBLIC KEY-----\n" + new String(Base64.encode(publicKey.getEncoded()))
+				+ "\n-----END PUBLIC KEY-----";
+	}
+</code></pre>
+<p>🚀 <em>这里不禁要感叹一句 SpringSecurity 真的是越用越好用，每一次都能给我带来惊喜！</em></p>
+<p>我们测试一下，使用 postman 请求密码方式获取 token</p>
+<pre><code>{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDUwNzU1NiwiYXV0aG9yaXRpZXMiOlsidXNlcjpsaXN0IiwiZGVwdDpkaXNzb2x2ZSIsInJvbGU6dXBkYXRlIiwidXNlcjpwYXNzd29yZCIsImRlcHQ6YWRkIiwicGVybTppbmZvIiwicm9sZTppbmZvIiwicm9sZTphZGQiLCJ1c2VyOnNldFJvbGVzIiwiZGVwdDpsaXN0Iiwicm9sZTpyZW1vdmUiLCJ1c2VyOmluZm8iLCJwZXJtOnVwZGF0ZSIsInJvbGU6bGlzdCIsInBlcm06bGlzdCIsInBlcm06cmVtb3ZlIiwicm9sZTpzZXRQZXJtcyIsImRlcHQ6aW5mbyIsInBlcm06YWRkIiwidXNlcjp1cGRhdGUiLCJ1c2VyOnJlbW92ZSIsImRlcHQ6dXBkYXRlIiwidXNlcjpzZXREZXB0IiwiUk9MRV9BRE1JTiIsInVzZXI6YWRkT25lIl0sImp0aSI6ImQwYjBkMzA2LWY1NmUtNDEzMi05MDUzLTJlODA3ZTFkYTYwNSIsImNsaWVudF9pZCI6InRlc3QifQ.dxuqIl_Tevpv2UBA5yDkPmYVvehJv4RisUEAqD9WJVgENXpx4SoZk3GrAo_2DuNSwUVt6ayPjkLcXQAJzj5OdYUfSQ4c0gCwJ4MJ-wi0cT0WPWJCF2X8WwBu-Cnwu-XdzlymOpsJp_XUAhUFffMnAe-ZhdAOwoxtAcqN-m_e6UE-UTYUYsIwnPp9t7gNWw0erOfXM7c4ezOmLhd9_7QGE63qHZMeHYA9T42J2Ca9N6WdOL6Eh9dN1euSOz0JBsI4VaA2PJZGRR90r0RQV1eG8eH-_iVUXK66wZlkzMXfalujKIjgepcCDZc5wP-EmBgBqBywDSLXvkefW6nhT82zNw",
+    "token_type": "bearer",
+    "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInNjb3BlIjpbImFsbCJdLCJhdGkiOiJkMGIwZDMwNi1mNTZlLTQxMzItOTA1My0yZTgwN2UxZGE2MDUiLCJzZWNyZXQiOiJwcml2YXRlX3NlY3JldCIsImV4cCI6MTU4NDU5MDM1NiwiYXV0aG9yaXRpZXMiOlsidXNlcjpsaXN0IiwiZGVwdDpkaXNzb2x2ZSIsInJvbGU6dXBkYXRlIiwidXNlcjpwYXNzd29yZCIsImRlcHQ6YWRkIiwicGVybTppbmZvIiwicm9sZTppbmZvIiwicm9sZTphZGQiLCJ1c2VyOnNldFJvbGVzIiwiZGVwdDpsaXN0Iiwicm9sZTpyZW1vdmUiLCJ1c2VyOmluZm8iLCJwZXJtOnVwZGF0ZSIsInJvbGU6bGlzdCIsInBlcm06bGlzdCIsInBlcm06cmVtb3ZlIiwicm9sZTpzZXRQZXJtcyIsImRlcHQ6aW5mbyIsInBlcm06YWRkIiwidXNlcjp1cGRhdGUiLCJ1c2VyOnJlbW92ZSIsImRlcHQ6dXBkYXRlIiwidXNlcjpzZXREZXB0IiwiUk9MRV9BRE1JTiIsInVzZXI6YWRkT25lIl0sImp0aSI6IjBmNzJhMmIyLTY4N2MtNGM0MC1hZWM1LWE1N2QyYzZiODA5MSIsImNsaWVudF9pZCI6InRlc3QifQ.RCMbCvmFzh_Rxbl-Vz6WccNHWn35gR3cQyUEJYvQFaXRJbAudXU72i3I2bwngn04HVfwJtRW2B-wJzmcGfpz5zRq74OrCKWESk0-kxg91hf82FgPf-LLFZRzlrNF1QCRoxfHRNy9BdIro-lxhoaQu9RxW4YmKOD12fpaStaAD8N7fGHRQRHFKpZvcp-8r_opUzavxx7HK-80rvJJizzKN1LnOcj3InUY-w6PYHwoJ_vdKmTwESoJmoT8Rr7BtmuFlIdC5vtu9fYiEkatjEfQxJ_1LoQew1R3WGBaeL6vpIdMQ5F-JtCGQoo6sp9b4lJjsYO4Wo9QgmSQ58J4y-vVAw",
+    "expires_in": 3599,
+    "scope": "all",
+    "secret": "private_secret",
+    "jti": "d0b0d306-f56e-4132-9053-2e807e1da605"
+}
+</code></pre>
+<p>我们对 token 进行解码，便捷起见，只看头部信息</p>
+<pre><code>{
+  "alg": "RS256",
+  "typ": "JWT"
+}
+</code></pre>
+<p>很显然，JWT 的加密方式为 <code>RS256</code>。</p>
+<p>至此，JWT 在 Spring Security 中 <code>对称加密</code> 和 <code>非对称加密</code> 两种方式我们都有所了解了。</p>
+<hr>
+<h3 id="toc_h3_6">3. 总结</h3>
+<p>JWT 是目前主流的<strong>信息加密</strong>和<strong>信息传输</strong>的方式，掌握它是很有必要的。后续还将使用其他的语言对其进行应用，在这里将会一一记录。</p>
+<p>🚀 相关链接：</p>
+<ol>
+<li>JWT 简介：<a href="https://jwt.io/introduction/" target="_blank">https://jwt.io/introduction/</a></li>
+<li>Spring Security OAuth2 JWT 应用：<a href="https://www.chenyangjie.com.cn/articles/2020/03/14/1584194721393.html" target="_blank">SpringSecurity OAuth2 实现应用授权</a></li>
+</ol>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/03/15/1584254901664.html" target="_blank">https://nekochips.github.io/articles/2020/03/15/1584254901664.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="初探 JWT"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/03/15/1584254901664.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1584254901664"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nginx">Nginx</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1584254901664",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1584254901664', "SpringBoot,Java,JWT")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2991ms, 2020/05/23 21:10:42 -->

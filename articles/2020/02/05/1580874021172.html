@@ -1,0 +1,886 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>排序算法 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="排序算法 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/02/05/1580874021172.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="排序算法 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/02/05/1580874021172.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">排序算法</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-02-05</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/02/05/1580874021172.html#comments">
+              <span data-uvstatcmt="1580874021172">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/02/05/1580874021172.html">7</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/Java">Java</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p><img src="https://img.hacpai.com/file/2020/02/image-4cb123fe.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<h3 id="toc_h3_0">------------------------------------------排序算法-------------------------------------------</h3>
+<p>源码地址：<a href="https://github.com/NekoChips/study/tree/master/src/code/algorithm/sort" target="_blank">Sort</a></p>
+<p>根据时间复杂度的不同，主流的排序算法可以分为 3 大类。</p>
+<ol>
+<li>时间复杂度为 O(n ²)的排序算法</li>
+<li>时间复杂度为 O(n㏒n)的排序算法</li>
+<li>时间复杂度为线性的排序算法</li>
+</ol>
+<h4 id="toc_h4_1">1. 冒泡排序</h4>
+<p>冒泡排序的**升序排列是将相邻的元素两两比较，当一个元素大于右侧相邻元素时，交换他们的位置。**冒泡排序的时间复杂度为 O(n ²)。</p>
+<p><strong>一般的冒泡排序</strong></p>
+<pre><code>    /**
+     * 简单的冒泡排序（升序）
+     *
+     * @param originalArray 原始数组
+     */
+    public static void simpleBubbleSort(int[] originalArray) {
+        int[] array;
+        array = Arrays.copyOf(originalArray, originalArray.length);
+        for (int i = 0; i &lt; array.length - 1; i++) {
+            for (int j = 0; j &lt; array.length - i - 1; j++) {
+                if (array[j] &gt; array[j + 1]) {
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
+    }
+</code></pre>
+<p><strong>优化后的冒泡排序</strong></p>
+<pre><code>    /**
+     * 优化后的冒泡排序（升序）
+     *
+     * @param originalArray 原始数组
+     */
+    public static void optBubbleSort(int[] originalArray) {
+        int[] array;
+        array = Arrays.copyOf(originalArray, originalArray.length);
+
+        // 最后一次交换的位置
+        int lastExchangeIndex = 0;
+        // 数组中的无序数列的边界
+        int sortBorder = array.length - 1;
+        for (int i = 0; i &lt; array.length - 1; i++) {
+            // 默认每一次循环需要排序的序列是有序的
+            boolean isSorted = true;
+            for (int j = 0; j &lt; sortBorder; j++) {
+                if (array[j] &gt; array[j + 1]) {
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+
+                    // 发生了交换，说明不是有序序列
+                    isSorted = false;
+                    // 记录最后一次交换元素的下标
+                    lastExchangeIndex = j;
+                }
+            }
+            sortBorder = lastExchangeIndex;
+            if (isSorted) {
+                break;
+            }
+        }
+    }
+</code></pre>
+<p>优化后的冒泡排序对<strong>原数组中已经包含多数有序序列的数组排序效率更高</strong>，否则由于每一次循环中需要做额外的赋值操作，反而较简单的冒泡排序效率更低下。</p>
+<h4 id="toc_h4_2">2. 鸡尾酒排序</h4>
+<p>鸡尾酒排序的排序规则是**轮流从左至右和从右至左进行相邻元素两两比较进行排序。**鸡尾酒排序的时间复杂度为 O(n ²)。<br>
+<strong>一般的鸡尾酒排序</strong></p>
+<pre><code>/**
+ * 鸡尾酒排序
+ */
+public class CocktailSort {
+
+    /**
+     * 普通的鸡尾酒排序（升序）
+     *
+     * @param originalArray 序排序的原始数组
+     */
+    public static void simpleSort(int[] originalArray) {
+        for (int i = 0; i &lt; originalArray.length / 2; i++) {
+            // 默认每一轮开始比较之前数组都是有序的
+            boolean isSorted = true;
+            for (int j = 0; j &lt; originalArray.length - i - 1; j++) {
+                if (originalArray[j] &gt; originalArray[j + 1]) {
+                    int temp = originalArray[j];
+                    originalArray[j] = originalArray[j + 1];
+                    originalArray[j + 1] = temp;
+
+                    // 有发生元素位置交换，所以原数组不为有序数组
+                    isSorted = false;
+                }
+            }
+            if (isSorted) {
+                // 数组已为有序数组，无需做后续比较
+                break;
+            }
+
+            // 进行这一轮排序之前，默认认为数组有序
+            isSorted = true;
+            for (int j = originalArray.length - i - 1; j &gt; i; j--) {
+                if (originalArray[j] &lt; originalArray[j - 1]) {
+                    int temp = originalArray[j];
+                    originalArray[j] = originalArray[j - 1];
+                    originalArray[j - 1] = temp;
+
+                    // 发生了位置交换，说明数组不为有序数组
+                    isSorted = false;
+                }
+            }
+            if (isSorted) {
+                break;
+            }
+        }
+    }
+</code></pre>
+<p><strong>优化后的鸡尾酒排序</strong></p>
+<pre><code>   /**
+    * 优化后的鸡尾酒排序
+    *
+    * @param originalArray 需排序的数组
+    */
+   public static void optSort(int[] originalArray) {
+       // 数组无序右边界
+       int rightBorder = originalArray.length - 1;
+       // 数组无序左边界
+       int leftBorder = 0;
+       // 从左至右最后一次交换的位置
+       int lastRightIndex = 0;
+       // 从右至左最后一次交换的位置
+       int lastLeftIndex = 0;
+       for (int i = 0; i &lt; originalArray.length / 2; i++) {
+           // 默认每一轮开始比较之前数组都是有序的
+           boolean isSorted = true;
+           for (int j = leftBorder; j &lt; rightBorder; j++) {
+               if (originalArray[j] &gt; originalArray[j + 1]) {
+                   int temp = originalArray[j];
+                   originalArray[j] = originalArray[j + 1];
+                   originalArray[j + 1] = temp;
+
+                   // 记录最后一次发生交换的右边界位置
+                   lastRightIndex = j;
+                   // 有发生元素位置交换，所以原数组不为有序数组
+                   isSorted = false;
+               }
+           }
+           rightBorder = lastRightIndex;
+           if (isSorted) {
+               // 数组已为有序数组，无需做后续比较
+               break;
+           }
+
+           // 进行这一轮排序之前，默认认为数组有序
+           isSorted = true;
+           for (int j = rightBorder; j &gt; leftBorder; j--) {
+               if (originalArray[j] &lt; originalArray[j - 1]) {
+                   int temp = originalArray[j];
+                   originalArray[j] = originalArray[j - 1];
+                   originalArray[j - 1] = temp;
+
+                   // 记录最后一次发生交换的左边界位置
+                   lastLeftIndex = j;
+                   // 发生了位置交换，说明数组不为有序数组
+                   isSorted = false;
+               }
+           }
+           leftBorder = lastLeftIndex;
+           if (isSorted) {
+               break;
+           }
+       }
+   }
+</code></pre>
+<p>鸡尾酒排序适用于<strong>大部分元素已有序的情况</strong>。</p>
+<h4 id="toc_h4_3">3. 快速排序</h4>
+<p>快速排序是<strong>在每一轮挑选一个基准元素，并让其他比他大的元素移动到数列一边，比它小的元素移动到另一边，从而把数列拆解成两个部分。<strong>这种思路就叫作</strong>分治法</strong>。快速排序的时间复杂度为 O(n㏒n)。</p>
+<p>快速排序中要实现分治，有两种方法：</p>
+<ul>
+<li>双边循环法</li>
+<li>单边循环法</li>
+</ul>
+<p><strong>代码如下</strong>：</p>
+<pre><code>    /**
+     * 双边循环
+     * 1. 首先选定基准元素pivot，并且设置两个指针left和right，
+     *    指向数列的最左和最右两个元素。
+     * 2. 从right指针开始，让right指针所指向的元素和pivot相比较，
+     *    如果大于pivot，则right指针向左移一位，否则停止移动。
+     * 3. 切换至left指针，让left指针所指向的元素和pivot相比较，
+     *    如果小于或等于pivot，则left指针右移一位，否则停止移动。
+     * 4. 此时将left指针的元素和right指针的元素互换位置。
+     * 5. 如此循环执行 2 --&gt; 3 --&gt; 4 这三步操作，
+     *    直至left指针与right指针重合，
+     *    将指针位置的元素与pivot元素互换位置，
+     *    此时pivot元素左侧均为小于或等于pivot的元素，
+     *    右侧均为大于pivot的元素，达到分治要求
+     *
+     * @param array      需排序的数组
+     * @param startIndex 数组片段的起始位置
+     * @param endIndex   数组片段的结束位置
+     * @return 分治数组后，基准元素pivot的下标
+     */
+    public static int duplexPartition(int[] array, int startIndex, int endIndex) {
+        // 默认取第一个元素作为基准元素
+        int pivot = array[startIndex];
+        // 基准元素左指针指向的元素下标位置
+        int left = startIndex;
+        // 基准元素右指针指向的元素下标位置
+        int right = endIndex;
+
+        while (left &lt; right) {
+            while (array[right] &gt; pivot) {
+                // 依次从右至左与基准元素进行比较，直至元素的值小于或等于基准元素的值
+                right--;
+            }
+            while (left &lt; right &amp;&amp; array[left] &lt;= pivot) {
+                // 依次从左至右与基准元素进行比较，直至元素的值大于基准元素的值
+                left++;
+            }
+
+            if (left &lt; right) {
+                // 将基准元素的左指针停止的位置元素与右指针停止的元素位置进行交换
+                int temp = array[left];
+                array[left] = array[right];
+                array[right] = temp;
+            }
+        }
+
+        // 将基准元素与两指针重合位置的元素交换
+        array[startIndex] = array[left];
+        array[left] = pivot;
+        return left;
+    }
+
+    /**
+     * 单边循环
+     * 1. 首先选定基准元素pivot，并制定标记位置mark，
+     *    设置mark初始值为数组起始位置。
+     * 2. 将数组中的元素从左至右依次与pivot进行比较，
+     *    如果元素的值比pivot大，则继续进行比较，
+     *    如果元素的值小于或等于pivot，则
+     *    先将mark后移一位，
+     *    然后再将该元素和mark位置所在的元素位置进行互换。
+     * 3. 待将整个数组的元素与pivot比较完毕后，
+     *    将mark位置所在的元素与pivot互换位置。
+     *
+     * @param array      需排序的数组
+     * @param startIndex 数组片段的起始位置
+     * @param endIndex   数组片段的结束位置
+     * @return 基准元素pivot的下标
+     */
+    public static int simplexPartition(int[] array, int startIndex, int endIndex) {
+        int pivot = array[startIndex];
+        int mark = startIndex;
+        for (int i = startIndex + 1; i &lt;= endIndex; i++) {
+            if (pivot &gt;= array[i]) {
+                // 从左至右与基准元素进行比较，小于pivot则将标记后移一位，并将mark位置的元素和当前元素进行交换
+                mark++;
+                int temp = array[mark];
+                array[mark] = array[i];
+                array[i] = temp;
+            }
+        }
+
+        // 此时数组中mark位置（包括mark）之前的元素均小于pivot，将mark位置的元素与pivot进行交换
+        array[startIndex] = array[mark];
+        array[mark] = pivot;
+        return mark;
+    }
+</code></pre>
+<p><strong>快速排序</strong>代码如下：</p>
+<pre><code>    /**
+     * 快速排序（升序）
+     * 1. 首先使用单边循环或者双边循环将数组分成两部分
+     * 2. 基准元素左边均是小于或等于pivot的元素，
+     *    基准元素右边均是大于pivot的元素。
+     * 3. 分别递归左边和右边的数组，循环执行 1 --&gt; 2 
+     * @param array      需排序的数组
+     * @param startIndex 数组片段的起始位置
+     * @param endIndex   数组片段的结束位置
+     */
+    public static void sort(int[] array, int startIndex, int endIndex) {
+        // 当startIndex 和 endIndex 在一个位置时跳出递归循环
+        if (startIndex &gt;= endIndex) {
+            return;
+        }
+        // 获取基准元素pivot的下标
+        // 使用单边循环
+        int pivotIndex = simplexPartition(array, startIndex, endIndex);
+        // 使用双边循环
+//        int pivotIndex = duplexPartition(array, startIndex, endIndex);
+        // 根据基准元素，分成两部分进行递归排序
+        // 递归左边
+        sort(array, startIndex, pivotIndex - 1);
+        // 递归右边
+        sort(array, pivotIndex + 1, endIndex); 
+    }
+</code></pre>
+<h4 id="toc_h4_4">4. 堆排序</h4>
+<p>使用二叉堆这种数据结构的特性可以完成对数组的排序。<br>
+<strong>升序排序</strong>可先将数组调整为<strong>最大二叉堆，然后循环删除堆顶元素，并移动至尾部。</strong><br>
+<strong>降序排序</strong>可先将数组调整为<strong>最小二叉堆，然后循环删除堆顶元素，并移动至尾部。</strong></p>
+<pre><code>    /**
+     * 构建最小二叉堆
+     *
+     * @param array    待调整的堆
+     * @param endIndex 待调整的堆中可供调整的最大边界位置
+     */
+    public static void buildMinHeap(int[] array, int endIndex) {
+        // 从最后一位非叶子节点进行“下沉”调整
+        for (int i = (endIndex - 1) / 2; i &gt;= 0; i--) {
+            downAdjust(array, i, endIndex + 1);
+        }
+    }
+
+    /**
+     * 二叉堆的“下沉”操作
+     *
+     * @param array       待调整的堆
+     * @param parentIndex 父节点下标
+     * @param length      堆的大小
+     */
+    public static void downAdjust(int[] array, int parentIndex, int length) {
+        int temp = array[parentIndex];
+        // 左子节点的下标位置为 2 * parentIndex + 1
+        int childIndex = 2 * parentIndex + 1;
+        while (childIndex &lt; length) {
+            // 取左右子节点中的较大的节点
+            if (childIndex + 1 &lt; length &amp;&amp; array[childIndex + 1] &gt; array[childIndex]) {
+                childIndex++;
+            }
+            if (temp &gt;= array[childIndex]) {
+                break;
+            }
+            array[parentIndex] = array[childIndex];
+            parentIndex = childIndex;
+            childIndex = 2 * parentIndex + 1;
+        }
+        array[parentIndex] = temp;
+    }
+
+    /**
+     * 堆排序（升序）
+     *
+     * @param array 需排序的数组
+     */
+    public static void sort(int[] array) {
+        int endIndex = array.length - 1;
+        for (int i = 0; i &lt; array.length - 1; i++) {
+            // 每次取了堆顶元素后，都要对新堆做调整
+            buildMinHeap(array, endIndex);
+            // 将排序后的数组中的最后一个元素与堆顶元素互换位置
+            int temp = array[endIndex];
+            array[endIndex] = array[0];
+            array[0] = temp;
+            // 此时数组中最大的元素已排到队尾，此时将堆的调整最大边界前移一位，即最后一位不参与最大堆调整
+            endIndex--;
+        }
+    }
+</code></pre>
+<h4 id="toc_h4_5">5. 计数排序</h4>
+<p>计数排序只适用于都是整数的数组进行排序。<br>
+代码如下：</p>
+<pre><code>/**
+ * 计数排序
+ * ** 只适用于整数序列的排序
+ * 1. 首先获取数组中元素的最大值max与最小值min。
+ * 2. 创建一个长度为（max - min） + 1的数组array， 数组中各个元素的初始值均为0。
+ * 3. 循环遍历目标数组，当目标数组中的元素（值 - min）与array下标的值相等时，
+ *    array中该下标位置的值 + 1。
+ * 4. 此时排序已完成，循环输出即可
+ */
+public class CountSort {
+
+    public static class Extreme {
+        int min;
+        int max;
+    }
+
+    /**
+     * 获取数组中的最小值 和 最大值
+     *
+     * @param array 数组
+     * @return 极限值
+     */
+    public static Extreme getExtreme(int[] array) {
+        Extreme extreme = new Extreme();
+        for (int i = 0; i &lt; array.length; i++) {
+            if (array[i] &lt; extreme.min) {
+                extreme.min = array[i];
+            }
+            if (array[i] &gt; extreme.max) {
+                extreme.max = array[i];
+            }
+        }
+        return extreme;
+    }
+
+    /**
+     * 构建计数数组
+     *
+     * @param array 需排序的数组
+     * @return 返回计数数组
+     */
+    public static int[] buildCountArray(int[] array) {
+        Extreme extreme = getExtreme(array);
+        int min = extreme.min;
+        int max = extreme.max;
+
+        // 构建计数数组
+        int[] countArray = new int[max - min + 1];
+        for (int i = 0; i &lt; array.length; i++) {
+            countArray[array[i] - min]++;
+        }
+
+        return countArray;
+    }
+
+    /**
+     * 一般的计数排序（升序）
+     *
+     * @param array 需排序的数组
+     * @return 排序后的数组
+     */
+    public static int[] simpleSort(int[] array) {
+        // 构建计数数组
+        int[] countArray = buildCountArray(array);
+
+        int index = 0;
+        int min = getExtreme(array).min;
+        int[] resultArray = new int[array.length];
+        for (int i = 0; i &lt; countArray.length; i++) {
+            if (countArray[i] != 0) {
+                // 当下标所在位置元素的值为0时，表示需排序数组中不含与该下标值相同的元素
+                for (int j = 0; j &lt; countArray[i]; j++) {
+                    // 排序后的数组
+                    resultArray[index++] = i + min;
+                }
+            }
+        }
+        return resultArray;
+    }
+
+    /**
+     * 优化后的计数排序（升序）
+     *
+     * @param array 需排序的数组
+     * @return 排序后的数组
+     */
+    public static int[] optSort(int[] array) {
+        int[] countArray = buildCountArray(array);
+
+        // 优化计数数组
+        for (int i = 1; i &lt; countArray.length; i++) {
+            countArray[i] += countArray[i - 1];
+        }
+
+        int min = getExtreme(array).min;
+        int[] resultArray = new int[array.length];
+        for (int i = 0; i &lt; array.length; i++) {
+            resultArray[countArray[array[i] - min] - 1] = array[i];
+            countArray[array[i] - min]--;
+        }
+        return resultArray;
+    }
+
+    public static void main(String[] args) {
+        int[] array = {4, 4, 6, 5, 3, 2, 8, 1};
+        int[] sortArray = optSort(array);
+        System.out.println(Arrays.toString(sortArray));
+    }
+
+}
+
+</code></pre>
+<h4 id="toc_h4_6">6. 桶排序</h4>
+<p>桶排序类似于计数排序，只是将数组中的各个元素放入对应的桶中，然后循环遍历所有的桶，即得排序后的数组。<br>
+每个通都有一个<strong>区间跨度</strong><br>
+<strong>区间跨度 = （最大值 - 最小值）/ （桶的数量 - 1）</strong></p>
+<pre><code>/**
+ * 桶排序
+ * 1. 先设置桶的个数num，继而确认每个桶的取值区间。
+ * 2. 遍历集合，放入对应的桶中。
+ * 3. 对每个桶内部的元素进行排序
+ * 4. 循环遍历所有的桶，即可得到排序后的集合
+ */
+public class BucketSort {
+
+    /**
+     * 极限值，包含最小值和最大值
+     */
+    public static class Extreme {
+        int min;
+        int max;
+    }
+
+    /**
+     * 构建所有的桶
+     *
+     * @param source 需排序的集合
+     * @return 所有的桶
+     */
+    public static ArrayList&lt;LinkedList&lt;Integer&gt;&gt; buildBuckets(List&lt;Integer&gt; source) {
+        // 这里桶的个数设为排序序列长度的十分之一
+        int bucketNums = source.size() / 10;
+        while (bucketNums &lt;= 1) {
+            // 保证桶的个数最少为两个（最后一个始终只放一个最大值）
+            bucketNums++;
+        }
+        ArrayList&lt;LinkedList&lt;Integer&gt;&gt; buckets = new ArrayList&lt;&gt;(bucketNums);
+        for (int i = 0; i &lt; bucketNums; i++) {
+            buckets.add(new LinkedList&lt;&gt;());
+        }
+        return buckets;
+    }
+
+    /**
+     * 获取序列中的极限值
+     *
+     * @param source 需排序的集合
+     * @return 极限值
+     */
+    public static Extreme getExtreme(List&lt;Integer&gt; source) {
+        Extreme extreme = new Extreme();
+        extreme.min = Collections.min(source);
+        extreme.max = Collections.max(source);
+        return extreme;
+    }
+
+    /**
+     * 桶排序（升序）
+     *
+     * @param source 需排序的集合
+     * @return 排序后的集合
+     */
+    public static ArrayList&lt;Integer&gt; sort(List&lt;Integer&gt; source) {
+        ArrayList&lt;Integer&gt; sortList = new ArrayList&lt;&gt;(source.size());
+        Extreme extreme = getExtreme(source);
+        int min = extreme.min;
+        int max = extreme.max;
+        ArrayList&lt;LinkedList&lt;Integer&gt;&gt; buckets = buildBuckets(source);
+        // 遍历所有元素，将其放入对应的桶中
+        for (int i = 0; i &lt; source.size(); i++) {
+            int element = source.get(i);
+            // 桶的下标
+            int bucketIndex = (element - min) * (buckets.size() - 1) / (max - min);
+            // 将元素存入桶中
+            buckets.get(bucketIndex).add(element);
+        }
+        // 对每个桶中的元素进行排序
+        buckets.forEach(Collections::sort);
+
+        // 循环遍历所有的桶添加至排序集合中
+        buckets.forEach(sortList::addAll);
+
+        return sortList;
+    }
+}
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/02/image-98397389.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<ul>
+<li><strong>备注：</strong> 源码地址：<a href="https://github.com/NekoChips/study/tree/master/src/code/algorithm/sort" target="_blank">Sort</a></li>
+</ul>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/02/05/1580874021172.html" target="_blank">https://nekochips.github.io/articles/2020/02/05/1580874021172.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="排序算法"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/02/05/1580874021172.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1580874021172"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+      <a class="item" href="https://nekochips.github.io/tags/JWT">JWT</a>
+      <a class="item" href="https://nekochips.github.io/tags/Golang">Golang</a>
+      <a class="item" href="https://nekochips.github.io/tags/CSS">CSS</a>
+      <a class="item" href="https://nekochips.github.io/tags/AntDesignPro">AntDesignPro</a>
+      <a class="item" href="https://nekochips.github.io/tags/SpringCloud">SpringCloud</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1580874021172",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1580874021172', "Java,算法")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2672ms, 2020/05/23 21:10:41 -->
