@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>MySQL 学习总结（一） —— 认识 MySQL 以及简单应用 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="MySQL 学习总结（一） —— 认识 MySQL 以及简单应用 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/04/15/1586926804823.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="MySQL 学习总结（一） —— 认识 MySQL 以及简单应用 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/04/15/1586926804823.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">MySQL 学习总结（一） —— 认识 MySQL 以及简单应用</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-04-15</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/04/15/1586926804823.html#comments">
+              <span data-uvstatcmt="1586926804823">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/04/15/1586926804823.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/Mysql">Mysql</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <h3 id="toc_h3_0">1. 为什么选择 MySQL ？</h3>
+<hr>
+<p>要说为什么，我们可以从以下几点进行分析：</p>
+<ul>
+<li>开源免费，方便拓展。</li>
+<li>轻量，相比于 <strong>Oracle</strong> 安装起来颇为简单。</li>
+<li>社区活跃，碰到的问题总是能找到合适的解决方案。</li>
+<li>......</li>
+</ul>
+<blockquote>
+<p>之前很长一段时间都仅仅把数据库当做一款工具在使用，而没有认真地去了解。近来在看《高性能MySQL》和一些有关 MySQL 的文章、帖子，也使得我对 MySQL 有一个重新的认识。</p>
+</blockquote>
+<p><a href="https://www.w3schools.com/sql/exercise.asp" target="_blank">SQL 能力检验</a>，通过它检验 SQL 基本功。</p>
+<p>最后在这里推荐几篇写得比较好的文章：</p>
+<ul>
+<li><a href="https://github.com/jaywcjlove/mysql-tutorial" target="_blank">MySQL入门教程</a> （适用初学者，也可以通过它来检验自己对 MySQL 的理解程度）</li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIwOTE2MzU4NA==&amp;mid=2247483925&amp;idx=1&amp;sn=1f7be5fdeb7230a9202b52bebdedbdb8&amp;chksm=9779463aa00ecf2c0a711a8dc13036e8f7e7ee75e5caccb712ce93920203492def91de5ebc6c&amp;mpshare=1&amp;scene=1&amp;srcid=&amp;sharer_sharetime=1586917304463&amp;sharer_shareid=830ea5fef10aff679d0c10b4a76894a2&amp;key=1299633068b1228cd5fd95b36dcc59191315343f082bcc6424e95d1d38f8f988ea68623458d68914b81fb9ee406005b35384193f695c43f90d4b29cdbe05640c5131c6552f7c53337470d28b24dd8d6a&amp;ascene=1&amp;uin=NTA2MTYyOTIw&amp;devicetype=Windows+10+x64&amp;version=6209005c&amp;lang=zh_CN&amp;exportkey=Aa2y8yqhtnDkoc6C4%2Fdb%2BA8%3D&amp;pass_ticket=O%2FP2Bdy1aD4O%2F3mp1HzlKWPvIXQoWTttglCtfX8zDjtKwjcswe5JaIyb3d1eyXvR" target="_blank">后端程序员必备：书写高质量SQL的30条建议</a> （总结的比较到位，能够应用于大部分场景）</li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=Mzg2OTA0Njk0OA==&amp;mid=2247485185&amp;idx=1&amp;sn=66ef08b4ab6af5757792223a83fc0d45&amp;chksm=cea248caf9d5c1dc72ec8a281ec16aa3ec3e8066dbb252e27362438a26c33fbe842b0e0adf47&amp;token=79317275&amp;lang=zh_CN#rd" target="_blank">腾讯面试：一条SQL语句执行得很慢的原因有哪些？---不看后悔系列</a> （诙谐易懂，推荐阅读）</li>
+</ul>
+<h3 id="toc_h3_1">2. 存储引擎</h3>
+<hr>
+<h4 id="toc_h4_2">2.1 查看 MySQL 存储引擎</h4>
+<p>通过查看官方文档，或者使用命令查看 MySQL 支持的存储引擎。</p>
+<pre><code>mysql&gt; show engines;
+
+</code></pre>
+<pre><code>+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+9 rows in set (0.00 sec)
+</code></pre>
+<p>从输出结果上看 MySQL 当前默认的存储引擎是 <strong>InnoDB</strong>，同时还支持如 <strong>MyISAM</strong> 等其他的存储引擎。同时在 MySQL 5.7 版本中，只有 InnoDB 支持事务（这一点在选择数据库引擎上要着重考虑）。</p>
+<h4 id="toc_h4_3">2.2 数据库表的存储引擎</h4>
+<p>我们可以在创建表时为数据库表指定存储引擎。</p>
+<pre><code class="language-sql">drop table if exists tb_test1;
+create table tb_test1(
+    id int auto_increment,
+    name varchar(20) not null,
+    primary key (id)
+) ENGINE = InnoDB;
+
+drop table if exists tb_test2;
+create table tb_test2(
+    id int auto_increment,
+    name varchar(20) not null,
+    primary key (id)
+) ENGINE = MyISAM;
+</code></pre>
+<p>查看数据库表的存储引擎，表 tb_test1 存储引擎为 InnoDB。</p>
+<pre><code>mysql&gt; show table status like 'tb_test1';
+</code></pre>
+<pre><code>+----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+-------------+------------+--------------------+----------+----------------+---------+
+| Name     | Engine | Version | Row_format | Rows | Avg_row_length | Data_length | Max_data_length | Index_length | Data_free | Auto_increment | Create_time         | Update_time | Check_time | Collation          | Checksum | Create_options | Comment |
++----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+-------------+------------+--------------------+----------+----------------+---------+
+| tb_test1 | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |         0 |              1 | 2020-04-15 10:54:27 | NULL        | NULL       | utf8mb4_general_ci |     NULL |                |         |
++----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+-------------+------------+--------------------+----------+----------------+---------+
+
+</code></pre>
+<pre><code>mysql&gt; mysql&gt; show table status like 'tb_test2';
+
+</code></pre>
+<pre><code>+----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+| Name     | Engine | Version | Row_format | Rows | Avg_row_length | Data_length | Max_data_length | Index_length | Data_free | Auto_increment | Create_time         | Update_time         | Check_time | Collation          | Checksum | Create_options | Comment |
++----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+| tb_test2 | MyISAM |      10 | Dynamic    |    0 |              0 |           0 | 281474976710655 |         1024 |         0 |              1 | 2020-04-15 10:54:28 | 2020-04-15 10:54:28 | NULL       | utf8mb4_general_ci |     NULL |                |         |
++----------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+
+</code></pre>
+<p>可以看出 tb_test1 存储引擎为 InnoDB， tb_test2 存储引擎为 MyISAM。</p>
+<h4 id="toc_h4_4">2.3 MyISAM 和 InnoDB 的区别</h4>
+<p>上面我们只对 MyISAM 和 InnoDB 两种存储引擎进行了简单的了解。（其他的别问我，我目前也不会😂)。</p>
+<p>MyISAM 在 5.5 版本之前是 MySQL 的默认存储引擎，5.5 版本后引入了 InnoDB 作为它的默认存储引擎。</p>
+<p>那么这两种存储引擎有什么区别呢？（仅作参考）</p>
+<ul>
+<li><strong>支持锁的类型</strong>：MyISAM 仅支持表级锁（table-level locking）。InnoDB 同时支持表级锁以及行级锁（row-level locking），且默认为行级锁。</li>
+<li><strong>是否支持外键</strong>：MyISAM 不支持外键（foreign key），而 InnoDB 支持。</li>
+<li><strong>是否支持事务</strong>：MyISAM 强调性能，查询语句的执行速度比 InnoDB 更快，但是不提供事务支持。InnoDB 提供事务支持且比较完善，通过设置可达到最高隔离级别（SERIALIZABLE），下面会讲到。</li>
+<li><strong>是否支持安全恢复</strong>：MyISAM 不支持， InnoDB 支持。</li>
+<li><strong>是否支持 MVVC</strong> ：MyISAM 不支持， 仅 InnoDB 支持。</li>
+</ul>
+<p>综上，在一般情况下，我们使用 InnoDB 作为存储引擎是完全没有问题的，但是在某些情况下可能对安全性、回滚等功能都不太在乎，这时选择 MyISAM 也是没有问题的。</p>
+<h3 id="toc_h3_5">3. 字符集校对规则</h3>
+<hr>
+<h4 id="toc_h4_6">3.1 字符集</h4>
+<p>查看 MySQL 系统变量使用的字符集</p>
+<pre><code>mysql&gt; show variables like 'character%';
+</code></pre>
+<pre><code>+--------------------------+----------------------------+
+| Variable_name            | Value                      |
++--------------------------+----------------------------+
+| character_set_client     | latin1                     |
+| character_set_connection | latin1                     |
+| character_set_database   | latin1                     |
+| character_set_filesystem | binary                     |
+| character_set_results    | latin1                     |
+| character_set_server     | latin1                     |
+| character_set_system     | utf8                       |
+| character_sets_dir       | /usr/share/mysql/charsets/ |
++--------------------------+----------------------------+
+
+</code></pre>
+<p>这些系统变量代表的意思大家望文生义，这里就不对它们的功能做解释了。</p>
+<p>一般情况下，我们在创建数据库的时候指定数据库的编码字符集为 <strong>UTF-8</strong> 即可。</p>
+<pre><code>mysql&gt; create database test character set utf8;
+</code></pre>
+<h4 id="toc_h4_7">3.2 字符集的继承性</h4>
+<p>所谓继承性，就是说如果未指定字符集就默认使用其上层指定的字符集。</p>
+<p>比如：表中的字段如果没有指定字符集，则其默认使用表的字符集，如果表也没有指定字符集，就使用表所在的数据库所使用的的字符集。那么如果数据库也没设置字符集咋办呢？那就使用 <code>character_set_server</code> 系统变量所指定的字符集。</p>
+<p>MySQL 规范地使用会在我们使用过程中减少很多不必要的麻烦，所以建议我们在创建数据库以及创建数据库表的时候都要指定所使用的字符集。</p>
+<pre><code>create database test character set utf8;
+
+create table tb_test3(
+    id int auto_increment,
+    name varchar(20) not null,
+    primary key (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+</code></pre>
+<h3 id="toc_h3_8">4. 事务</h3>
+<hr>
+<p>谈起事务，我们的第一反应就是 <strong>ACID</strong> 原则，这里我们一起回顾一下：</p>
+<ul>
+<li><strong>原子性</strong>：Atomicity 指事务中的最小执行单位，要么整个事务全部执行成功，要么全部失败。</li>
+<li><strong>一致性</strong>：Consistency 指执行事务的前后数据保持一致，即多个事务对同一个数据的读取结果是一样的。</li>
+<li><strong>隔离性</strong>：Isolation 指多个事务之间互不干扰。</li>
+<li><strong>持久性</strong>：Durability 指一个事务被提交后，该事务所做的改变是持久的，即使发生一些不可控的外力因素也不应该对其造成影响。</li>
+</ul>
+<blockquote>
+<p>那么在数据库中并发事务会带来哪些问题呢？</p>
+</blockquote>
+<p>数据库的并发事务可能会引发以下问题：</p>
+<ul>
+<li><strong>脏读</strong>：当一个事务正在访问数据库中的数据且对其进行修改，但是这个修改操作还未提交至数据库，这时另一个事务也来访问这条数据，并使用这条数据做了一些逻辑操作。由于前一个事务的修改还未提交至数据库，所有后一个事务<strong>获取到的数据是一条 “脏数据”</strong> ，这种情况我们称之为 脏读。</li>
+<li><strong>不可重复读</strong>：一个事务多次访问同一数据，在这个事务还未结束时另一个事务也访问了该数据且对其进行了修改，这会造成前<strong>一个事务多次访问该数据得到了不同的结果</strong>，这种情况我们称之为 不可重复读。</li>
+<li><strong>幻读</strong>：与 不可重复读 类似，在一个事务多次访问同一数据时，另外一个事务也访问了该数据且对数据进行了增加或者是删除操作，这会造成前<strong>一个事务访问该数据时多了一些不存在的记录或者少了一些已有的记录，就犹如出现 “幻觉” 一般</strong>，这种情况我们称之为 幻读。</li>
+<li><strong>第一类丢失修改</strong>：一个事务访问数据且对其进行了修改，而另一个事务也访问了该数据并撤销了事务操作，这个时候前一个事务的修改已经提交，而<strong>后一个事务的撤销会导致前一个事务提交的修改被覆盖从而导致丢失修改</strong>，我们称之为 第一类丢失修改。</li>
+<li><strong>第二类丢失修改</strong>：一个事务访问数据且对其进行了修改，而另一个事务也访问了这条数据并进行了修改，这会<strong>导致前一个事务的修改结果丢失</strong>，这种情况我们称之为 第二类丢失修改。</li>
+</ul>
+<blockquote>
+<p>数据库是怎么处理这些并发事务所带来的的问题呢？</p>
+</blockquote>
+<p>说到这个，我们就要谈一谈 SQL 标准定义的四个隔离级别了：</p>
+<ul>
+<li><strong>READ-UNCOMMITED</strong>：顾名思义，读未提交 是 SQL 标准中最低的隔离级别，允许读取没有提交至数据库的数据。<strong>这就可能导致脏读、幻读、不可重复读以及第二类丢失修改问题。</strong></li>
+<li><strong>READ-COMMITED</strong>：读已提交，允许读取已经提交至数据库的数据。<strong>可以避免脏读，但还是可能会发生不可重复读、幻读以及第二类丢失修改的问题。</strong></li>
+<li><strong>REPEATABLE-READ</strong>：可重复读，多次读取的结果是一致的，除非数据被事务本身修改了。<strong>可以避免脏读、不可重复读和丢失修改，但是幻读还是有可能会发生。</strong></li>
+<li><strong>SERIALIZABLE</strong>：可串行化，SQL 标准中最高的隔离级别，所有事务串行化依次执行，这样事务之间就完全不会互相干扰。<strong>不会出现事务所引发的问题。</strong></li>
+</ul>
+<table>
+<thead>
+<tr><th align="center">隔离级别</th><th align="center">脏读</th><th align="center">不可重复读</th><th align="center">幻读</th><th align="center">第一类丢失修改</th><th align="center">第二类丢失修改</th></tr>
+</thead>
+<tbody>
+<tr><td align="center">不设置任何隔离级别</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td></tr>
+<tr><td align="center">READ-UNCOMMITED</td><td align="center">Y</td><td align="center">Y</td><td align="center">Y</td><td align="center">N</td><td align="center">Y</td></tr>
+<tr><td align="center">READ-COMMITED</td><td align="center">N</td><td align="center">Y</td><td align="center">Y</td><td align="center">N</td><td align="center">Y</td></tr>
+<tr><td align="center">REPEATABLE-READ</td><td align="center">N</td><td align="center">N</td><td align="center">Y</td><td align="center">N</td><td align="center">N</td></tr>
+<tr><td align="center">SERIALIZABLE</td><td align="center">N</td><td align="center">N</td><td align="center">N</td><td align="center">N</td><td align="center">N</td></tr>
+</tbody>
+</table>
+<blockquote>
+<p>MySQL 默认支持的隔离级别是什么呢？</p>
+</blockquote>
+<p>我们通过 <code>select @@global.tx_isolation</code> 进行查看</p>
+<pre><code>mysql&gt; select @@global.tx_isolation;
+</code></pre>
+<pre><code>+-----------------------+
+| @@global.tx_isolation |
++-----------------------+
+| REPEATABLE-READ       |
++-----------------------+
+</code></pre>
+<p>可以看到 MySQL 默认的隔离级别是 <strong>可重复读</strong>。这里我顺便提一句，其他的如 Oracle、SQLServer 等一些主流数据库默认的隔离级别为 <strong>读已提交。</strong></p>
+<p>与 SQL 标准不同的是 MySQL 中的 <strong>REPEATABLE-READ</strong> 通过使用 <code>next-key lock</code> 算法锁定了包含记录本身在内的部分数据，从而也能避免 幻读 的发生。也就是说，尽管 MySQL 默认的隔离级别是 <strong>REPEATABLE-READ</strong>，但其实际上已经达到了 <strong>SERIALIZABLE</strong> 隔离级别。</p>
+<h3 id="toc_h3_9">5. SQL 优化</h3>
+<hr>
+<p>如果说前面的可以不了解，那 <strong>SQL 优化</strong>和 <strong>数据库表优化</strong> 是我们必须要掌握的技能。</p>
+<p>SQL 优化这里就不细说了，推荐阅读 <a href="https://mp.weixin.qq.com/s?__biz=MzIwOTE2MzU4NA==&amp;mid=2247483925&amp;idx=1&amp;sn=1f7be5fdeb7230a9202b52bebdedbdb8&amp;chksm=9779463aa00ecf2c0a711a8dc13036e8f7e7ee75e5caccb712ce93920203492def91de5ebc6c&amp;mpshare=1&amp;scene=1&amp;srcid=&amp;sharer_sharetime=1586917304463&amp;sharer_shareid=830ea5fef10aff679d0c10b4a76894a2&amp;key=1299633068b1228cd5fd95b36dcc59191315343f082bcc6424e95d1d38f8f988ea68623458d68914b81fb9ee406005b35384193f695c43f90d4b29cdbe05640c5131c6552f7c53337470d28b24dd8d6a&amp;ascene=1&amp;uin=NTA2MTYyOTIw&amp;devicetype=Windows+10+x64&amp;version=6209005c&amp;lang=zh_CN&amp;exportkey=Aa2y8yqhtnDkoc6C4%2Fdb%2BA8%3D&amp;pass_ticket=O%2FP2Bdy1aD4O%2F3mp1HzlKWPvIXQoWTttglCtfX8zDjtKwjcswe5JaIyb3d1eyXvR" target="_blank">后端程序员必备：书写高质量SQL的30条建议</a>。</p>
+<h4 id="toc_h4_10">索引</h4>
+<blockquote>
+<p>我们要善用索引，但不要滥用索引。</p>
+</blockquote>
+<p>说一下学习过程中目前我对使用索引的理解：</p>
+<ul>
+<li>同一张表中索引列不要超过 5 个。</li>
+<li>注意，创建联合索引时相当于创建了多个索引，如 <code>index_a_b_c (a, b, c)</code> 相当于创建了 <code>index_a (a)</code>, <code>index_a_b (a, b)</code>以及 <code>index_a_b_c (a, b, c)</code> 三个索引。</li>
+<li>使用联合索引时注意 SQL 语句一定要满足 <strong>最左匹配原则</strong> ，否则 SQL 语句不走索引。</li>
+<li>删除冗余索引，如创建了联合索引，就删除掉之前创建的且包含在联合索引之内的索引。</li>
+<li>不要在值重复较多的列上创建索引，如 性别 。</li>
+<li>不要在 <code>where</code> 条件中对索引列进行运算操作，否则 SQL 语句不走索引。</li>
+<li>不要在 <code>where</code> 条件中对索引列进行函数操作，否则 SQL 语句不走索引。</li>
+<li>不要在 <code>where</code> 条件中对索引列使用 <code>!=</code> 或 <code>&lt;&gt;</code> 操作符。</li>
+<li>养成使用 <code>explain</code> 的习惯，在执行 SQL 语句前先看看它是否用到了索引。</li>
+</ul>
+<p>下面对部分情况进行实例演示，加深理解！</p>
+<p><strong>错误示范：在重复值较多的列上创建索引</strong></p>
+<p>在 sex 列上创建索引，我们看一下效果</p>
+<pre><code>explain select * from tb_test3 where sex = '1';
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-65459f62.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>这条查询语句没有走索引，而是全表扫描。</p>
+<blockquote>
+<p>为什么会这样呢？</p>
+</blockquote>
+<p>首先要了解到 <strong>非主键索引</strong> 中存放的不是这个字段的数据，而是 <strong>主键字段的值</strong>。所以数据库在使用非主键索引的时候，<strong>会先查询到主键索引的值，然后再走主键索引</strong>。也就是说我们只是通过非主键索引进行了一次筛选，最后还是会走主键索引，<strong>是执行了两次操作的</strong>！</p>
+<p>了解了这个之后，我们再来看看 MySQL 走索引的机制。MySQL 通过对索引列采取抽样的方式计算出一个名为 <strong>索引基数</strong> 的东西，这个基数的值越大说明这个字段中拥有相同数据的行数越少，从而就更适合使用索引来提升效率，反之它会认为走索引比直接走主键（也就是全表扫描）更慢从而进行全表扫描。这就是为什么 <strong>不要在重复值较多的列上创建索引</strong> 的原因。</p>
+<p><strong>错误示范：在索引列上进行运算操作</strong></p>
+<p>在 num 列上创建索引，我们在 where 条件中对其进行运算操作</p>
+<pre><code>explain select * from tb_test3 where num + 10 = 100;
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-d7b36eca.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>修改一下 SQL 语句</p>
+<pre><code>explain select * from tb_test3 where num = 100 - 10;
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-3ef7d83d.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>这个没什么好说的，虽然看起来没什么区别，但是可能就是这一点点细小的差别而导致效率上的千差万别，所以一定要注意了。</p>
+<p><strong>错误示范：在索引列上使用函数</strong></p>
+<p>在 num 列上创建索引，在 where 条件中对其使用函数</p>
+<pre><code>explain select * from tb_test3 where char(num) = '100';
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-595b9e7b.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>这个与上面的同理。</p>
+<p><strong>错误示范：索引列上使用 != 或者 &lt;&gt;</strong></p>
+<p>还是 num 列，直接看效果</p>
+<pre><code>explain select * from tb_test3 where num &lt;&gt; 100;
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-a5a92280.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>这个时候可以考虑自身的业务，如果不走索引会引发严重效率问题，建议将 SQL 语句进行拆分。</p>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/04/15/1586926804823.html" target="_blank">https://nekochips.github.io/articles/2020/04/15/1586926804823.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="MySQL 学习总结（一） —— 认识 MySQL 以及简单应用"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/04/15/1586926804823.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1586926804823"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1586926804823",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1586926804823', "Mysql")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2589ms, 2020/05/23 21:10:33 -->

@@ -1,0 +1,976 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>Spring Boot 深入学习（3） ——  理解 Enable 模块驱动 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="Spring Boot 深入学习（3） ——  理解 Enable 模块驱动 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/04/19/1587266739252.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="Spring Boot 深入学习（3） ——  理解 Enable 模块驱动 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/04/19/1587266739252.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">Spring Boot 深入学习（3） ——  理解 Enable 模块驱动</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-04-19</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/04/19/1587266739252.html#comments">
+              <span data-uvstatcmt="1587266739252">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/04/19/1587266739252.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <blockquote>
+<p>Spring 以及 Spring Boot 中有很多模块都使用到了 Enable 模块驱动。这里的模块与我们理解的模块大致相同，均代表着实现某项功能的组件集合。而 Enable 模块驱动简单点说就是开启相应模块的功能。</p>
+</blockquote>
+<p>开始之前，我们先看看 Spring Boot 中都有哪些功能模块用到了 <code>Enable</code> 模块驱动。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-c70240d3.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>图中标注出来的注解想必大家都不陌生，下面我们以 <code>@EnableCaching</code> 注解为示例来看看 <code>@Enable</code> 模块驱动是如何实现的。</p>
+<h3 id="toc_h3_0">1. <code>@EnableCaching</code> 注解</h3>
+<hr>
+<pre><code class="language-java">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(CachingConfigurationSelector.class)
+public @interface EnableCaching {
+
+	/**
+	 * Indicate whether subclass-based (CGLIB) proxies are to be created as opposed
+	 * to standard Java interface-based proxies. The default is {@code false}. &lt;strong&gt;
+	 * Applicable only if {@link #mode()} is set to {@link AdviceMode#PROXY}&lt;/strong&gt;.
+	 * &lt;p&gt;Note that setting this attribute to {@code true} will affect &lt;em&gt;all&lt;/em&gt;
+	 * Spring-managed beans requiring proxying, not just those marked with {@code @Cacheable}.
+	 * For example, other beans marked with Spring's {@code @Transactional} annotation will
+	 * be upgraded to subclass proxying at the same time. This approach has no negative
+	 * impact in practice unless one is explicitly expecting one type of proxy vs another,
+	 * e.g. in tests.
+	 */
+	boolean proxyTargetClass() default false;
+
+	/**
+	 * Indicate how caching advice should be applied.
+	 * &lt;p&gt;&lt;b&gt;The default is {@link AdviceMode#PROXY}.&lt;/b&gt;
+	 * Please note that proxy mode allows for interception of calls through the proxy
+	 * only. Local calls within the same class cannot get intercepted that way;
+	 * a caching annotation on such a method within a local call will be ignored
+	 * since Spring's interceptor does not even kick in for such a runtime scenario.
+	 * For a more advanced mode of interception, consider switching this to
+	 * {@link AdviceMode#ASPECTJ}.
+	 */
+	AdviceMode mode() default AdviceMode.PROXY;
+
+	/**
+	 * Indicate the ordering of the execution of the caching advisor
+	 * when multiple advices are applied at a specific joinpoint.
+	 * &lt;p&gt;The default is {@link Ordered#LOWEST_PRECEDENCE}.
+	 */
+	int order() default Ordered.LOWEST_PRECEDENCE;
+
+}
+</code></pre>
+<p>可以看到 <code>@EnableCaching</code> 注解使用 <code>@Import</code> 注解导入了一个名为 <code>CachingConfigurationSelector</code> 的类。我们在前一篇文章 <a href="https://www.chenyangjie.com.cn/articles/2020/04/18/1587217357772.html" target="_blank">Spring Boot 深入学习（2）</a>中提到了 <code>@Import</code> 注解的功能以及使用，不太清楚的朋友可以以此作为参考。</p>
+<h3 id="toc_h3_1">2. <code>CachingConfigurationSelector</code> 源码分析</h3>
+<hr>
+<p>首先看一下它的继承结构：</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-00b41b26.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="CachingConfigurationSelector 继承结构.png"></p>
+<p>其中 <code>ImportSelector</code> 是 Spring 中注册组件的一个核心接口，<code>AdviceModelImportSelector</code> 是它的一个抽象实现，而 <code>CachingConfigurationSelector</code> 继承自 <code>AdviceModelImportSelector</code> 。</p>
+<h4 id="toc_h4_2">2.1 <code>ImportSelector</code> 接口</h4>
+<pre><code class="language-java">public interface ImportSelector {
+
+	/**
+	 * Select and return the names of which class(es) should be imported based on
+	 * the {@link AnnotationMetadata} of the importing @{@link Configuration} class.
+	 * @return the class names, or an empty array if none
+	 */
+	String[] selectImports(AnnotationMetadata importingClassMetadata);
+
+	@Nullable
+	default Predicate&lt;String&gt; getExclusionFilter() {
+		return null;
+	}
+
+}
+</code></pre>
+<p><code>ImporSelector</code> 核心方法为 <code>selectImports</code> ，方法通过入参 <code>AnnotationMetadata</code> 返回一个全类名数组。通过 <code>AnnotationMetadata</code> 我们可以获取到使用 <code>ImportSelector</code> 的类的全部注解信息。</p>
+<blockquote>
+<p>我们可以使用 <code>@Import</code> 注解将 <code>selectImports</code> 方法获取的全类名数组中的所有组件导入到 Spring 容器中。</p>
+<p>自定义 <code>ImportSelector</code> 实现 <code>selectImports</code> 方法，返回指定类的全类名数：</p>
+<pre><code>public class MyImportSelector implements ImportSelector {
+  
+    @Override
+    public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+        return new String[] {
+                Cat.class.getName(),
+                Dog.class.getName(),
+                Fish.class.getName()
+        };
+    }
+}
+</code></pre>
+<p>在 <code>WebConfig</code> 类中导入自定义的 <code>ImportSelector</code> ：</p>
+<pre><code class="language-java">@Configuration
+@Import(value = MyImportSelector.class)
+public class WebConfig {
+}
+</code></pre>
+<p>查看 Spring 容器中是否包含我们导入的组件：</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+
+        ApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        Arrays.stream(beanDefinitionNames)
+                .forEach(System.out::println);
+    }
+}
+</code></pre>
+<p>控制台输出：</p>
+<pre><code>......
+webConfig
+com.neko.learn.enable.bean.Cat
+com.neko.learn.enable.bean.Dog
+com.neko.learn.enable.bean.Fish
+</code></pre>
+</blockquote>
+<h4 id="toc_h4_3">2.2 <code>AdviceModeImportSelector</code> 抽象类</h4>
+<p>了解了 <code>SelectImports</code> 的功能后我们再来看看 <code>AdviceModeImportSelector</code> 是如何实现 <code>selectImports</code> 方法的。</p>
+<p><code>AdviceModeImportSelector</code> 部分源码：</p>
+<pre><code class="language-java">@Override
+public final String[] selectImports(AnnotationMetadata importingClassMetadata) {
+	// 获取注解类型
+	Class&lt;?&gt; annType = GenericTypeResolver.resolveTypeArgument(getClass(), AdviceModeImportSelector.class);
+	Assert.state(annType != null, "Unresolvable type argument for AdviceModeImportSelector");
+	AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);
+	if (attributes == null) {
+		throw new IllegalArgumentException(String.format(
+				"@%s is not present on importing class '%s' as expected",
+				annType.getSimpleName(), importingClassMetadata.getClassName()));
+	}
+	// 获取 ActiveMode
+	AdviceMode adviceMode = attributes.getEnum(getAdviceModeAttributeName());
+	// 调用 selectImports 方法，入参为 ActiveMode
+	String[] imports = selectImports(adviceMode);
+	if (imports == null) {
+		throw new IllegalArgumentException("Unknown AdviceMode: " + adviceMode);
+	}
+	return imports;
+}
+
+// selectImports 的具体实现由其子类完成
+protected abstract String[] selectImports(AdviceMode adviceMode);
+</code></pre>
+<p><code>AdviceMode</code> 是一个枚举类：</p>
+<pre><code class="language-java">public enum AdviceMode {
+
+	/**
+	 * JDK proxy-based advice.
+	 */
+	PROXY,
+
+	/**
+	 * AspectJ weaving-based advice.
+	 */
+	ASPECTJ
+
+}
+</code></pre>
+<h4 id="toc_h4_4">2.3 <code>CachingConfigurationSelector</code> 实现类</h4>
+<p>从我们一路分析过来的代码可得知，具体需要将哪些交于 Spring 容器是由该类实现的。</p>
+<p><code>CachingConfigurationSelector</code> 的 <code>selectImports</code> 方法：</p>
+<pre><code class="language-java">/**
+ * Returns {@link ProxyCachingConfiguration} or {@code AspectJCachingConfiguration}
+ * for {@code PROXY} and {@code ASPECTJ} values of {@link EnableCaching#mode()},
+ * respectively. Potentially includes corresponding JCache configuration as well.
+ */
+@Override
+public String[] selectImports(AdviceMode adviceMode) {
+	switch (adviceMode) {
+		case PROXY:
+			return getProxyImports();
+		case ASPECTJ:
+			return getAspectJImports();
+		default:
+			return null;
+	}
+}
+</code></pre>
+<p>默认情况下使用的是 <code>PROXY</code> 类型的 <code>ActiveMode</code>，也就是说调用 <code>getProxyImports</code> 方法：</p>
+<pre><code class="language-java">/**
+ * Return the imports to use if the {@link AdviceMode} is set to {@link AdviceMode#PROXY}.
+ * &lt;p&gt;Take care of adding the necessary JSR-107 import if it is available.
+ */
+private String[] getProxyImports() {
+	List&lt;String&gt; result = new ArrayList&lt;&gt;(3);
+	// 添加 AutoProxyRegistrar 全类名
+	result.add(AutoProxyRegistrar.class.getName());
+	// 添加 ProxyCachingConfiguration 全类名
+	result.add(ProxyCachingConfiguration.class.getName());
+	if (jsr107Present &amp;&amp; jcacheImplPresent) {
+		result.add(PROXY_JCACHE_CONFIGURATION_CLASS);
+	}
+	// 生成全类名数组
+	return StringUtils.toStringArray(result);
+}
+</code></pre>
+<p>默认情况下 <code>jsr107Present</code> 为 <code>false</code>，所以 <code>CachingConfigurationSelector</code> 的 <code>selectImports</code> 方法返回的是包含 <code>AutoProxyRegistrar</code> 和 <code>ProxyCachingConfiguration</code> 全类名信息的数组。也就是说要将这两个类纳入 Spring 容器。分别看一下这两个类的功能。</p>
+<h4 id="toc_h4_5">2.4 <code>AutoProxyRegistrar</code> 代理注册类</h4>
+<pre><code class="language-java">public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
+	// ......
+}
+</code></pre>
+<blockquote>
+<p>该类实现 <code>ImportBeanDefinitionRegistrar</code> 接口，进入源码：</p>
+<pre><code class="language-java">public interface ImportBeanDefinitionRegistrar {
+
+	default void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
+			BeanNameGenerator importBeanNameGenerator) {
+
+		registerBeanDefinitions(importingClassMetadata, registry);
+	}
+
+	default void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	}
+
+}
+</code></pre>
+<p>提供了两个默认方法，实际上发挥作用的是只有两个入参的 <code>registerBeanDefinitions</code> 方法：</p>
+<ul>
+<li><code>AnnotationMetadata</code>：通过它可以得到类的注解信息。</li>
+<li><code>BeanDefinitionRegistry</code>：<code>BeanDefinition</code> 注册器，其中定义了一些操作 BeanDefinition 的方法：</li>
+</ul>
+<pre><code class="language-java">public interface BeanDefinitionRegistry extends AliasRegistry {
+
+	// 注册 Bean
+	void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+			throws BeanDefinitionStoreException;
+
+	// 移除 Bean
+	void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
+
+	// 获取 Bean
+	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
+
+	// 判断是否包含 Bean
+	boolean containsBeanDefinition(String beanName);
+
+	// 获取在该注册器中定义的所有 Bean 的名称
+	String[] getBeanDefinitionNames();
+
+	// 获取在该注册其中定义的 Bean 的数量
+	int getBeanDefinitionCount();
+
+	// 判断在该注册器中是否已经使用了 beanName
+	boolean isBeanNameInUse(String beanName);
+
+}
+</code></pre>
+<p><code>ListableBeanRegistry</code> 实现了 <code>registerBeanDefinition</code> 方法，这个类在 <a href="https://www.chenyangjie.com.cn/articles/2020/04/16/1587046127282.html" target="_blank">Spring IOC 以及组件注册</a><br>
+中有过介绍，这里不再赘述。</p>
+<p>也就是说 <code>ImportBeanDefinitionRegistrar</code> 的功能也是来注册组件的。</p>
+</blockquote>
+<hr>
+<p><code>BeanDefinition</code> 接口有一个抽象实现类 <code>AbstractBeanDefinition</code>，<code>AbstractBeanDefinition</code> 有一个子类 <code>RootBeanDefinition</code> ，我们来使用它向 Spring 容器中注册组件。</p>
+<p>自定义一个 <code>ImportBeanDefinitionRegistrar</code> 实现类：</p>
+<pre><code class="language-java">public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        String beaName = Apple.class.getName();
+        boolean exist = registry.containsBeanDefinition(beaName);
+        if (exist) {
+            System.out.println(String.format("%s 已经存在于注册器中", beaName));
+            return;
+        }
+        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(beaName);
+        registry.registerBeanDefinition(beaName, rootBeanDefinition);
+    }
+}
+</code></pre>
+<p>为了让 <code>ImportBeanDefinitionRegistrar</code> 生效，在 <code>WebConfig</code> 中将其导入：</p>
+<pre><code class="language-java">@Configuration
+@Import(value = MyImportBeanDefinitionRegistrar.class)
+public class WebConfig {
+}
+</code></pre>
+<p>查看容器中是否有 <code>Apple</code> 组件：</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        Arrays.stream(beanDefinitionNames)
+                .forEach(System.out::println);
+    }
+}
+</code></pre>
+<p>控制台输出：</p>
+<pre><code>......
+webConfig
+com.neko.learn.enable.bean.Apple
+</code></pre>
+<hr>
+<blockquote>
+<p>简单了解了 <code>ImportBeanDefinitionRegistrar</code> 注册组件的功能后，再来看看 <code>AutoProxyRegistrar</code> 是如何实现 <code>registerBeanDefinitions</code> 方法的：</p>
+<pre><code class="language-java">@Override
+public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	boolean candidateFound = false;
+	// 获取注解类型集合
+	Set&lt;String&gt; annTypes = importingClassMetadata.getAnnotationTypes();
+	for (String annType : annTypes) {
+		// 获取注解属性
+		AnnotationAttributes candidate = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);
+		if (candidate == null) {
+			continue;
+		}
+		// 注解的 mode 属性
+		Object mode = candidate.get("mode");
+		// 注解的 proxyTargetClass 属性
+		Object proxyTargetClass = candidate.get("proxyTargetClass");
+		if (mode != null &amp;&amp; proxyTargetClass != null &amp;&amp; AdviceMode.class == mode.getClass() &amp;&amp;
+				Boolean.class == proxyTargetClass.getClass()) {
+			// 找到匹配的注解
+			candidateFound = true;
+			// 如果 AdviceMode 类型为 PROXY，则注册一个 InfrastructureAdvisorAutoProxyCreator 对象，这里涉及到 AOP 的相关知识，先做个了解不做不展开。
+			if (mode == AdviceMode.PROXY) {
+				AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
+				if ((Boolean) proxyTargetClass) {
+					AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
+					return;
+				}
+			}
+		}
+	}
+	// 一个匹配的注解都没找到
+	if (!candidateFound &amp;&amp; logger.isInfoEnabled()) {
+		String name = getClass().getSimpleName();
+		logger.info(String.format("%s was imported but no annotations were found " +
+				"having both 'mode' and 'proxyTargetClass' attributes of type " +
+				"AdviceMode and boolean respectively. This means that auto proxy " +
+				"creator registration and configuration may not have occurred as " +
+				"intended, and components may not be proxied as expected. Check to " +
+				"ensure that %s has been @Import'ed on the same class where these " +
+				"annotations are declared; otherwise remove the import of %s " +
+				"altogether.", name, name, name));
+	}
+}
+</code></pre>
+<p>也就是说 <code>AutoProxyRegistrar</code> 的功能主要是向 Spring 容器中注册了一个 APC。</p>
+</blockquote>
+<h4 id="toc_h4_6">2.5 <code>ProxyCachingConfiguration</code> 配置类</h4>
+<pre><code class="language-java">@Configuration
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public class ProxyCachingConfiguration extends AbstractCachingConfiguration {
+}
+</code></pre>
+<blockquote>
+<p>该类继承自 <code>AbstractCachingConfiguration</code>，进入它的源码。</p>
+<p>首先定义了一系列属性，想必这些属性大家都不陌生：</p>
+<pre><code class="language-java">// 均被 protected 修饰，子类可继承
+
+@Nullable
+protected AnnotationAttributes enableCaching;
+
+@Nullable
+protected Supplier&lt;CacheManager&gt; cacheManager;
+
+@Nullable
+protected Supplier&lt;CacheResolver&gt; cacheResolver;
+
+@Nullable
+protected Supplier&lt;KeyGenerator&gt; keyGenerator;
+
+@Nullable
+protected Supplier&lt;CacheErrorHandler&gt; errorHandler;
+</code></pre>
+<p>配置 <code>enableCaching</code> 注解参数，：</p>
+<pre><code class="language-java">@Override
+public void setImportMetadata(AnnotationMetadata importMetadata) {
+	// 熟悉的身影，@EnableCaching 注解
+	this.enableCaching = AnnotationAttributes.fromMap(
+			importMetadata.getAnnotationAttributes(EnableCaching.class.getName(), false));
+	if (this.enableCaching == null) {
+		throw new IllegalArgumentException(
+				"@EnableCaching is not present on importing class " + importMetadata.getClassName());
+	}
+}
+</code></pre>
+<p>配置缓存所需的所有配置信息：</p>
+<pre><code class="language-java">@Autowired(required = false)
+void setConfigurers(Collection&lt;CachingConfigurer&gt; configurers) {
+	if (CollectionUtils.isEmpty(configurers)) {
+		return;
+	}
+	// 只能有一个 CachingConfigure 配置
+	if (configurers.size() &gt; 1) {
+		throw new IllegalStateException(configurers.size() + " implementations of " +
+				"CachingConfigurer were found when only 1 was expected. " +
+				"Refactor the configuration such that CachingConfigurer is " +
+				"implemented only once or not at all.");
+	}
+	// CachingConfigurer 对象
+	CachingConfigurer configurer = configurers.iterator().next();
+	// CachingConfigurer 作为入参 
+	useCachingConfigurer(configurer);
+}
+</code></pre>
+<p>查看 <code>CachingConfigure</code> 源码，提供了创建配置的方法：</p>
+<pre><code class="language-java">public interface CachingConfigurer {
+
+	@Nullable
+	CacheManager cacheManager();
+
+	@Nullable
+	CacheResolver cacheResolver();
+
+	@Nullable
+	KeyGenerator keyGenerator();
+
+	@Nullable
+	CacheErrorHandler errorHandler();
+
+}
+</code></pre>
+<p><code>CachingConfigure</code> 只有一个实现类：</p>
+<pre><code class="language-java">public class CachingConfigurerSupport implements CachingConfigurer {
+
+	@Override
+	@Nullable
+	public CacheManager cacheManager() {
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public CacheResolver cacheResolver() {
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public KeyGenerator keyGenerator() {
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public CacheErrorHandler errorHandler() {
+		return null;
+	}
+
+}
+</code></pre>
+<p>再返回 <code>AbstractCachingConfiguration</code>，查看 <code>useCachingConfigurer</code> 方法：</p>
+<pre><code class="language-java">// protected修饰符，子类继承
+protected void useCachingConfigurer(CachingConfigurer config) {
+	this.cacheManager = config::cacheManager;
+	this.cacheResolver = config::cacheResolver;
+	this.keyGenerator = config::keyGenerator;
+	this.errorHandler = config::errorHandler;
+}
+</code></pre>
+</blockquote>
+<p>经过对 <code>AbstractCachingConfiguration</code> 的源码分析，它对缓存所需的参数赋了空值。</p>
+<p>再来看 <code>ProxyCachingConfiguration</code> 中做了哪些事情：</p>
+<pre><code class="language-java">@Bean(name = CacheManagementConfigUtils.CACHE_ADVISOR_BEAN_NAME)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public BeanFactoryCacheOperationSourceAdvisor cacheAdvisor() {
+	BeanFactoryCacheOperationSourceAdvisor advisor = new BeanFactoryCacheOperationSourceAdvisor();
+	advisor.setCacheOperationSource(cacheOperationSource());
+	advisor.setAdvice(cacheInterceptor());
+	if (this.enableCaching != null) {
+		advisor.setOrder(this.enableCaching.&lt;Integer&gt;getNumber("order"));
+	}
+	return advisor;
+}
+
+@Bean
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public CacheOperationSource cacheOperationSource() {
+	return new AnnotationCacheOperationSource();
+}
+@Bean
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public CacheInterceptor cacheInterceptor() {
+	CacheInterceptor interceptor = new CacheInterceptor();
+	// 配置缓存所需要的配置
+	interceptor.configure(this.errorHandler, this.keyGenerator, this.cacheResolver, this.cacheManager);
+	interceptor.setCacheOperationSource(cacheOperationSource());
+	return interceptor;
+}
+</code></pre>
+<p>向容器中注册了一个 <code>BeanFactoryCacheOperationSourceAdvisor</code>对象、 <code>AnnotationCacheOperationSource</code> 对象和一个 <code>CacheInterceptor</code> 对象，其中 <code>AnnotationCacheOperationSource</code> 与操作缓存有关，这里不展开。</p>
+<p><code>CacheInterceptor</code> 将从 <code>CachingConfigure</code> 中获取的配置对象作为参数调用了 <code>configure</code> 方法。</p>
+<p><code>CacheInterceptor</code> 继承结构图如下：</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-6bfa20d0.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<blockquote>
+<p><code>CachingConfigure</code> 中的 <code>configure</code> 方法直接继承 <code>CacheAspectSupport</code> 并没有重写该方法。</p>
+<p><code>CacheAspectSupport</code> 的 <code>configure</code> 方法：</p>
+<pre><code class="language-java">/**
+ * Configure this aspect with the given error handler, key generator and cache resolver/manager
+ * suppliers, applying the corresponding default if a supplier is not resolvable.
+ * @since 5.1
+ */
+public void configure(
+		@Nullable Supplier&lt;CacheErrorHandler&gt; errorHandler, @Nullable Supplier&lt;KeyGenerator&gt; keyGenerator,
+		@Nullable Supplier&lt;CacheResolver&gt; cacheResolver, @Nullable Supplier&lt;CacheManager&gt; cacheManager) {
+	this.errorHandler = new SingletonSupplier&lt;&gt;(errorHandler, SimpleCacheErrorHandler::new);
+	this.keyGenerator = new SingletonSupplier&lt;&gt;(keyGenerator, SimpleKeyGenerator::new);
+	this.cacheResolver = new SingletonSupplier&lt;&gt;(cacheResolver,
+			() -&gt; SimpleCacheResolver.of(SupplierUtils.resolve(cacheManager)));
+}
+</code></pre>
+<p>可见 <code>configure</code> 方法对缓存所需要的配置进行了初始化。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>总结：简单来说 <code>CachingConfigurationSelector</code> 的作用就是将 <code>AutoProxyRegistrar</code> 和 <code>ProxyCachingConfiguration</code> 注册到 Spring 容器。<code>AutoProxyRegistrar</code> 的作用是向 Spring 容器中注册了一个 APC 对象，而 <code>ProxyCachingConfiguration</code> 又注册了一个 <code>CacheInterceptor</code> 对象，该对象中又包含了 <code>CacheConfigure</code> 提供的配置类且对它们进行了初始化。</p>
+</blockquote>
+<h3 id="toc_h3_7">3. 检验 <code>@EnableCaching</code></h3>
+<hr>
+<p>创建 <code>CacheConfig</code> 配置类：</p>
+<pre><code class="language-java">@Configuration
+public class CacheConfig {
+  
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("myCache");
+    }
+}
+</code></pre>
+<p>当前没有开启 <code>@EnableCaching</code>注解，查看 <code>Spring</code> 容器中与 <code>cache</code> 有关的组件：</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(CacheConfig.class);
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        Arrays.stream(beanDefinitionNames)
+                .filter(beanNames -&gt; beanNames.contains("cache"))
+                .forEach(System.out::println);
+    }
+}
+</code></pre>
+<p>查看控制台输出，除了我们注册的两个组件，Spring 容器中没有其他和 cache 有关的组件：</p>
+<pre><code>cacheConfig
+cacheManager
+</code></pre>
+<p>现在在 <code>CacheConfig</code> 上添加 <code>@EnableCaching</code> 注解，查看控制台输出：</p>
+<pre><code>cacheConfig
+org.springframework.cache.annotation.ProxyCachingConfiguration
+org.springframework.cache.config.internalCacheAdvisor
+cacheOperationSource
+cacheInterceptor
+cacheManager
+</code></pre>
+<p>其中 <code>ProxyCachingConfiguration</code> 、<code>internalCacheAdvisor</code>、<code>cacheOperationSource</code>、<code>cacheInterceptor</code> 均为我们上面分析过的对象。<strong>由此可见 <code>@EnableCaching</code> 的功能就是向 Spring 容器中注册开启缓存功能所需要的一系列组件</strong>。</p>
+<h3 id="toc_h3_8">4. 其他 @Enable 模块驱动注解</h3>
+<p>分析完 <code>@EnableCaching</code> 之后，我们分别看看其他的 <code>@Enable</code> 模块驱动注解。</p>
+<p><strong><code>@EnableAsync</code> 注解</strong></p>
+<pre><code class="language-java">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(AsyncConfigurationSelector.class)
+public @interface EnableAsync {
+	// ......
+}
+</code></pre>
+<blockquote>
+<p>导入了 <code>AsyncConfigurationSelector</code> ：</p>
+<pre><code class="language-java">public class AsyncConfigurationSelector extends AdviceModeImportSelector&lt;EnableAsync&gt; {
+
+	private static final String ASYNC_EXECUTION_ASPECT_CONFIGURATION_CLASS_NAME =
+			"org.springframework.scheduling.aspectj.AspectJAsyncConfiguration";
+
+	@Override
+	@Nullable
+	public String[] selectImports(AdviceMode adviceMode) {
+		switch (adviceMode) {
+			case PROXY:
+				return new String[] {ProxyAsyncConfiguration.class.getName()};
+			case ASPECTJ:
+				return new String[] {ASYNC_EXECUTION_ASPECT_CONFIGURATION_CLASS_NAME};
+			default:
+				return null;
+		}
+	}
+
+}
+</code></pre>
+<p>基本与 <code>@EnableCaching</code> 如出一辙，至于注册了哪些组件就不分析了，有兴趣地可以自行研究其源码。</p>
+</blockquote>
+<hr>
+<p><strong><code>@EnableAutoConfiguration</code> 注解</strong></p>
+<pre><code class="language-java">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import(AutoConfigurationImportSelector.class)
+public @interface EnableAutoConfiguration {
+
+	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+
+	Class&lt;?&gt;[] exclude() default {};
+
+	String[] excludeName() default {};
+
+}
+</code></pre>
+<p>同样的，也是导入了一个 <code>ImportSelector</code> 的实现类 <code>AutoConfigurationImportSelector</code> 。不过 <code>AutoConfigurationImportSelector</code> 的源码内容较多，又由于 <code>@EnableAutoConfiguration</code> 在我们使用 Spring Boot 时极为重要，后面我会专门写一篇文章对 <code>@EnableAutoConfiguration</code> 进行深入了解。</p>
+<blockquote>
+<p>当然还有很多 <code>@Enable</code> 模块驱动的注解，实现的方式都大同小异，这里就不逐个分析了。</p>
+</blockquote>
+<h3 id="toc_h3_9">5. 自定义 @Enable 模块驱动注解</h3>
+<p>看完 <code>@Enable</code> 模块驱动的原理后，我们自己也可以编写一个 <code>@Enable</code> 模块驱动注解。</p>
+<p>自定义一个 <code>@EnableNeko</code> 注解</p>
+<pre><code class="language-java">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(NekoConfigurationSelector.class)
+public @interface EnableNeko {
+  
+}
+</code></pre>
+<p><code>NekoConfigurationSelector</code> 注册组件：</p>
+<pre><code class="language-java">public class NekoConfigurationSelector implements ImportSelector {
+  
+    @Override
+    public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+        List&lt;String&gt; result = new ArrayList&lt;&gt;(4);
+        result.add(Apple.class.getName());
+        result.add(Cat.class.getName());
+        result.add(Dog.class.getName());
+        result.add(Fish.class.getName());
+  
+        return StringUtils.toStringArray(result);
+    }
+}
+</code></pre>
+<p><code>NekoConfig</code> 中开启 <code>@EnableNeko</code> 注解：</p>
+<pre><code class="language-java">@Configuration
+@EnableNeko
+public class NekoConfig {
+}
+</code></pre>
+<p>查看 Spring 容器中的组件信息：</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(NekoConfig.class);
+        Arrays.stream(context.getBeanDefinitionNames())
+                .forEach(System.out::println);
+    }
+}
+</code></pre>
+<p>控制台输出结果：</p>
+<pre><code>......
+nekoConfig
+com.neko.learn.enable.bean.Apple
+com.neko.learn.enable.bean.Cat
+com.neko.learn.enable.bean.Dog
+com.neko.learn.enable.bean.Fish
+</code></pre>
+<hr>
+<blockquote>
+<p>源码链接：<a href="https://github.com/NekoChips/LearnSpring/tree/master/Spring-Learn-Enable" target="_blank">https://github.com/NekoChips/LearnSpring/tree/master/Spring-Learn-Enable</a></p>
+</blockquote>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/04/19/1587266739252.html" target="_blank">https://nekochips.github.io/articles/2020/04/19/1587266739252.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="Spring Boot 深入学习（3） ——  理解 Enable 模块驱动"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/04/19/1587266739252.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1587266739252"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nginx">Nginx</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1587266739252",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1587266739252', "SpringBoot,源码学习")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2988ms, 2020/05/23 21:10:31 -->

@@ -1,0 +1,930 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>Spring Boot 使用 Kafka 生产和消费消息 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="Spring Boot 使用 Kafka 生产和消费消息 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/04/30/1588254024454.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="Spring Boot 使用 Kafka 生产和消费消息 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/04/30/1588254024454.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">Spring Boot 使用 Kafka 生产和消费消息</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-04-30</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/04/30/1588254024454.html#comments">
+              <span data-uvstatcmt="1588254024454">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/04/30/1588254024454.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p>引用一段官网的说明：</p>
+<p>Apache Kafka 是 一个分布式流处理平台 ，主要有以下三个特性：</p>
+<ol>
+<li>可以让你发布和订阅流式的记录。这一方面与消息队列或者企业消息系统类似。</li>
+<li>可以储存流式的记录，并且有较好的容错性。</li>
+<li>可以在流式记录产生时就进行处理。</li>
+</ol>
+<p>Kafka 的一些基本概念：</p>
+<ul>
+<li>Kafka 是以一个集群的方式运行在一台或者多台服务器上的。</li>
+<li>Kafka 的消息以 topic 来进行区分。</li>
+<li>将向 Kafka 集群中指定的 topic 发布消息的服务称为 <strong>Producer</strong>。</li>
+<li>将从 Kafka 集群中指定的<strong>一个或多个</strong> topic 中获取消息并消费的服务称为 <strong>Consumer</strong>。</li>
+</ul>
+<p><img src="https://img.hacpai.com/file/2020/04/image-336ff008.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<blockquote>
+<p>以上内容均来自：<a href="http://kafka.apachecn.org/intro.html" target="_blank">Kafka 中文文档</a> 。有关 topic、producer、consumer、client 的详细讲解可阅读官方文档。</p>
+</blockquote>
+<h3 id="toc_h3_0">1.  搭建 Kafka 环境</h3>
+<hr>
+<p>由于个人较为倾向于使用 Docker 搭建服务环境，所以文中只介绍如何使用 Docker 搭建 Kafka 环境。</p>
+<p>在 kafka 目录下创建 docker-compose.yml 文件。</p>
+<p><strong>docker-compose.yml 文件内容</strong>：</p>
+<pre><code class="language-yaml">version: '3'
+  services:
+    zookeeper:
+      container_name: kafka_zookeeper
+      image: wurstmeister/zookeeper
+      ports:
+	- "2181:2181"
+    kafka:
+      container_name: kafka
+      image: wurstmeister/kafka:latest
+      ports:
+	- "9092:9092"
+      environment:
+	KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
+	KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+	KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      volumes:
+	- /var/run/docker.sock:/var/run/docker.sock
+</code></pre>
+<p>保存文件后，在 kafka 目录下执行 docker-compose 命令：</p>
+<pre><code class="language-shell">docker-compose up -d
+</code></pre>
+<p>执行过程中会自动下载 <code>wurstmeister/zookeeper</code> 和 <code>wurstmeister/kafka</code> 镜像。如果无法下载该镜像文件，可以手动执行 pull 命令：</p>
+<pre><code>docker pull wurstmeister/zookeeper
+docker pull wurstmeister/kafka
+</code></pre>
+<blockquote>
+<p>至于如何通过 kafka 命令创建 topic，发布消息以及消费消息，可对照官方文档进行操作，本文重点在于如何在 Spring Boot 中使用 Kafka。</p>
+</blockquote>
+<h3 id="toc_h3_1">2. Spring Boot 整合 Kafka</h3>
+<hr>
+<p>搭建好了 Kafka 环境，我们开始着手 Spring Boot 的整合。</p>
+<blockquote>
+<p>Demo 项目中 Spring Boot 的版本为 2.2.6.RELASE，并使用 lombok 工具。</p>
+</blockquote>
+<h4 id="toc_h4_2">2.1 添加依赖</h4>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h4 id="toc_h4_3">2.2 文件配置</h4>
+<p>在 application.yml 文件中添加 kafka 配置：</p>
+<pre><code class="language-yaml">spring:
+  kafka:
+    # kafka 地址，多个用 “，”隔开
+    bootstrap-servers: localhost:9092
+    template:
+      # 默认 topic
+      default-topic: kafka_test
+    # 生产者配置
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 3
+    # 消费者配置
+    consumer:
+      group-id: kafka-consumer
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      isolation-level: read_committed
+      enable-auto-commit: true
+    # listener 配置，作用于 @KafkaListener
+    listener:
+      type: batch
+      concurrency: 4
+      poll-timeout: 3000
+</code></pre>
+<h4 id="toc_h4_4">2.3 JavaConfig 配置 Kafka</h4>
+<p>创建 KafkaConfig 配置类：</p>
+<pre><code class="language-java">@Configuration
+@EnableKafka
+public class KafkaConfig{
+
+    @Autowired
+    private KafkaProperties kafkaProperties;
+  
+    @Bean
+    public AdminClient adminClient() {
+        Map&lt;String, Object&gt; configs = new HashMap&lt;&gt;(2);
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        return AdminClient.create(configs);
+    }
+}
+</code></pre>
+<p>在 appliction.yml 文件中添加的 kafka 配置均会配置到 <code>KafkaProperties</code> 中。</p>
+<p>使用 <code>@EnableKafka</code> 注解开启 Kafka 支持，通过 Spring Boot 的自动装配自动将 <code>ProducerFactory</code>、<code>ConsumerFactory</code> 添加至 Spring IOC 容器中。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-f50114f1.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>在配置类中向 Spring IOC 容器中注册 <code>AdminClient</code> ，后面会用到。</p>
+<h4 id="toc_h4_5">2.4 创建 topic</h4>
+<p>新建一个 <code>KafkaController</code> 类：</p>
+<pre><code>@Slf4j
+@RestController
+@RequestMapping("kafka")
+public class KafkaController {
+
+    @Autowired
+    private KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+
+    @Autowired
+    private AdminClient adminClient;
+
+    @PutMapping("topic")
+    public void buildTopic(@RequestParam("name") String name, @RequestParam("numPartitions") Integer numPartitions,
+                           @RequestParam("replicationFactor") Short replicationFactor) {
+        NewTopic newTopic = new NewTopic(name, numPartitions, replicationFactor);
+        adminClient.createTopics(Collections.singletonList(newTopic));
+    }
+}
+</code></pre>
+<p>新建或者更新 topic 需要三个参数：</p>
+<ul>
+<li>name: topic 名称。</li>
+<li>numPartitions: topic 分区数量。</li>
+<li>replicationFactor：topic 副本数量。</li>
+</ul>
+<p>同样还可以通过 <code>AdminClient</code> 查询或删除 topic ：</p>
+<pre><code>@GetMapping("topics")
+public HttpEntity&lt;?&gt; getAllTopics() {
+    ListTopicsResult listTopicsResult = adminClient.listTopics();
+    try {
+        Set&lt;String&gt; names = listTopicsResult.names().get();
+        return ResponseEntity.ok(names);
+    } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("服务异常");
+    }
+}
+
+@DeleteMapping("topic/{topic}")
+public void deleteTopic(@PathVariable String topic) {
+    adminClient.deleteTopics(Collections.singletonList(topic));
+}
+</code></pre>
+<p>查询当前 topic 列表，返回如下结果：</p>
+<pre><code class="language-json">[
+    "kafka_test2",
+    "kafka_test"
+]
+</code></pre>
+<p>调用接口删除 <code>kafka_test2</code> 后，再次查询：</p>
+<pre><code>[
+    "kafka_test"
+]
+</code></pre>
+<h4 id="toc_h4_6">2.5 发布消息</h4>
+<pre><code class="language-java">@GetMapping("produce")
+public void send(@RequestParam("message") String message) {
+    /// 发送消息至默认topic
+    ListenableFuture&lt;SendResult&lt;String, String&gt;&gt; future = kafkaTemplate.sendDefault(message
+    buildCallBack(future, message);
+}
+
+@GetMapping("produce/{topic}")
+public void sendToTopic(@PathVariable String topic, @RequestParam("message") String message) {
+    ListenableFuture&lt;SendResult&lt;String, String&gt;&gt; future = kafkaTemplate.send(topic, message);
+    buildCallBack(future, message);
+}
+
+@SuppressWarnings("NullableProblems")
+private void buildCallBack(ListenableFuture&lt;SendResult&lt;String, String&gt;&gt; future, String message) {
+    future.addCallback(new ListenableFutureCallback&lt;SendResult&lt;String, String&gt;&gt;() {
+  
+        @Override
+        public void onFailure( Throwable throwable) {
+            log.info("消息 [{}] 发送失败，错误原因: {}", message, throwable.getMessage());
+        }
+        @Override
+        public void onSuccess(SendResult&lt;String, String&gt; result) {
+            log.info("消息 [{}] 发送成功，当前 partition: {}，当前 offset: {}", message,
+                    result.getRecordMetadata().partition(), result.getRecordMetadata().offset());
+        }
+    });
+}
+</code></pre>
+<p>代码中我们通过 <code>ListenableFutureCallback</code> 回调的方式来确定消息是否发送成功，成功回调 <code>onSuccess</code> 方法，失败回调 <code>onFailure</code> 方法。</p>
+<p>如此，现在就可以发布消息了，但是还没有消费者消费这些消息。</p>
+<h4 id="toc_h4_7">2.6 消费消息</h4>
+<p>新建一个 <code>KafkaMessageListener</code> 类：</p>
+<pre><code class="language-java">@Component
+@Slf4j
+public class KafkaMessageListener {
+
+    @KafkaListener(topics = "kafka_test", groupId = "kafka-consumer")
+    public void listen(String message) {
+        log.info("收到消息： {}", message);  
+    }
+}
+</code></pre>
+<p>下面我们大致分析一下，<code>@KafkaListener</code> 是如何工作的：</p>
+<p>通过 application.yml 配置，Spring Boot 会帮助我们创建一个 <code>DefaultConsumerFactory</code> 对象：</p>
+<pre><code>public class DefaultKafkaConsumerFactory&lt;K, V&gt; implements ConsumerFactory&lt;K, V&gt; {
+
+	private static final LogAccessor LOGGER = new LogAccessor(LogFactory.getLog(DefaultKafkaConsumerFactory.class));
+
+	private final Map&lt;String, Object&gt; configs;
+
+	private Supplier&lt;Deserializer&lt;K&gt;&gt; keyDeserializerSupplier;
+
+	private Supplier&lt;Deserializer&lt;V&gt;&gt; valueDeserializerSupplier;
+
+	// ......
+
+}
+</code></pre>
+<p>而后将该 <code>DefaultConsumerFactory</code> 对象作为参数传递给 <code>ConcurrentKafkaListenerContainerFactory</code> ，以此创建消息监听容器：</p>
+<pre><code>public class ConcurrentKafkaListenerContainerFactory&lt;K, V&gt;
+		extends AbstractKafkaListenerContainerFactory&lt;ConcurrentMessageListenerContainer&lt;K, V&gt;, K, V&gt; {
+	// ......
+
+	@Override
+	protected ConcurrentMessageListenerContainer&lt;K, V&gt; createContainerInstance(KafkaListenerEndpoint endpoint) {
+		TopicPartitionOffset[] topicPartitions = endpoint.getTopicPartitionsToAssign();
+		if (topicPartitions != null &amp;&amp; topicPartitions.length &gt; 0) {
+			ContainerProperties properties = new ContainerProperties(topicPartitions);
+			return new ConcurrentMessageListenerContainer&lt;&gt;(getConsumerFactory(), properties);
+		}
+		else {
+			Collection&lt;String&gt; topics = endpoint.getTopics();
+			if (!topics.isEmpty()) {
+				ContainerProperties properties = new ContainerProperties(topics.toArray(new String[0]));
+				return new ConcurrentMessageListenerContainer&lt;&gt;(getConsumerFactory(), properties);
+			}
+			else {
+				ContainerProperties properties = new ContainerProperties(endpoint.getTopicPattern());
+				return new ConcurrentMessageListenerContainer&lt;&gt;(getConsumerFactory(), properties);
+			}
+		}
+	}
+
+	// ......
+
+}
+
+</code></pre>
+<p><code>getConsumerFactory</code> 方法继承自 <code>AbstractKafkaListenerContainerFactory</code> ：</p>
+<pre><code>private ConsumerFactory&lt;? super K, ? super V&gt; consumerFactory;
+
+public ConsumerFactory&lt;? super K, ? super V&gt; getConsumerFactory() {
+	return this.consumerFactory;
+}
+</code></pre>
+<p>接着通过 <code>@KafkaListener</code> 注解指定监听的 <strong>topic</strong> 以及消费消息的 <strong>Consumer 消费组</strong>。</p>
+<p>至此，我们已经配置好了 Producer、Consumer 以及配置好消息监听了，接下来看看效果。</p>
+<h3 id="toc_h3_8">3. 测试消息发送与接收</h3>
+<hr>
+<p>启动项目后，控制台有一段这样的输出：</p>
+<pre><code class="language-bash">2020-04-30 17:41:23.968  INFO 17284 --- [           main] o.a.k.clients.admin.AdminClientConfig    : AdminClientConfig values: 
+	bootstrap.servers = [127.0.0.1:9092]
+	client.dns.lookup = default
+	client.id = 
+	connections.max.idle.ms = 300000
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 120000
+	retries = 5
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+
+2020-04-30 17:41:24.007  INFO 17284 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 2.3.1
+2020-04-30 17:41:24.008  INFO 17284 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 18a913733fb71c01
+2020-04-30 17:41:24.008  INFO 17284 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1588239684006
+</code></pre>
+<p>输出了 <strong>AdminClient</strong> 的配置信息。</p>
+<hr>
+<blockquote>
+<p>目前项目中有两个 topic ： kafka_test、kafka_test2</p>
+</blockquote>
+<p>启动后，我们分别访问：</p>
+<ol>
+<li><a href="" target="_blank">localhost:8080/kafka/produce?message=你好， 世界</a></li>
+<li><a href="localhost:8080/kafka/produce/kafka_test2?message=hello,kafka" target="_blank">localhost:8080/kafka/produce/kafkast2?message=hello,kafka</a></li>
+</ol>
+<p>控制台先输出如下结果：</p>
+<pre><code class="language-bash">2020-04-30 20:25:50.426  INFO 19376 --- [           main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [47.105.106.3:9092]
+	check.crcs = true
+	client.dns.lookup = default
+	client.id = 
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = kafka-consumer
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	isolation.level = read_committed
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	session.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2020-04-30 20:25:50.453  INFO 19376 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 2.3.1
+2020-04-30 20:25:50.453  INFO 19376 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 18a913733fb71c01
+2020-04-30 20:25:50.453  INFO 19376 --- [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1588249550453
+2020-04-30 20:25:50.454  INFO 19376 --- [           main] o.a.k.clients.consumer.KafkaConsumer     : [Consumer clientId=consumer-1, groupId=kafka-consumer] Subscribed to topic(s): kafka_test
+</code></pre>
+<p>这部分信息是 <strong>Consumer</strong> 的配置信息，不过<strong>类似</strong>的信息输出了 <strong>4</strong> 次是为什么呢？</p>
+<p>因为我们监听容器中指定的 topic 有 <strong>4</strong> 个分区，而默认情况下，每一个分区就要对应一个 Consumer，所以创建了 <strong>4</strong> 个 <strong>Consumer</strong> 。</p>
+<hr>
+<p>接着控制台输出了 <strong>Producer</strong> 的配置信息：</p>
+<pre><code class="language-bash">2020-04-30 20:26:05.284  INFO 19376 --- [nio-8080-exec-1] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [127.0.0.1:9092]
+	buffer.memory = 33554432
+	client.dns.lookup = default
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 3
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2020-04-30 20:26:05.294  INFO 19376 --- [nio-8080-exec-1] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 2.3.1
+2020-04-30 20:26:05.294  INFO 19376 --- [nio-8080-exec-1] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 18a913733fb71c01
+2020-04-30 20:26:05.294  INFO 19376 --- [nio-8080-exec-1] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1588249565294
+2020-04-30 20:26:05.413  INFO 19376 --- [ad | producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=producer-1] Cluster ID: 2lYAT_NgRw28lGEvmJe_eg
+</code></pre>
+<hr>
+<p>在之后就是我们刚刚发送的消息：</p>
+<pre><code>[ad | producer-1] c.n.kafka.controller.KafkaController     : 消息 [你好， 世界] 发送成功，当前 partition: 0，当前 offset: 6
+[ntainer#0-0-C-1] c.n.kafka.listener.KafkaMessageListener  : 收到消息： 你好， 世界
+[ad | producer-1] c.n.kafka.controller.KafkaController     : 消息 [hello kafka] 发送成功，当前 partition: 0，当前 offset: 1
+</code></pre>
+<p>可以看到 发送到 kafka_test2 中的消息 【hello kafka】 没有被消费。</p>
+<h3 id="toc_h3_9">4. @KafkaListener 的更多用法</h3>
+<hr>
+<p>我们还可以使用 <code>@KafkaListener</code> 同时监听多个 topic 消息：</p>
+<pre><code class="language-java">@KafkaListener(topics = {"kafka_test", "kafka_test2"}, groupId = "kafka-consumer")
+</code></pre>
+<p>以及通过 @Header 注解当前消息的来源信息：</p>
+<pre><code class="language-java">@KafkaListener(topics = {"kafka_test", "kafka_test2"}, groupId = "kafka-consumer")
+public void listen(@Payload String message,
+                   @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                   @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+    log.info("收到来自 topic: {}, partition: {} 的消息： {}", topic, partition, message);
+}
+</code></pre>
+<p>重新启动项目，控制台输出：</p>
+<pre><code>.... KafkaMessageListener  : 收到来自 topic: kafka_test2, partition: 0 的消息： hello kafka
+</code></pre>
+<p>由于之前 kafka_test2 中有一条消息没有消费，在本次监听中首先对这条消息进行了消费。接着再推送两条消息：</p>
+<pre><code>c.n.kafka.controller.KafkaController     : 消息 [ message from kafka_test] 发送成功，当前 partition: 0，当前 offset: 7
+c.n.kafka.listener.KafkaMessageListener  : 收到来自 topic: kafka_test, partition: 0 的消息：  message from kafka_test
+c.n.kafka.controller.KafkaController     : 消息 [ message from kafka_test2] 发送成功，当前 partition: 0，当前 offset: 3
+c.n.kafka.listener.KafkaMessageListener  : 收到来自 topic: kafka_test2, partition: 0 的消息：  message from kafka_test2
+</code></pre>
+<h3 id="toc_h3_10">5. 发送对象内容</h3>
+<hr>
+<p>定义一个订单实体类：</p>
+<pre><code>@Data
+public class Order implements Serializable {
+
+    private static final long serialVersionUID = -6330218506336380533L;
+
+    private Long id;
+
+    private String orderNo;
+
+    private List&lt;ShopDetail&gt; shopList;
+
+    private Integer amount;
+}
+</code></pre>
+<p>我们接下来要向 kafka 中推送订单消息。</p>
+<h4 id="toc_h4_11">5.1 JSON 方式</h4>
+<p>通过自定义配置 <code>JsonSerializer</code> 和 <code>JsonDeserializer</code> 对消息进行序列化和反序列化：</p>
+<pre><code class="language-java">@Bean
+public ProducerFactory&lt;String, Order&gt; producerFactory() {
+    Map&lt;String, Object&gt; configs = new HashMap&lt;&gt;(8);
+    configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+    configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+    return new DefaultKafkaProducerFactory&lt;&gt;(configs);
+}
+
+@Bean
+public ConsumerFactory&lt;String, Order&gt; consumerFactory() {
+    Map&lt;String, Object&gt; configs = new HashMap&lt;&gt;(4);
+    configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+    configs.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId());
+    configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
+    return new DefaultKafkaConsumerFactory&lt;&gt;(configs, new StringDeserializer(), new JsonDeserializer&lt;&gt;(Order.class));
+}
+
+@Bean
+public ConcurrentKafkaListenerContainerFactory&lt;String, Order&gt; factory() {
+    ConcurrentKafkaListenerContainerFactory&lt;String, Order&gt; factory = new ConcurrentKafkaListenerContainerFactory&lt;&gt;();
+    factory.setConsumerFactory(consumerFactory());
+    return factory;
+}
+</code></pre>
+<p>同时还要修改 <code>KafkaMessageListener</code> ：</p>
+<pre><code class="language-java">@KafkaListener(topics = {"kafka_test", "kafka_test2"}, groupId = "kafka-consumer")
+public void listen(@Payload Order order,
+                   @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                   @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+    log.info("收到来自 topic: {}, partition: {} 的订单消息： {}", topic, partition, order);
+}
+</code></pre>
+<p>这样配置完成后就可以发送和消费对象消息了。</p>
+<h4 id="toc_h4_12">5.2 String 方式（推荐）</h4>
+<p>相信大家都感觉到了，直接使用 JSON 序列化和反序列化的方式需要进行自定义配置。如果是针对多个不同的对象，就还需要更多的配置，总之做的就是吃力不讨好的事。</p>
+<p>反正都是以 JSON 的形式传递消息，那为什么不传递 <strong>JSON 格式的 字符串</strong> 呢，同样的效果，只需要进行一步转换，无需更多的配置：</p>
+<p>在 <code>KafkaController</code> 中添加接口：</p>
+<pre><code class="language-java">@Autowired
+private ObjectMapper objectMapper;
+
+@PostMapping("produce/order/{topic}")
+public void sendOrderToTopic(@PathVariable String topic, @RequestBody Order order) {
+    String message = null;
+    try {
+        message = objectMapper.writeValueAsString(order);
+    } catch (JsonProcessingException e) {
+        log.error("parse json error", e);
+    }
+    ListenableFuture&lt;SendResult&lt;String, String&gt;&gt; future = kafkaTemplate.send(topic, message);
+    buildCallBack(future, message);
+}
+</code></pre>
+<p>修改 <code>KafkaMessageListener</code> ：</p>
+<pre><code>@Autowired
+private ObjectMapper objectMapper;
+
+@KafkaListener(topics = {"kafka_test", "kafka_test2"}, groupId = "kafka-consumer")
+public void listen(@Payload String message,
+                   @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                   @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+    try {
+        Order order = objectMapper.readValue(message, Order.class);
+        log.info("收到来自 topic: {}, partition: {} 的订单消息： {}", topic, partition, order);
+    } catch (JsonProcessingException e) {
+        log.error("parse json error, json string: {}", message, e);
+    }
+}
+</code></pre>
+<p>发送一条这样的订单消息，查看控制台输出：</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-8bc6e334.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<pre><code>c.n.kafka.controller.KafkaController     : 消息 [{"id":1,"orderNo":"20200430102348389","shopList":[{"id":1,"productNo":"A10001","productName":"Iphone 11 Pro","price":899900,"buyNum":"1"},{"id":1,"productNo":"A10002","productName":"MacBook Pro","price":1899900,"buyNum":"1"}],"amount":2799800}] 发送成功，当前 partition: 0，当前 offset: 8
+c.n.kafka.listener.KafkaMessageListener  : 收到来自 topic: kafka_test, partition: 0 的订单消息： Order(id=1, orderNo=20200430102348389, shopList=[ShopDetail(id=1, productNo=A10001, productName=Iphone 11 Pro, price=899900, buyNum=1), ShopDetail(id=1, productNo=A10002, productName=MacBook Pro, price=1899900, buyNum=1)], amount=2799800)
+</code></pre>
+<p>相比较而言，在没有特殊需求的情况下，直接使用 String 的方式传递消息无疑是最为方便的。极其不推荐使用 <strong>JSON 方式</strong> 或者 <strong>自定义序列化</strong> 方式来处理消息。</p>
+<blockquote>
+<p>源码地址：<a href="https://github.com/NekoChips/SpringDemo/tree/master/23.springboot-Kafka" target="_blank">https://github.com/NekoChips/SpringDemo/tree/master/23.springboot-Kafka</a></p>
+</blockquote>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/04/30/1588254024454.html" target="_blank">https://nekochips.github.io/articles/2020/04/30/1588254024454.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="Spring Boot 使用 Kafka 生产和消费消息"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/04/30/1588254024454.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1588254024454"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nginx">Nginx</a>
+      <a class="item" href="https://nekochips.github.io/tags/Maven">Maven</a>
+      <a class="item" href="https://nekochips.github.io/tags/Git">Git</a>
+      <a class="item" href="https://nekochips.github.io/tags/Personal">Personal</a>
+      <a class="item" href="https://nekochips.github.io/tags/Docker">Docker</a>
+      <a class="item" href="https://nekochips.github.io/tags/Nexus">Nexus</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1588254024454",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1588254024454', "SpringBoot")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2866ms, 2020/05/23 21:10:14 -->

@@ -1,0 +1,1429 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+<meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/><meta name="theme-color" content="#3b3e43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no"/><title>Spring Boot 深入学习（1） —— Spring IOC 以及组件注册 - NekoChip's Blog</title><meta name="description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/><meta property="og:description" content="A small and beautiful blogging system. 一款小而美的博客系统。"/>    <meta name="keywords" content="Solo,Java,Docker,分布式,博客"/><link rel="dns-prefetch" href="https://nekochips.github.io"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://nekochips.github.io"><link rel="icon" type="image/png" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="apple-touch-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><link rel="shortcut icon" type="image/x-icon" href="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"><meta name="copyright" content="B3log"/><meta http-equiv="Window-target" content="_top"/><meta property="og:locale" content="zh_CN"/><meta property="og:title" content="Spring Boot 深入学习（1） —— Spring IOC 以及组件注册 - NekoChip's Blog"/><meta property="og:site_name" content="NekoChip&#39;s Blog"/><meta property="og:url"      content="https://nekochips.github.io/articles/2020/04/16/1587046127282.html?"/><meta property="og:image" content="https://pic.downk.cc/item/5e58629a6127cc0713151cf7.png"/><link rel="search" type="application/opensearchdescription+xml" title="Spring Boot 深入学习（1） —— Spring IOC 以及组件注册 - NekoChip's Blog" href="/opensearch.xml"><link href="https://nekochips.github.io/rss.xml" title="RSS" type="application/rss+xml" rel="alternate"/><link rel="manifest" href="https://nekochips.github.io/manifest.json">        <link rel="canonical" href="https://nekochips.github.io/articles/2020/04/16/1587046127282.html">      <link type="text/css" rel="stylesheet" href="https://nekochips.github.io/skins/solo-skin-emiya/css/base.css?1590239253314" charset="utf-8" />
+    <!--鼠标点击特效-->
+<script src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/custom/click.min.js"></script>
+<!--页面动态樱花-->
+<!--<script type="text/javascript"src="https://cdn.jsdelivr.net/gh/fz6m/Private-web@1.2/js/sakura/sakura-original.js"></script>-->  </head>
+  <body id="emiya_blog">
+  <nav class="navbar J_navbar">
+    <div class="navbar__container navbar__container--mobile">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <button type="button" class="toggle J_navbar_toggle" data-for="toggle-items">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="toggle-items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+
+    <div class="navbar__container navbar__container--web">
+      <a class="brand" href="/">NekoChip's Blog</a>
+      <div class="items">
+        <ul>  <li><a href="https://www.chenyangjie.com.cn" target="_self">首页</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/archives.html" target="_parent">存档</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/links.html" target="_parent">链接</a></li>
+  <li><a href="https://github.com/NekoChips?tab=repositories" target="_blank">我的开源</a></li>
+  <li><a href="https://www.chenyangjie.com.cn/tags.html" target="_parent">标签墙</a></li>
+  <li><a href="https://nekochips.github.io/start">立即使用</a></li>
+</ul>
+      </div>
+    </div>
+  </nav>
+  <div class="custom_header" style="background-image: url('/skins/solo-skin-emiya/images/header.jpg')"></div>
+    <div class="container-fluid">
+      <main id="pjax" class="container--left">
+        
+  <header class="custom_header">
+    <div class="custom_header__container">
+      <div class="custom_header__articleMeta">
+        <h1 class="articleMeta__title">Spring Boot 深入学习（1） —— Spring IOC 以及组件注册</h1>
+        <div class="articleMeta__info">
+          <span class="author">@NekoChips &nbsp;2020-04-16</span>
+          <span class="comments">
+            <a href="https://nekochips.github.io/articles/2020/04/16/1587046127282.html#comments">
+              <span data-uvstatcmt="1587046127282">0</span> 
+              评论
+            </a>
+          </span>
+          <span class="views">
+            <span data-uvstaturl="https://nekochips.github.io/articles/2020/04/16/1587046127282.html">0</span> 浏览
+          </span>
+        </div>
+        <div class="articleMeta__tags">
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>&nbsp;
+          <a class="tagBtn" rel="tag" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>&nbsp;
+        </div>
+      </div>
+    </div>
+  </header>
+        <div class="article__content J_article__content vditor-reset">
+          <p>随着 Spring 家族成员的增加，Spring 系列所提供的功能也是越来越完善。为了能够更好地使用 Spring，理解它的实现原理是必不可少的，那么阅读它的源码无疑是最直接的方式。</p>
+<p>为了方便起见，源码学习系列我们使用 <code>Spring Boot 2.2.6.RELEASE</code> 来构建基本项目架构，在项目中逐步深入学习 Spring 。</p>
+<h3 id="toc_h3_0">1. 什么是 IOC ？</h3>
+<hr>
+<blockquote>
+<p>IOC ，Inversion of Control 直译过来就是我们常说的 “控制反转” 。IOC 是面向对象框架中的一个概念， 通常我们也称之为 IOC 容器。这里还有一个重要的概念叫做 <strong>依赖注入</strong> (Dependency Injection)，而在 Spring 中 IOC 和 DI 是密不可分的。</p>
+</blockquote>
+<p>关于 IOC 和 DI 概念这一块，我也是直到在知乎上看到一个回答才算是有个较为明确的理解。这里分享给大家。源于知乎：<a href="https://www.zhihu.com/question/23277575/answer/169698662" target="_blank">SpringIOC 有什么好处？</a></p>
+<h3 id="toc_h3_1">2. Spring 是怎么注册 Bean 的？</h3>
+<hr>
+<p>了解了 IOC 和 DI 后，我们再来看看 Spring 是怎么将 Bean 注册到 IOC 容器中的。</p>
+<h4 id="toc_h4_2">2.1 了解 ApplicationContext</h4>
+<p>下面这段代码想必大家都不陌生。这是我们最开始接触 Spring 时示例中给出的代码。</p>
+<pre><code class="language-java">public static void main(String[] args) {
+    	ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-context.xml");
+}
+</code></pre>
+<p>而其中的 <code>ApplicationContext</code> 对象就是我们所说的 <strong>IOC 容器</strong>。我们先看一下它的继承结构。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-c8caf822.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>上图中 <code>BeanFactory</code> 是 Spring 的核心，而 <code>ApplicationContext</code> 是它的一个子接口。</p>
+<p>使用过 Spring 的都知道 Spring 为我们提供了三种 Bean 的装配方式：</p>
+<ul>
+<li>XML 文件</li>
+<li>在 Java 代码中显示装配</li>
+<li>隐式的发现机制和自动装配</li>
+</ul>
+<blockquote>
+<p>XML 文件的方式现在几乎已经没有人在使用了，而官方也推荐使用 Java Config 的方式，所以这里我们就不细谈 XML 方式了。</p>
+</blockquote>
+<p><code>ApplicationContext</code> 有众多子类实现，其中 <code>ClassPathXmlApplicationContext</code> 、<code>AnnotationConfigApplicationContext</code> 是我们接触得比较多的。</p>
+<p>从类名中可以看出 <code>ClassPathXmlApplicationContext</code> 是通过 XML 文件的方式加载上下文信息的。而 <code>AnnotationConfigApplicationContext</code> 是通过注解的方式加载上下文信息的。</p>
+<h4 id="toc_h4_3">2.2 Spring 注解方式注册组件过程</h4>
+<p>XML 文件的方式我们这里不做讨论，重点看一下注解的方式是如何完成 Bean 的注册的。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-56cbfff2.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="AnnotationConfigApplicationContext 继承结构.png"></p>
+<p>上图中可以看到 <code>AnnotationConfigApplicationContext</code> 继承自 <code>GenericApplicationContext</code>， 而其又实现了 <code>BeanDefinitonRegistry</code> 接口。该接口中有一个方法，这个方法注释中说得很明白，它就是用来注册 Bean 的。</p>
+<pre><code class="language-java">	/**
+	 * Register a new bean definition with this registry.
+	 * Must support RootBeanDefinition and ChildBeanDefinition.
+	 * @param beanName the name of the bean instance to register
+	 * @param beanDefinition definition of the bean instance to register
+	 * @throws BeanDefinitionStoreException if the BeanDefinition is invalid
+	 * @throws BeanDefinitionOverrideException if there is already a BeanDefinition
+	 * for the specified bean name and we are not allowed to override it
+	 * @see GenericBeanDefinition
+	 * @see RootBeanDefinition
+	 * @see ChildBeanDefinition
+	 */
+	void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+			throws BeanDefinitionStoreException;
+</code></pre>
+<p>在 <code>DefaultListableBeanFactory</code> 中实现了这个方法，我们一起看一下</p>
+<pre><code class="language-java">	/** Map of bean definition objects, keyed by bean name. */
+	private final Map&lt;String, BeanDefinition&gt; beanDefinitionMap = new ConcurrentHashMap&lt;&gt;(256);
+	/** List of bean definition names, in registration order. */
+	private volatile List&lt;String&gt; beanDefinitionNames = new ArrayList&lt;&gt;(256);
+
+	@Override
+	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+			throws BeanDefinitionStoreException {
+		// ......
+		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+		if (existingDefinition != null) {
+			// ......
+		else {
+			if (hasBeanCreationStarted()) {
+			// ......
+			else {
+				// Still in startup registration phase
+				this.beanDefinitionMap.put(beanName, beanDefinition);
+				this.beanDefinitionNames.add(beanName);
+				removeManualSingletonName(beanName);
+			}
+			this.frozenBeanDefinitionNames = null;
+		}
+
+		if (existingDefinition != null || containsSingleton(beanName)) {
+			resetBeanDefinition(beanName);
+		}
+	}
+</code></pre>
+<p>我们启动项目，开启 debug 。由于 Spring 中已经写了很多组件并交于Spring 容器管理，所以在启动项目的时候，这些类就会自动注册到 Spring 容器中。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-70194ffa.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="image.png"></p>
+<p>我们再返回去看 <code>GenericApplicationContext</code> 和 <code>AnnotationConfigApplicationContext</code></p>
+<p><strong><code>GenericApplicationContext</code> 部分源码</strong></p>
+<pre><code class="language-java">public class GenericApplicationContext extends AbstractApplicationContext implements BeanDefinitionRegistry {
+
+	private final DefaultListableBeanFactory beanFactory;
+
+	@Nullable
+	private ResourceLoader resourceLoader;
+
+	private boolean customClassLoader = false;
+
+	private final AtomicBoolean refreshed = new AtomicBoolean();
+
+
+	/**
+	 * Create a new GenericApplicationContext.
+	 * @see #registerBeanDefinition
+	 * @see #refresh
+	 */
+	public GenericApplicationContext() {
+		this.beanFactory = new DefaultListableBeanFactory();
+	}
+
+	// ......
+
+}
+</code></pre>
+<p><strong><code>AnnotationConfigApplicationContext</code> 组件注册核心源码</strong></p>
+<pre><code class="language-java">public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
+
+	private final AnnotatedBeanDefinitionReader reader;
+
+	private final ClassPathBeanDefinitionScanner scanner;
+
+
+	/**
+	 * Create a new AnnotationConfigApplicationContext that needs to be populated
+	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
+	 */
+	public AnnotationConfigApplicationContext() {
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	/**
+	 * Create a new AnnotationConfigApplicationContext with the given DefaultListableBeanFactory.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	/**
+	 * Create a new AnnotationConfigApplicationContext, deriving bean definitions
+	 * from the given component classes and automatically refreshing the context.
+	 * @param componentClasses one or more component classes — for example,
+	 * {@link Configuration @Configuration} classes
+	 */
+	public AnnotationConfigApplicationContext(Class&lt;?&gt;... componentClasses) {
+		this();
+		register(componentClasses);
+		refresh();
+	}
+
+	/**
+	 * Create a new AnnotationConfigApplicationContext, scanning for components
+	 * in the given packages, registering bean definitions for those components,
+	 * and automatically refreshing the context.
+	 * @param basePackages the packages to scan for component classes
+	 */
+	public AnnotationConfigApplicationContext(String... basePackages) {
+		this();
+		scan(basePackages);
+		refresh();
+	}
+	// ......
+
+}
+</code></pre>
+<p><strong><code>AnnotatedBeanDefinitionReader</code> 组件注册核心源码</strong></p>
+<pre><code class="language-java">public class AnnotatedBeanDefinitionReader {
+	/**
+	 * Register one or more component classes to be processed.
+	 * &lt;p&gt;Calls to {@code register} are idempotent; adding the same
+	 * component class more than once has no additional effect.
+	 * @param componentClasses one or more component classes,
+	 * e.g. {@link Configuration @Configuration} classes
+	 */
+	public void register(Class&lt;?&gt;... componentClasses) {
+		for (Class&lt;?&gt; componentClass : componentClasses) {
+			registerBean(componentClass);
+		}
+	}
+
+	/**
+	 * Register a bean from the given bean class, deriving its metadata from
+	 * class-declared annotations.
+	 * @param beanClass the class of the bean
+	 */
+	public void registerBean(Class&lt;?&gt; beanClass) {
+		doRegisterBean(beanClass, null, null, null, null);
+	}
+
+	/**
+	 * Register a bean from the given bean class, deriving its metadata from
+	 * class-declared annotations.
+	 * @param beanClass the class of the bean
+	 * @param name an explicit name for the bean
+	 * @param qualifiers specific qualifier annotations to consider, if any,
+	 * in addition to qualifiers at the bean class level
+	 * @param supplier a callback for creating an instance of the bean
+	 * (may be {@code null})
+	 * @param customizers one or more callbacks for customizing the factory's
+	 * {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
+	 * @since 5.0
+	 */
+	private &lt;T&gt; void doRegisterBean(Class&lt;T&gt; beanClass, @Nullable String name,
+			@Nullable Class&lt;? extends Annotation&gt;[] qualifiers, @Nullable Supplier&lt;T&gt; supplier,
+			@Nullable BeanDefinitionCustomizer[] customizers) {
+
+		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
+			return;
+		}
+
+		abd.setInstanceSupplier(supplier);
+		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
+		abd.setScope(scopeMetadata.getScopeName());
+		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
+
+		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		if (qualifiers != null) {
+			for (Class&lt;? extends Annotation&gt; qualifier : qualifiers) {
+				if (Primary.class == qualifier) {
+					abd.setPrimary(true);
+				}
+				else if (Lazy.class == qualifier) {
+					abd.setLazyInit(true);
+				}
+				else {
+					abd.addQualifier(new AutowireCandidateQualifier(qualifier));
+				}
+			}
+		}
+		if (customizers != null) {
+			for (BeanDefinitionCustomizer customizer : customizers) {
+				customizer.customize(abd);
+			}
+		}
+
+		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
+	}
+}
+</code></pre>
+<blockquote>
+<p><code>AnnotatedBeanDefinitionReader</code> 中 <code>doRegisterBean()</code> 方法前面都是配置 <code>BeanDifinition</code> 的一些属性，最后调用了 <code>BeanDefinitionReaderUtils.registerBeanDefinition</code> 传入封装的 <code>BeanDefinitionHolder</code> 和 <code>BeanDefinitionRegistry</code> 对象。再来看看 <code>BeanDefinitionReaderUtils</code> 做了些什么。</p>
+</blockquote>
+<p><strong><code>BeanDefinitionReaderUtils</code> 组件注册核心源码</strong></p>
+<pre><code class="language-java">public abstract class BeanDefinitionReaderUtils {
+
+	// ......
+
+	/**
+	 * Register the given bean definition with the given bean factory.
+	 * @param definitionHolder the bean definition including name and aliases
+	 * @param registry the bean factory to register with
+	 * @throws BeanDefinitionStoreException if registration failed
+	 */
+	public static void registerBeanDefinition(
+			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
+			throws BeanDefinitionStoreException {
+
+		// Register bean definition under primary name.
+		String beanName = definitionHolder.getBeanName();
+		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
+
+		// Register aliases for bean name, if any.
+		String[] aliases = definitionHolder.getAliases();
+		if (aliases != null) {
+			for (String alias : aliases) {
+				registry.registerAlias(beanName, alias);
+			}
+		}
+	}
+
+	// ......
+}
+</code></pre>
+<blockquote>
+<p>可以看到 <code>registerBeanDefinition()</code> 方法调用了 <code>BeanDefinitionRegistry</code> 对象的 <code>registerBeanDefinition()</code> 方法，我们上面提到的 <code>DefaultListableBeanFactory</code> 是 <code>BeanDefinitionRegistry</code> 最为重要的一个实现类，Spring 中无疑也是使用了 <code>DefaultListableBeanFactory</code> 对象的 <code>registerBeanDefinition()</code> 方法来实现组件注册的。（源码验证过程在本小结开始处有提到过，记忆模糊的朋友可以返回去看看）</p>
+</blockquote>
+<p>**看到这里我们来总结一下，Spring 是如何通过注解方式注册 Bean 的：<br>
+**</p>
+<ol>
+<li><strong>创建 <code>AnnotationConfigApplicationContext</code> 容器。</strong></li>
+<li><strong>调用 <code>AnnotatedBeanDefinitionReader</code>的 <code>register()</code> 方法，最终执行至 <code>doRegisterBean()</code> 方法。</strong></li>
+<li><strong><code>doRegisterBean()</code> 方法调用了 <code>BeanDefinitionRegistry</code> 对象的 <code>registerBeanDefinition()</code> 方法。</strong></li>
+<li><strong>通过 <code>BeanDefinitionRegistry</code> 的实现类  <code>DefaultListableBeanFactory</code> 中实现的 <code>register()</code> 方法将添加注解的组件注册到 <code>AnnotationConfigApplicationContext</code> 容器中。</strong></li>
+</ol>
+<h4 id="toc_h4_4">2.3 Spring Boot 注解方式注册组件过程</h4>
+<p>因为我们在项目中使用的是 <strong>Spring Boot</strong>， 而 <strong>Spring Boot</strong> 中并非是使用 <code>AnnotationConfigApplicationContext</code> 来注册、管理 Bean 的。我们可以通过 <code>SpringApplication</code> 的源码来探查一番，这里只贴出关键代码。</p>
+<pre><code class="language-java">
+public class SpringApplication {
+
+	/**
+	 * The class name of application context that will be used by default for non-web
+	 * environments.
+	 */
+	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
+			+ "annotation.AnnotationConfigApplicationContext";
+
+	/**
+	 * The class name of application context that will be used by default for web
+	 * environments.
+	 */
+	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
+			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
+
+	/**
+	 * The class name of application context that will be used by default for reactive web
+	 * environments.
+	 */
+	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
+			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
+
+	/**
+	 * Run the Spring application, creating and refreshing a new
+	 * {@link ApplicationContext}.
+	 * @param args the application arguments (usually passed from a Java main method)
+	 * @return a running {@link ApplicationContext}
+	 */
+	public ConfigurableApplicationContext run(String... args) {
+		// ......
+
+		try {
+			// ......
+			context = createApplicationContext();
+			// ......
+		}
+		catch (Throwable ex) {
+			handleRunFailure(context, ex, exceptionReporters, listeners);
+			throw new IllegalStateException(ex);
+		}
+
+		// ......
+		return context;
+	}
+
+	/**
+	 * Strategy method used to create the {@link ApplicationContext}. By default this
+	 * method will respect any explicitly set application context or application context
+	 * class before falling back to a suitable default.
+	 * @return the application context (not yet refreshed)
+	 * @see #setApplicationContextClass(Class)
+	 */
+	protected ConfigurableApplicationContext createApplicationContext() {
+		Class&lt;?&gt; contextClass = this.applicationContextClass;
+		if (contextClass == null) {
+			try {
+				switch (this.webApplicationType) {
+				case SERVLET:
+					contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);
+					break;
+				case REACTIVE:
+					contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
+					break;
+				default:
+					contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
+				}
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(
+						"Unable create a default ApplicationContext, please specify an ApplicationContextClass", ex);
+			}
+		}
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
+	}
+}
+</code></pre>
+<p>上面的代码还是有点长，总的来说就是我们在启动类中调用 run 方法时，Spring Boot 会根据不同的配置创建相对应的 context 容器，我们不做任何配置启动 Spring Boot 然后开启断点观察一下。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-92e54151.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="Spring Boot 创建容器.png"></p>
+<p>可以看到 Spring Boot 在启动时创建了一个 <code>AnnotationConfigServletWebServerApplicationContext</code> 容器（名字是有点长 😄 ），再看一下它的继承结构，从中可以看到熟悉的老朋友 <code>GenericApplicationContext</code>，剩下的过程就和 Spring 是大同小异了。下面我们就源码来分析一下：</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-4a7182aa.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="AnnotationConfigServletWebServerApplicationContext 继承结构.png"></p>
+<p><strong><code>AnnotationConfigServletWebServerApplicationContext</code> 组件注册核心源码</strong></p>
+<pre><code class="language-java">public class AnnotationConfigServletWebServerApplicationContext extends ServletWebServerApplicationContext
+		implements AnnotationConfigRegistry {
+
+	private final AnnotatedBeanDefinitionReader reader;
+
+	private final ClassPathBeanDefinitionScanner scanner;
+
+	private final Set&lt;Class&lt;?&gt;&gt; annotatedClasses = new LinkedHashSet&lt;&gt;();
+
+	private String[] basePackages;
+
+	public AnnotationConfigServletWebServerApplicationContext() {
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	public AnnotationConfigServletWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	public AnnotationConfigServletWebServerApplicationContext(Class&lt;?&gt;... annotatedClasses) {
+		this();
+		register(annotatedClasses);
+		refresh();
+	}
+
+	public AnnotationConfigServletWebServerApplicationContext(String... basePackages) {
+		this();
+		scan(basePackages);
+		refresh();
+	}
+
+	// ......
+
+	@Override
+	public final void register(Class&lt;?&gt;... annotatedClasses) {
+		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
+		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
+	}
+	@Override
+	public final void refresh() throws BeansException, IllegalStateException {
+		try {
+			super.refresh();
+		}
+		catch (RuntimeException ex) {
+			stopAndReleaseWebServer();
+			throw ex;
+		}
+	}
+
+	@Override
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		super.postProcessBeanFactory(beanFactory);
+		if (this.basePackages != null &amp;&amp; this.basePackages.length &gt; 0) {
+			this.scanner.scan(this.basePackages);
+		}
+		if (!this.annotatedClasses.isEmpty()) {
+			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
+		}
+	}
+}
+</code></pre>
+<blockquote>
+<p>是不是有股子熟悉的感觉。没错！<code>AnnotationConfigServletWebServerApplicationContext</code> 中组件注册尽管兜兜转转了很久但最终依旧是要使用 <code>AnnotatedBeanDefinitionReader</code> 的 <code>register()</code> 方法完成组件注册，后面的过程就和 Spring 中是一模一样的，这里就不赘述了。</p>
+</blockquote>
+<p><strong>看到这里，我们也来总结一下 Spring Boot 是如何通过注解注册 Bean 的：</strong></p>
+<ol>
+<li><strong>启动类中调用 <code>SpringApplication.run()</code> 方法。</strong></li>
+<li><strong><code>SpringApplication</code> 根据项目中的配置创建对应的容器，一般情况下为 <code>AnnotationConfigServletWebServerApplicationContext</code>，项目中使用 <code>WebFlux</code> 组件时创建的是 <code>AnnotationConfigReactiveWebServerApplicationContext</code> 。</strong></li>
+<li><strong>调用 <code>AnnotatedBeanDefinitionReader</code>的 <code>register()</code> 方法，最终执行至 <code>doRegisterBean()</code> 方法。</strong></li>
+<li><strong><code>doRegisterBean() 方法调用了 BeanDefinitionRegistry 对象的 registerBeanDefinition() 方法。</code></strong></li>
+<li><strong>通过 <code>BeanDefinitionRegistry</code> 的实现类  <code>DefaultListableBeanFactory</code> 中实现的 <code>register()</code> 方法将添加注解的组件注册到 <code>AnnotationConfigApplicationContext</code> 容器中。</strong></li>
+</ol>
+<h3 id="toc_h3_5">3. 相关注解</h3>
+<hr>
+<p>通过上面部分源码的分析，我们大概了解了 <strong>Spring</strong> 以及 <strong>Spring Boot</strong> 是如何通过注解的方式注册 Bean 的。但是从源码中有很多对象我们可能还不了解，下面我们通过 Spring 提供的注解来认识一下。</p>
+<h4 id="toc_h4_6">3.1 @Component 注解</h4>
+<p>添加了该注解的类将被作为一个 “<strong>组件</strong>” 交于 Spring 容器进行管理。而在众多注解中，都是有着 <code>@Component</code> 的身影。如 <code>@Configuration</code> 注解、<code>@Service</code> 注解、<code>@Controller</code> 注解 等等。这些查看注解的源码便可得知。</p>
+<p>我们来测试一下，先创建一个 <code>WebConfig</code> 类。</p>
+<pre><code class="language-java">public class WebConfig {
+  
+}
+</code></pre>
+<p>我们在启动类中尝试注册并获取 <code>WebConfig</code> 对象， 启动项目。</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(context.getBean("webConfig").getClass().getName());
+    }
+}
+</code></pre>
+<p><img src="https://img.hacpai.com/file/2020/04/image-cb128bf9.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="no_bean_error.png"></p>
+<p>不出所料，果然报错了。下面我们在 <code>WebConfig</code> 上添加 <code>@Configuration</code> 注解，再次启动项目。</p>
+<pre><code class="language-java">@Configuration
+public class WebConfig {
+  
+}
+</code></pre>
+<p>控制台输出如下信息，很显然我们通过添加注解的方式将 WebConfig 注册到了 Spring 容器中。</p>
+<pre><code>com.learn.neko.config.WebConfig$$EnhancerBySpringCGLIB$$5b10b1b2
+</code></pre>
+<h4 id="toc_h4_7">3.2 @Bean 注解</h4>
+<p>除了使用 <code>@Component</code> 注解的方式将进行 Bean 的装配，我们还可以使用 <code>@Bean</code> 注解<strong>显示地对一个 Bean 对象进行装配</strong>。</p>
+<p>创建一个 <code>Person</code> 类，我们在 WebConfig 中使用 @Bean 注解对其对象进行显示地装配。</p>
+<pre><code class="language-java">public class Person implements Serializable {
+
+    private static final long serialVersionUID = -2229740821899298181L;
+
+    private String name;
+
+    private int age;
+
+    public Person() {
+    }
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+  
+    // 省略 getter、setter、toString
+}
+</code></pre>
+<pre><code class="language-java">@Configuration
+public class WebConfig {
+  
+    @Bean
+    public Person person() {
+        return new Person("NekoChips", 18);
+    }
+}
+</code></pre>
+<p>修改一下启动类，获取 Person 对象，然后启动项目。</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(context.getBean("person"));
+    }
+}
+</code></pre>
+<p>控制台输出结果：</p>
+<pre><code class="language-java">Person{name='NekoChips', age=18}
+</code></pre>
+<p>这说明 <code>@Bean</code> 注解也可以将对象交给 Spring 容器进行管理，且<strong>默认名称为方法名。</strong></p>
+<p>我们可以在 <code>@Bean</code> 注解中添加参数来指定对象注册到容器中的别名。</p>
+<pre><code class="language-java">@Configuration
+public class WebConfig {
+  
+    @Bean(name = "human")
+    public Person person() {
+        return new Person("NekoChips", 18);
+    }
+}
+</code></pre>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(context.getBean("human"));
+    }
+}
+</code></pre>
+<pre><code class="language-java">Person{name='NekoChips', age=18}
+</code></pre>
+<h4 id="toc_h4_8">3.3 @Component 和 @Bean 的区别</h4>
+<blockquote>
+<p>有朋友可能会问：既然 @Component 和 @Bean 注解都能往 Spring 容器中注册对象，它们的区别是什么呢？</p>
+</blockquote>
+<p>从上面的例子中我们不难看出， <strong>@Component 注解是作用在类上的，@Bean 注解是作用在方法上的</strong>。这一点我们同样可以从它们的源码中得出这个结论。</p>
+<blockquote>
+<p>那我们应该分别在什么情况下使用它们呢？</p>
+</blockquote>
+<p>前面也说到过，Spring 提供的众多注解中有些注解已经包含了 @Component 注解。<strong>对于我们自己编写的类，可以添加其相应的注解进行注册</strong>。如：在 Controller 类上添加 @Controller 注解，在 Service 类上添加 @Service 注解，在 Dao 类上添加 @Repository 注解，在 Config 配置类上添加 @Configuration 注解等等。对于不能明确归类的自定义类，我们可以添加 @Component 注解完成注册。</p>
+<p>@Bean 注解可以将类的对象注册至 Spring 容器中。出于这个功能，<strong>我们可以使用它向 Spring 容器中注册不是我们自己来维护的一些类</strong>，比如 Spring 中的一些类并未使用 @Component 注解主动注册到 Spring 容器中，而我们项目中需要使用到这些类就要使用 @Bean 注解将其对象注入到 Spring 容器中了。</p>
+<p><strong>总结</strong>：<strong>也就是说 @Component 使用在我们自己创建维护的类上，而 @Bean 注解更多的是用于注册不是我们自己维护的类对象的。</strong></p>
+<h4 id="toc_h4_9">3.4 @ComponentScan 注解</h4>
+<p>该注解也称为 “<strong>组件扫描</strong>” 注解，功能是<strong>被该注解扫描到的类才可以注册到 Spring 容器中</strong>。什么意思呢？也就是说就算我们使用了 <code>@Component</code> 来注册对象，但也不一定生效。一起看一下它的源码：</p>
+<pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+@Repeatable(ComponentScans.class)
+public @interface ComponentScan {
+
+	/**
+	 * Alias for {@link #basePackages}.
+	 * &lt;p&gt;Allows for more concise annotation declarations if no other attributes
+	 * are needed — for example, {@code @ComponentScan("org.my.pkg")}
+	 * instead of {@code @ComponentScan(basePackages = "org.my.pkg")}.
+	 */
+	@AliasFor("basePackages")
+	String[] value() default {};
+
+	/**
+	 * Base packages to scan for annotated components.
+	 * &lt;p&gt;{@link #value} is an alias for (and mutually exclusive with) this
+	 * attribute.
+	 * &lt;p&gt;Use {@link #basePackageClasses} for a type-safe alternative to
+	 * String-based package names.
+	 */
+	@AliasFor("value")
+	String[] basePackages() default {};
+
+	// ......
+
+	/**
+	 * Specifies which types are eligible for component scanning.
+	 * &lt;p&gt;Further narrows the set of candidate components from everything in {@link #basePackages}
+	 * to everything in the base packages that matches the given filter or filters.
+	 * &lt;p&gt;Note that these filters will be applied in addition to the default filters, if specified.
+	 * Any type under the specified base packages which matches a given filter will be included,
+	 * even if it does not match the default filters (i.e. is not annotated with {@code @Component}).
+	 * @see #resourcePattern()
+	 * @see #useDefaultFilters()
+	 */
+	Filter[] includeFilters() default {};
+
+	/**
+	 * Specifies which types are not eligible for component scanning.
+	 * @see #resourcePattern
+	 */
+	Filter[] excludeFilters() default {};
+
+	// ......
+}
+</code></pre>
+<p>这其中有几个比较重要的属性：</p>
+<ul>
+<li>basePackages：指定扫描的包路径。</li>
+<li>includeFilters：指定能够被扫描到的类型。</li>
+<li>excludeFilters：指定不能被扫描到的类型。</li>
+</ul>
+<p>我们来看一下它们各自的功能。</p>
+<p>首先看一当前项目的目录结构，其中的类上都添加了相应的注册注解。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-5fe63f27.png?imageView2/2/w/1280/format/jpg/interlace/1/q/100" alt="spring-source 目录结构.png"></p>
+<p><strong>@ComponentScan 注解默认扫描的是与启动类同级的目录</strong>，在这个项目中也就是 com.learn.neko</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(String.format("WebConfig: %s", context.getBean("webConfig")));
+        System.out.println(String.format("Person: %s" , context.getBean("human")));
+        System.out.println(String.format("PersonService: %s", context.getBean("personService")));
+        System.out.println(String.format("PersonController: %s", context.getBean("personController")));
+    }
+}
+</code></pre>
+<pre><code class="language-java">WebConfig: com.learn.neko.config.WebConfig$$EnhancerBySpringCGLIB$$b676d4dc@1894593a
+Person: Person{name='NekoChips', age=18}
+PersonService: com.learn.neko.service.PersonService@14b0e127
+PersonController: com.learn.neko.controller.PersonController@10823d72
+</code></pre>
+<p>我们指定扫描的包路径为 <code>com.learn.neko.config</code>，可以看到 Spring 容器中只注册了 config 目录下的 Bean。</p>
+<pre><code>@SpringBootApplication
+@ComponentScan(basePackages = "com.learn.neko.config")
+public class DemoApplication {
+	// .....
+}
+</code></pre>
+<pre><code class="language-java">WebConfig: com.learn.neko.config.WebConfig$$EnhancerBySpringCGLIB$$67cd961e@5a2fa51f
+Person: Person{name='NekoChips', age=18}
+Exception in thread "main" org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'personService' available
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanDefinition(DefaultListableBeanFactory.java:808)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getMergedLocalBeanDefinition(AbstractBeanFactory.java:1279)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:297)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1108)
+	at com.learn.neko.DemoApplication.main(DemoApplication.java:22)
+</code></pre>
+<blockquote>
+<p>注意：@ComponentScan 注解极为重要，扫描路径配置不当很有可能导致项目大量报错甚至无法启动。</p>
+</blockquote>
+<p>在使用 <code>includeFilters</code> 和 <code>excludeFilters</code> 属性前，我们先一起看一下  <strong><code>@ComponentScan</code> 的内部注解 <code>@Filter</code></strong></p>
+<pre><code class="language-java">	@Retention(RetentionPolicy.RUNTIME)
+	@Target({})
+	@interface Filter {
+
+		/**
+		 * The type of filter to use.
+		 * &lt;p&gt;Default is {@link FilterType#ANNOTATION}.
+		 * @see #classes
+		 * @see #pattern
+		 */
+		FilterType type() default FilterType.ANNOTATION;
+		// ......
+	}
+</code></pre>
+<p>再看一下 <code>FilterType</code></p>
+<pre><code class="language-java">public enum FilterType {
+
+	/**
+	 * Filter candidates marked with a given annotation.
+	 * @see org.springframework.core.type.filter.AnnotationTypeFilter
+	 */
+	ANNOTATION,
+
+	/**
+	 * Filter candidates assignable to a given type.
+	 * @see org.springframework.core.type.filter.AssignableTypeFilter
+	 */
+	ASSIGNABLE_TYPE,
+
+	/**
+	 * Filter candidates matching a given AspectJ type pattern expression.
+	 * @see org.springframework.core.type.filter.AspectJTypeFilter
+	 */
+	ASPECTJ,
+
+	/**
+	 * Filter candidates matching a given regex pattern.
+	 * @see org.springframework.core.type.filter.RegexPatternTypeFilter
+	 */
+	REGEX,
+
+	/** Filter candidates using a given custom
+	 * {@link org.springframework.core.type.filter.TypeFilter} implementation.
+	 */
+	CUSTOM
+
+}
+</code></pre>
+<p>FilterType 中有很多类型，注释中说得也比较清楚了：</p>
+<ul>
+<li>ANNOTATION：注解类型。</li>
+<li>ASSIGNABLE_TYPE：指定类的类型。</li>
+<li>ASPECTJ：ASPECTJ 表达式类型。</li>
+<li>REGEX：正则表达式类型。</li>
+<li>CUSTOM：自定义类型。</li>
+</ul>
+<p>使用 <code>excludeFilters</code> 指定不被扫描的类。为了不报错使用 <code>containsBean(</code>) 作为验证。</p>
+<pre><code class="language-java">@SpringBootApplication
+@ComponentScan(value = "com.learn.neko",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class)})
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+
+            System.out.println(String.format("WebConfig: %s", context.containsBean("webConfig")));
+            System.out.println(String.format("Person: %s", context.containsBean("human")));
+            System.out.println(String.format("PersonService: %s", context.containsBean("personService")));
+            System.out.println(String.format("PersonController: %s", context.containsBean("personController")));
+    }
+}
+</code></pre>
+<pre><code>WebConfig: false
+Person: false
+PersonService: true
+PersonController: true
+</code></pre>
+<p>使用 <code>includeFilters</code> 指定被扫描的类，使用 <code>useDefaultFilters = false</code> 关闭 Spring Boot 默认的扫描策略。</p>
+<pre><code class="language-java">@SpringBootApplication
+@ComponentScan(value = "com.learn.neko",
+        includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class)},
+        useDefaultFilters = false)
+public class DemoApplication {
+	// ......
+    }
+}
+</code></pre>
+<pre><code>WebConfig: true
+Person: true
+PersonService: false
+PersonController: false
+</code></pre>
+<p>指定扫描类型为 ANNOTATION ，如下代码即排除被 @Controller 和 @Service 注解标识的类。</p>
+<pre><code>@SpringBootApplication
+@ComponentScan(value = "com.learn.neko",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = {Controller.class, Service.class})})public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+
+        System.out.println(String.format("WebConfig: %s", context.containsBean("webConfig")));
+        System.out.println(String.format("Person: %s", context.containsBean("human")));
+        System.out.println(String.format("PersonService: %s", context.containsBean("personService")));
+        System.out.println(String.format("PersonController: %s", context.containsBean("personController")));
+    }
+}
+</code></pre>
+<pre><code>WebConfig: true
+Person: true
+PersonService: false
+PersonController: false
+</code></pre>
+<p>我们还能自定义扫描策略，只需实现 <code>TypeFilter</code> 接口即可。</p>
+<pre><code class="language-java">public class MyTypeFilter implements TypeFilter {
+    @Override
+    public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+
+        // 正在被扫描的类的注解信息
+        AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+        // 正在被扫描的类的类信息
+        ClassMetadata classMetadata = metadataReader.getClassMetadata();
+        // 正在被扫描的类的资源路径信息
+        Resource resource = metadataReader.getResource();
+
+        // 该过滤策略为类名中包含 Person 的类
+       return classMetadata.getClassName().contains("Person");
+    }
+}
+</code></pre>
+<p>指定自定义扫描策略 <code>MyFilterType</code></p>
+<pre><code class="language-java">@SpringBootApplication
+@ComponentScan(value = "com.learn.neko",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.CUSTOM, classes = MyTypeFilter.class)})
+public class DemoApplication {
+	// ......
+}
+</code></pre>
+<pre><code>WebConfig: true
+Person: true
+PersonService: false
+PersonController: false
+</code></pre>
+<blockquote>
+<p>这里 Spring 容器中之所以还有 Person 对象是因为我们前面是通过 @Bean 注解注册了一个 Person 对象，而 @ComponentScan 并不能影响 @Bean 注解注册的对象。</p>
+</blockquote>
+<h4 id="toc_h4_10">3.5 @Scope 注解</h4>
+<p>该注解的作用是<strong>指定组件的作用域</strong> 。<strong>默认情况下 Spring 容器中注册的每一个组件都是单例的，而我们可以通过使用 @Scope 注解改变组件的作用域。</strong></p>
+<pre><code class="language-java">@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Scope {
+
+	/**
+	 * Alias for {@link #scopeName}.
+	 * @see #scopeName
+	 */
+	@AliasFor("scopeName")
+	String value() default "";
+
+	/**
+	 * Specifies the name of the scope to use for the annotated component/bean.
+	 * &lt;p&gt;Defaults to an empty string ({@code ""}) which implies
+	 * {@link ConfigurableBeanFactory#SCOPE_SINGLETON SCOPE_SINGLETON}.
+	 * @since 4.2
+	 * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
+	 * @see ConfigurableBeanFactory#SCOPE_SINGLETON
+	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST
+	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_SESSION
+	 * @see #value
+	 */
+	@AliasFor("value")
+	String scopeName() default "";
+
+	// ......
+}
+</code></pre>
+<p>注释中已经写得很清楚，我们可以指定四种作用域。</p>
+<pre><code class="language-JAVA">public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
+
+	/**
+	 * Scope identifier for the standard singleton scope: {@value}.
+	 * &lt;p&gt;Custom scopes can be added via {@code registerScope}.
+	 * @see #registerScope
+	 */
+	String SCOPE_SINGLETON = "singleton";
+
+	/**
+	 * Scope identifier for the standard prototype scope: {@value}.
+	 * &lt;p&gt;Custom scopes can be added via {@code registerScope}.
+	 * @see #registerScope
+	 */
+	String SCOPE_PROTOTYPE = "prototype";
+
+	// ......
+}
+</code></pre>
+<pre><code class="language-JAVA">public interface WebApplicationContext extends ApplicationContext {
+
+	/**
+	 * Scope identifier for request scope: "request".
+	 * Supported in addition to the standard scopes "singleton" and "prototype".
+	 */
+	String SCOPE_REQUEST = "request";
+
+	/**
+	 * Scope identifier for session scope: "session".
+	 * Supported in addition to the standard scopes "singleton" and "prototype".
+	 */
+	String SCOPE_SESSION = "session";
+
+	// ......
+}
+</code></pre>
+<p>对这四个作用域做个简单的回顾：</p>
+<ul>
+<li><code>singleton</code>：单例，Spring 容器启动时创建所有要注册到 Spring 容器中的对象，而之后每次使用对象均是从容器中直接获取，是 Spring 默认使用的作用域。</li>
+<li><code>prototype</code>：多例，Spring 容器启动时不会去创建对象，而是在每次使用对象时都会去创建一个新的实例对象。</li>
+<li><code>request</code>：一个请求对应一个实例对象。</li>
+<li><code>session</code>：一个 session 对应一个实例对象。</li>
+</ul>
+<p>做个简单的测试，看看 Spring 容器默认是不是使用的单例作用域。</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        Object webConfig1 = context.getBean("webConfig");
+        Object webConfig2 = context.getBean("webConfig");
+        System.out.println(String.format("webConfig1 == webConfig2: %s", webConfig1 == webConfig2));
+    }
+}
+</code></pre>
+<pre><code>webConfig1 == webConfig2: true
+</code></pre>
+<p>从结果上看，两次获取的对象是同一个对象，所以证实了我们的观点。</p>
+<p>在 <code>WebConfig</code> 类上添加 <code>@Scope</code> 注解并指定为 <code>prototype</code> ，再看一下控制台的输出。</p>
+<pre><code class="language-java">@Configuration
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class WebConfig {
+
+    @Bean(name = "human")
+    public Person person() {
+        return new Person("NekoChips", 18);
+    }
+}
+</code></pre>
+<pre><code>webConfig1 == webConfig2: false
+</code></pre>
+<h4 id="toc_h4_11">3.6 @Lazy 注解</h4>
+<p>从名字中可以看出它 “懒”， <strong>添加了该注解的类在 Spring 容器启动时不会立即创建对象并注册，而是在该组件第一次被使用时 Spring 容器才开始创建它的对象</strong>。</p>
+<p>在 <code>WebConfig</code> 中的 <code>person()</code> 方法上添加 <code>@Lazy</code> 注解。</p>
+<pre><code class="language-java">@Configuration
+public class WebConfig {
+
+    @Bean(name = "human")
+    @Lazy
+    public Person person() {
+        System.out.println("------ 创建 Person 对象 ------");
+        return new Person("NekoChips", 18);
+    }
+}
+</code></pre>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println("------ 容器创建完毕 ------");
+        System.out.println(context.getBean("human"));
+    }
+}
+</code></pre>
+<p>查看控制台输出：</p>
+<pre><code>------ 容器创建完毕 ------
+------ 创建 Person 对象 ------
+Person{name='NekoChips', age=18}
+</code></pre>
+<h4 id="toc_h4_12">3.7 其他注解</h4>
+<p>Spring 中还有很多非常实用的注解，如 <code>@Conditional</code> 系列注解、 <code>@Import</code> 注解。限于篇幅，后面会专门写一篇如何使用这些注解的总结。</p>
+<h3 id="toc_h3_13">4. FactoryBean 实现组件注册</h3>
+<hr>
+<p>除了上面所说的诸多注解之外，Spring 还提供了 <code>FactoryBean</code> 接口用于注册组件。</p>
+<pre><code class="language-java">public interface FactoryBean&lt;T&gt; {
+
+	/**
+	 * The name of an attribute that can be
+	 * {@link org.springframework.core.AttributeAccessor#setAttribute set} on a
+	 * {@link org.springframework.beans.factory.config.BeanDefinition} so that
+	 * factory beans can signal their object type when it can't be deduced from
+	 * the factory bean class.
+	 * @since 5.2
+	 */
+	String OBJECT_TYPE_ATTRIBUTE = "factoryBeanObjectType";
+
+
+	/**
+	 * Return an instance (possibly shared or independent) of the object
+	 * managed by this factory.
+	 * &lt;p&gt;As with a {@link BeanFactory}, this allows support for both the
+	 * Singleton and Prototype design pattern.
+	 * &lt;p&gt;If this FactoryBean is not fully initialized yet at the time of
+	 * the call (for example because it is involved in a circular reference),
+	 * throw a corresponding {@link FactoryBeanNotInitializedException}.
+	 * &lt;p&gt;As of Spring 2.0, FactoryBeans are allowed to return {@code null}
+	 * objects. The factory will consider this as normal value to be used; it
+	 * will not throw a FactoryBeanNotInitializedException in this case anymore.
+	 * FactoryBean implementations are encouraged to throw
+	 * FactoryBeanNotInitializedException themselves now, as appropriate.
+	 * @return an instance of the bean (can be {@code null})
+	 * @throws Exception in case of creation errors
+	 * @see FactoryBeanNotInitializedException
+	 */
+	@Nullable
+	T getObject() throws Exception;
+
+	/**
+	 * Return the type of object that this FactoryBean creates,
+	 * or {@code null} if not known in advance.
+	 * &lt;p&gt;This allows one to check for specific types of beans without
+	 * instantiating objects, for example on autowiring.
+	 * &lt;p&gt;In the case of implementations that are creating a singleton object,
+	 * this method should try to avoid singleton creation as far as possible;
+	 * it should rather estimate the type in advance.
+	 * For prototypes, returning a meaningful type here is advisable too.
+	 * &lt;p&gt;This method can be called &lt;i&gt;before&lt;/i&gt; this FactoryBean has
+	 * been fully initialized. It must not rely on state created during
+	 * initialization; of course, it can still use such state if available.
+	 * &lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; Autowiring will simply ignore FactoryBeans that return
+	 * {@code null} here. Therefore it is highly recommended to implement
+	 * this method properly, using the current state of the FactoryBean.
+	 * @return the type of object that this FactoryBean creates,
+	 * or {@code null} if not known at the time of the call
+	 * @see ListableBeanFactory#getBeansOfType
+	 */
+	@Nullable
+	Class&lt;?&gt; getObjectType();
+
+	/**
+	 * Is the object managed by this factory a singleton? That is,
+	 * will {@link #getObject()} always return the same object
+	 * (a reference that can be cached)?
+	 * &lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; If a FactoryBean indicates to hold a singleton object,
+	 * the object returned from {@code getObject()} might get cached
+	 * by the owning BeanFactory. Hence, do not return {@code true}
+	 * unless the FactoryBean always exposes the same reference.
+	 * &lt;p&gt;The singleton status of the FactoryBean itself will generally
+	 * be provided by the owning BeanFactory; usually, it has to be
+	 * defined as singleton there.
+	 * &lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; This method returning {@code false} does not
+	 * necessarily indicate that returned objects are independent instances.
+	 * An implementation of the extended {@link SmartFactoryBean} interface
+	 * may explicitly indicate independent instances through its
+	 * {@link SmartFactoryBean#isPrototype()} method. Plain {@link FactoryBean}
+	 * implementations which do not implement this extended interface are
+	 * simply assumed to always return independent instances if the
+	 * {@code isSingleton()} implementation returns {@code false}.
+	 * &lt;p&gt;The default implementation returns {@code true}, since a
+	 * {@code FactoryBean} typically manages a singleton instance.
+	 * @return whether the exposed object is a singleton
+	 * @see #getObject()
+	 * @see SmartFactoryBean#isPrototype()
+	 */
+	default boolean isSingleton() {
+		return true;
+	}
+
+}
+</code></pre>
+<p>源码很少也很好理解：</p>
+<ul>
+<li><code>getObject</code>：返回一个实例对象。</li>
+<li><code>getObjectType</code>：返回组件的类型。</li>
+<li><code>isSingleton</code>：Java 8 中接口的新特性，该接口的默认方法，默认为单例。</li>
+</ul>
+<p>下面我们使用 <code>FactoryBean</code> 注册一个组件。</p>
+<pre><code class="language-java">public class Car implements Serializable {
+  
+    private static final long serialVersionUID = 136242051382122048L;
+
+    private String color;
+
+    private int size;
+
+    public Car() {
+    }
+
+    public Car(String color, int size) {
+        this.color = color;
+        this.size = size;
+    }
+
+    // ......
+}
+</code></pre>
+<pre><code class="language-java">@Component
+public class CarFactoryBean implements FactoryBean&lt;Car&gt; {
+  
+    @Override
+    public Car getObject() throws Exception {
+        return new Car("red", 4);
+    }
+
+    @Override
+    public Class&lt;?&gt; getObjectType() {
+        return Car.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+}
+</code></pre>
+<p>可以看到我们使用了 <code>@Component</code> 注解将 <code>CarFactoryBean</code> 注册为组件。然后我们从 Spring 容器中获取它的对象。</p>
+<pre><code class="language-java">@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(context.getBean("carFactoryBean"));
+}
+
+</code></pre>
+<p>查看控制台输出：</p>
+<pre><code>Car{color='red', size=4}
+</code></pre>
+<p>从 Spring 容器中获取到的是 <code>Car</code> 的对象，可见<strong>通过 <code>FactoryBean</code> 也是可以注册组件的</strong>。</p>
+<blockquote>
+<p>很多朋友可能想问：我们同样向 Spring 容器中注册了 CarFactoryBean 组件，该如何去获取 CarFactoryBean 的对象呢？</p>
+</blockquote>
+<p>其实 BeanFactory 接口中已经告诉了我们答案：</p>
+<pre><code class="language-java">public interface BeanFactory {
+
+	/**
+	 * Used to dereference a {@link FactoryBean} instance and distinguish it from
+	 * beans &lt;i&gt;created&lt;/i&gt; by the FactoryBean. For example, if the bean named
+	 * {@code myJndiObject} is a FactoryBean, getting {@code &amp;myJndiObject}
+	 * will return the factory, not the instance returned by the factory.
+	 */
+	String FACTORY_BEAN_PREFIX = "&amp;";
+
+	// ......
+}
+</code></pre>
+<p>所以我们可以这样获取 CarFactoryBean 对象：</p>
+<pre><code>@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+        System.out.println(context.getBean("&amp;carFactoryBean").getClass());
+}
+</code></pre>
+<pre><code>class com.learn.neko.bean.CarFactoryBean
+</code></pre>
+<blockquote>
+<p>源码地址：<a href="https://github.com/NekoChips/LearnSpring/tree/master/Spring-Learn-IOC" target="_blank">https://github.com/NekoChips/LearnSpring/tree/master/Spring-Learn-IOC</a></p>
+</blockquote>
+          <div>
+            <hr>
+
+关于作者：NekoChips<br/>
+本文地址：<a href="https://nekochips.github.io/articles/2020/04/16/1587046127282.html" target="_blank">https://nekochips.github.io/articles/2020/04/16/1587046127282.html</a><br/>
+版权声明：本篇所有文章仅用于学习和技术交流，本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> BY-NC-SA 4.0 </a>许可协议，如需转载请注明出处！<br/>
+许可协议：<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>
+
+<!-- 签名档内可使用 HTML、JavaScript -->
+<br>
+          </div>
+        </div>
+        <div class="share__container">
+          <a class="item J_share" data-type="weibo" href="javascript:;"></a>
+          <a class="item J_share" data-type="qzone" href="javascript:;"></a>
+          <a 
+            class="item J_share J_share_wechat"
+            href="javascript:;"
+            data-type="wechat"
+            data-title="Spring Boot 深入学习（1） —— Spring IOC 以及组件注册"
+            data-blogtitle="NekoChip's Blog"
+            data-url="https://nekochips.github.io/articles/2020/04/16/1587046127282.html"
+            data-avatar="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100">
+            <span class="qrcode J_qrcode"></span>  
+          </a>
+        </div>
+        <div class="comment__container" id="comments">
+            <div id="vcomment" data-name="NekoChips" data-postId="1587046127282"></div>
+        </div>
+        <div class="recommendation__container">
+          <div class="item" id="externalRelevantArticles">
+          </div>
+          <div class="item" id="randomArticles">
+          </div>
+          <div class="item" id="relevantArticles">
+          </div>
+        </div>
+        
+      </main>
+      <div class="container--right">
+<div class="sidebar">
+    <section class="sidebar__container">
+    <div class="header">
+      <span>公告</span>
+    </div>
+    <div class="board" id="board">
+      温故而知新。
+    
+    </div>
+  </section>
+  <section class="sidebar__container">
+    <div class="header">
+      <span>搜索文章</span>
+    </div>
+    <div class="search">
+      <form class="search__form" action="https://nekochips.github.io/search">
+        <div class="input">
+          <input type="text" name="keyword" placeholder="输入关键字搜索">
+          <button type="submit"></button>
+        <div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>关于博主</span>
+    </div>
+    <main class="user">
+      <img class="user__avatar" src="https://img.hacpai.com/avatar/1553594128661_1553781796773.jpeg?imageView2/1/w/128/h/128/interlace/0/q/100" alt="NekoChips"/>
+      <div class="user__info">
+        <div class="item"><a href="https://nekochips.github.io/archives.html">33<span class="text">文章</span></a></div>
+        <div class="item"><span data-uvstaturl="https://nekochips.github.io">5959</span><span class="text">浏览</span></div>
+        <div class="item">2<span class="text">当前浏览</span></div>
+      </div>
+    </main>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>标签</span>
+    </div>
+    <div class="tags rowSmallItemLayout">
+      <a class="item" href="https://nekochips.github.io/tags/SpringBoot">SpringBoot</a>
+      <a class="item" href="https://nekochips.github.io/tags/Java">Java</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0">源码学习</a>
+      <a class="item" href="https://nekochips.github.io/tags/Solo">Solo</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mysql">Mysql</a>
+      <a class="item" href="https://nekochips.github.io/tags/ProblemSolution">ProblemSolution</a>
+      <a class="item" href="https://nekochips.github.io/tags/Mybatis">Mybatis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+      <a class="item" href="https://nekochips.github.io/tags/OAuth2">OAuth2</a>
+      <a class="item" href="https://nekochips.github.io/tags/Redis">Redis</a>
+      <a class="item" href="https://nekochips.github.io/tags/%E5%89%8D%E7%AB%AF">前端</a>
+      <a class="item" href="https://nekochips.github.io/tags/React">React</a>
+      <a class="item" href="https://nekochips.github.io/tags/MyBatis-Plus">MyBatis-Plus</a>
+      <a class="item" href="https://nekochips.github.io/tags/Shell">Shell</a>
+      <a class="item" href="https://nekochips.github.io/tags/Webpack">Webpack</a>
+      <a class="item" href="https://nekochips.github.io/tags/JWT">JWT</a>
+      <a class="item" href="https://nekochips.github.io/tags/Golang">Golang</a>
+      <a class="item" href="https://nekochips.github.io/tags/CSS">CSS</a>
+      <a class="item" href="https://nekochips.github.io/tags/AntDesignPro">AntDesignPro</a>
+      <a class="item" href="https://nekochips.github.io/tags/SpringCloud">SpringCloud</a>
+    </div>
+  </section>
+
+  <section class="sidebar__container">
+    <div class="header">
+      <span>存档</span>
+    </div>
+    <div class="lists">
+              <a href="https://nekochips.github.io/archives/2020/05"
+                  title="2020 年 05 月(2)">
+                  2020 年 05 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/04"
+                  title="2020 年 04 月(17)">
+                  2020 年 04 月(17)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/03"
+                  title="2020 年 03 月(6)">
+                  2020 年 03 月(6)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/02"
+                  title="2020 年 02 月(4)">
+                  2020 年 02 月(4)
+              </a>
+              <a href="https://nekochips.github.io/archives/2020/01"
+                  title="2020 年 01 月(1)">
+                  2020 年 01 月(1)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/11"
+                  title="2019 年 11 月(2)">
+                  2019 年 11 月(2)
+              </a>
+              <a href="https://nekochips.github.io/archives/2019/10"
+                  title="2019 年 10 月(1)">
+                  2019 年 10 月(1)
+              </a>
+    </div>
+  </section>
+
+  <section class="sidebar__container article__contents J_article__contents fn__none">
+    <div class="header">
+      <span>文章目录</span>
+    </div>
+    <div class="contents J_article__contents--container">
+    </div>
+  </section>
+
+  <div class="toTop J_backToTop">
+    <img src="https://nekochips.github.io/skins/solo-skin-emiya/images/top.png" />
+  </div>
+</div>
+      </div>
+    </div>
+<footer class="footer">
+  <div class="footer__container">
+    © 2020 <a href="https://nekochips.github.io">NekoChip's Blog</a> &nbsp;&nbsp;❥(^_-)Enjoy Code Enjoy Life❥<br/>版权所有 ICP 证：<a href="http://www.beian.miit.gov.cn" rel="noopener nofollow" target="_blank">鄂ICP备19026877号-1</a>
+<script type="text/javascript">
+    /*自动刷新页面，避免无法访问*/
+    var OriginTitile = document.title;
+    var titleTime;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            document.title = '稍等片刻，马上回来！(#^.^#) ';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎回来！ヾ(ﾟ∀ﾟゞ)';
+            titleTime = setTimeout(function () {
+                document.title = OriginTitile;
+            }, 3000);
+        }
+    });
+</script><br/>
+    Powered by <a href="https://solo.b3log.org" target="_blank">Solo</a> 
+    Theme <a rel="friend" href="https://github.com/zjhch123/solo-skin-emiya" target="_blank">solo-skin-emiya</a>
+    <sup>[<a href="https://github.com/spiritree/typecho-theme-amaze" target="_blank">ref</a>]</sup> 
+    by <a href="https://github.com/zjhch123" target="_blank">Jiahao.Zhang</a>
+  </div>
+</footer>
+<script>
+  var Label = {
+    servePath: "https://nekochips.github.io",
+    staticServePath: "https://nekochips.github.io",
+    luteAvailable: false,
+    hljsStyle: 'github',
+    langLabel: "zh_CN",
+    version: "4.1.0",
+    staticSite: true,
+    showCodeBlockLn: false,
+  }
+</script>
+<script type="text/javascript" src="https://nekochips.github.io/js/common.min.js?1590239253314" charset="utf-8"></script>
+<script type="text/javascript" src="https://nekochips.github.io/skins/solo-skin-emiya/js/common.min.js?1590239253314" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.css"/>
+<script async src="https://cdn.jsdelivr.net/npm/kanbanniang@0.2.8/index.js"></script>
+<div class="solo-kanbanniang">
+    <div class="solo-kanbanniang__tip"></div>
+    <canvas id="soloKanbanniang" width="280" height="250"></canvas>
+    <div class="solo-kanbanniang__tool">
+        <svg id="soloKanbanniangHome" viewBox="0 0 32 32" width="100%" height="100%">
+            <path d="M32 18.967l-16-12.42-16 12.42v-5.064l16-12.42 16 12.42zM28 18.516v12h-8v-8h-8v8h-8v-12l12-9z"></path>
+        </svg>
+        <svg id="soloKanbanniangRSS" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M320.364 768q0 45.728-32 77.728t-77.728 32-77.728-32-32-77.728 32-77.728 77.728-32 77.728 32 32 77.728zM612.94 838.272q1.152 16-9.728 27.424-10.272 12-26.848 12h-77.152q-14.272 0-24.576-9.44t-11.424-23.712q-12.576-130.848-105.44-223.712t-223.712-105.44q-14.272-1.152-23.712-11.424t-9.44-24.576V402.24q0-16.576 12-26.848 9.728-9.728 24.576-9.728h2.848q91.424 7.424 174.848 46.016t148 103.712q65.152 64.576 103.712 148t46.016 174.848z m292.576 1.152q1.152 15.424-10.272 26.848-10.272 11.424-26.272 11.424h-81.728q-14.848 0-25.44-10.016t-11.136-24.288q-6.848-122.848-57.728-233.44t-132.288-192-192-132.288-233.44-58.272q-14.272-0.576-24.288-11.136t-10.016-24.864V109.664q0-16 11.424-26.272 10.272-10.272 25.152-10.272h1.728q149.728 7.424 286.56 68.576t243.136 168q106.848 106.272 168 243.136t68.576 286.56z"></path>
+        </svg>
+        <svg id="soloKanbanniangChat" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M802.42709 96.163153H219.476155c-84.48109 0-154.896836 71.746044-154.896836 157.840888v393.119449c0 86.072331 70.415746 157.819398 154.896836 157.819399h214.038818V925.470963s22.526039 40.168862 64.767096 5.734608c30.965246-25.819039 126.721123-91.828428 171.775248-123.385145h132.369773c84.502579 0 154.896836-83.21526 154.896836-157.839865V251.125481c0-86.094844-70.394257-154.962328-154.896836-154.962328zM301.144176 518.002714c-39.427988 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044 39.426965 0 70.393233 31.577183 70.393234 71.746044 0 40.169885-30.966269 71.746044-70.393234 71.746044z m208.411657 0c-39.450501 0-70.415746-31.576159-70.415746-71.746044 0-40.168862 30.965246-71.746044 70.415746-71.746044 39.405475 0 70.394257 31.577183 70.394257 71.746044 0 40.169885-30.988782 71.746044-70.394257 71.746044z m211.203236 0c-39.426965 0-70.416769-31.576159-70.416769-71.746044 0-40.168862 30.988782-71.746044 70.416769-71.746044s70.415746 31.577183 70.415746 71.746044c-0.001023 40.169885-30.988782 71.746044-70.415746 71.746044z"></path>
+        </svg>
+        <svg id="soloKanbanniangChange" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M936.672 193.216l-226.88-64c-8.704-2.528-18.112-1.12-25.824 3.776-7.68 4.864-12.896 12.736-14.432 21.728C655.712 236.928 595.328 288 512 288c-71.424 0-142.464-103.296-163.776-143.104-7.136-13.28-22.528-19.84-37.024-15.68l-224 64C73.472 197.152 64 209.728 64 224v256a31.93 31.93 0 0 0 11.712 24.736c7.392 6.08 17.152 8.512 26.56 6.624L224 487.04V832c0 52.928 43.072 96 96 96h384c52.928 0 96-43.072 96-96V519.04l121.728 24.352c9.44 1.92 19.2-0.544 26.56-6.624C955.68 530.656 960 521.6 960 512V224c0-14.336-9.536-26.912-23.328-30.784zM672 800H352c-17.664 0-32-14.304-32-32s14.336-32 32-32h320c17.696 0 32 14.304 32 32s-14.304 32-32 32z"></path>
+        </svg>
+        <svg id="soloKanbanniangPhoto" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M898.048 258.048q23.552-1.024 46.592 9.216t40.96 27.136 28.672 39.424 10.752 46.08l0 390.144q0 24.576-10.752 47.104t-28.672 40.448-40.96 28.16-47.616 10.24l-697.344 0q-24.576 0-48.64-10.24t-42.496-27.648-29.696-40.448-11.264-48.64l0-381.952q0-22.528 10.752-45.568t28.672-41.472 39.936-30.208 44.544-11.776l63.488 0 13.312-83.968q3.072-20.48 18.432-32.768t34.816-12.288l456.704 0q19.456 0 34.304 10.752t16.896 34.304l14.336 83.968 54.272 0zM548.864 712.704q40.96 0 77.824-15.872t63.488-42.496 42.496-62.976 15.872-77.312-15.872-77.312-42.496-62.976-63.488-42.496-77.824-15.872-77.312 15.872-63.488 42.496-43.008 62.976-15.872 77.312 15.872 77.312 43.008 62.976 63.488 42.496 77.312 15.872z"></path>
+        </svg>
+        <svg id="soloKanbanniangGithub" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M1024 524.8c0 114.346667-32.554667 217.216-97.706667 308.565333-65.066667 91.306667-149.162667 154.538667-252.288 189.610667-11.989333 2.304-20.778667 0.682667-26.325333-4.778667a27.605333 27.605333 0 0 1-8.362667-20.48v-144.213333c0-44.16-11.52-76.501333-34.645333-97.024 25.344-2.730667 48.085333-6.826667 68.309333-12.288a268.629333 268.629333 0 0 0 62.72-26.666667 187.434667 187.434667 0 0 0 53.973334-45.44c14.421333-18.005333 26.197333-41.898667 35.328-71.765333 9.088-29.824 13.653333-64.128 13.653333-102.826667 0-55.125333-17.536-102.058667-52.650667-140.8 16.426667-41.429333 14.677333-87.893333-5.333333-139.392-12.458667-4.096-30.464-1.578667-54.016 7.509334a355.328 355.328 0 0 0-61.312 30.08L640 271.274667a462.336 462.336 0 0 0-128-17.749334c-43.989333 0-86.656 5.930667-128 17.749334a589.824 589.824 0 0 0-28.330667-18.432c-11.776-7.253333-30.336-16.042667-55.68-26.325334-25.344-10.24-44.416-13.312-57.301333-9.216-19.584 51.498667-21.12 97.962667-4.693333 139.434667-35.114667 38.698667-52.650667 85.632-52.650667 140.757333 0 38.698667 4.565333 72.874667 13.653333 102.485334 9.130667 29.610667 20.778667 53.546667 34.986667 71.765333 14.250667 18.218667 32.128 33.493333 53.674667 45.781333 21.546667 12.288 42.453333 21.205333 62.677333 26.666667 20.224 5.461333 43.008 9.557333 68.309333 12.288-17.749333 16.384-28.629333 39.850667-32.64 70.4a130.005333 130.005333 0 0 1-29.994666 10.24c-10.666667 2.261333-23.338667 3.413333-37.973334 3.413333-14.72 0-29.269333-4.906667-43.690666-14.677333-14.464-9.813333-26.794667-24.064-36.992-42.709333a109.226667 109.226667 0 0 0-32.341334-35.541334c-13.141333-9.130667-24.106667-14.592-33.024-16.426666l-13.312-2.048c-9.344 0-15.786667 1.024-19.328 3.072-3.584 2.090667-4.693333 4.693333-3.328 7.893333 1.28 3.157333 3.328 6.4 5.973334 9.557333 2.688 3.2 5.546667 5.930667 8.661333 8.192l4.693333 3.413334c9.770667 4.565333 19.413333 13.226667 29.013334 25.984 9.514667 12.757333 16.512 24.362667 20.992 34.858666l6.656 15.701334c5.76 17.322667 15.530667 31.317333 29.312 42.026666 13.781333 10.666667 28.672 17.536 44.672 20.48 16 2.986667 31.445333 4.565333 46.336 4.821334 14.890667 0.213333 27.221333-0.597333 36.992-2.389334l15.36-2.730666c0 17.28 0.085333 37.546667 0.298666 60.8l0.341334 36.906666a27.050667 27.050667 0 0 1-8.661334 20.48c-5.76 5.461333-14.677333 7.082667-26.666666 4.778667-103.125333-35.072-187.221333-98.261333-252.330667-189.610667C32.554667 742.058667 0 639.146667 0 524.8c0-95.232 22.869333-183.04 68.693333-263.466667A516.266667 516.266667 0 0 1 254.976 70.4C333.44 23.466667 419.114667 0 512 0c92.885333 0 178.56 23.466667 256.981333 70.4a516.266667 516.266667 0 0 1 186.368 190.976C1001.130667 341.802667 1024 429.653333 1024 524.842667z"></path>
+        </svg>
+        <svg id="soloKanbanniangClose" viewBox="0 0 1024 1024" width="32" height="32">
+            <path d="M517.572566143763 1018.6748601482986C238.26554897656422 1018.6748601482986 11.897910175114305 792.2714997690043 11.897910175114305 513.0002041796496c0-279.3070171671984 226.36763880144977-505.71037754649296 505.6746559686481-505.71037754649296 279.2712955893538 0 505.6746559686481 226.40336037929444 505.6746559686481 505.71037754649296C1023.2472221124112 792.2714997690043 796.8795833109612 1018.6748601482986 517.572566143763 1018.6748601482986zM754.7281214542927 339.25044954334646c13.752807470184345-13.752807470184345 9.680547595895998-40.186775075214015-9.073280772537204-58.94060344364717l-2.143294670678079-2.1075730928334457c-18.7538283684332-18.7538283684332-45.15207439561819-22.861809820566194-58.90488186580257-9.073280772537204l-168.21291007038468 168.24863164822932-180.42968969324974-180.46541127109438c-13.967136937252159-13.967136937252159-40.72259874288353-9.823433907274534-59.72647815622916 9.216167083915742l-2.143294670678079 2.143294670678079c-19.039600991190277 19.003879413345654-23.111860865478626 45.75934121897699-9.180445506071107 59.655035000539876l180.42968969324974 180.46541127109438-176.07165719620428 176.03593561835962c-13.788529048028984 13.824250625873615-9.716269173740633 40.151053497369375 9.073280772537204 58.94060344364717l2.1075730928334457 2.1075730928334457c18.7538283684332 18.7538283684332 45.15207439561819 22.897531398410823 58.90488186580257 9.073280772537204l176.10737877404887-176.10737877404887 170.39192631890742 170.42764789675192c13.967136937252159 13.931415359407513 40.686877165038865 9.85915548511917 59.690756578384516-9.180445506071107l2.1790162485227142-2.1790162485227142c19.039600991190277-18.968157835501014 23.147582443323273-45.72361964113239 9.180445506071107-59.690756578384516l-170.39192631890742-170.42764789675192L754.7281214542927 339.25044954334646z"></path>
+        </svg>
+    </div>
+</div>
+
+    
+<script type="text/javascript">
+    Util.addScript('https://nekochips.github.io/js/page.min.js?1590239253314', 'soloPageScript')
+    var page = new Page({
+        "commentContentCannotEmptyLabel": "评论内容只能为 2 到 500 个字符！",
+        "oId": "1587046127282",
+        "blogHost": "https://nekochips.github.io",
+        "randomArticles1Label": "随机阅读：",
+        "externalRelevantArticles1Label": "站外相关阅读："
+    });
+    $(document).ready(function () {
+        page.load();
+        Skin.initComment = function (articleOId, articleTags) {
+          page.tips.externalRelevantArticlesDisplayCount = "5";
+          page.loadExternalRelevantArticles(articleTags, "<div class='header'><span>HACPAI POSTS</span></div>");
+          page.loadRandomArticles("<div class='header'><span>RECOMMEND POSTS</span></div>");
+          page.loadRelevantArticles(articleOId, '<div class="header"><span>RELEVANT POSTS</span></div>');
+        }
+        Skin.initComment('1587046127282', "SpringBoot,源码学习")
+        Skin.initArticle()
+    });
+</script>
+    
+  </body>
+</html>
+<!-- Generated by Latke (https://github.com/88250/latke) in 2667ms, 2020/05/23 21:10:28 -->
